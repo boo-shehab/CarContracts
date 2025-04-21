@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import userImg from '../assets/userImage.png'
 import { NavLink } from 'react-router-dom'
 import { GoBellFill } from 'react-icons/go'
@@ -8,6 +8,18 @@ import { IoClose } from 'react-icons/io5'
 
 const Header = () => {
     const [isSidebarOpen, setIsSidebarOpen] = React.useState(false)
+    
+    useEffect(() => {
+        const handleResize = () => {
+          if (window.innerWidth >= 1024) {
+            setIsSidebarOpen(false);
+          }
+        };
+      
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
+      
   return (
     <header className='container mx-auto py-4 px-2 lg:px-2'>
         <div className='flex justify-between items-center gap-6'>
@@ -54,7 +66,6 @@ const Header = () => {
                     <div className="cursor-pointer text-gray-600 text-xl"><DownArrow /></div>
                 </div>
 
-                {/* Sidebar Nav */}
                 <nav className='flex flex-col gap-3 text-right'>
                     <NavLink to="/" onClick={() => setIsSidebarOpen(false)} className={({ isActive }) => (`inline text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`)}>الصفحة الرئيسية</NavLink>
                     <NavLink to="/contracts" onClick={() => setIsSidebarOpen(false)} className={({ isActive }) => (`text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`)}>العقود</NavLink>
