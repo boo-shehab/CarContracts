@@ -3,7 +3,7 @@ import { router } from './routes'
 function App() {
 
   return (
-    <div className=''>
+    <div className='px-4'>
       <RouterProvider router={router}/>
     </div>
 

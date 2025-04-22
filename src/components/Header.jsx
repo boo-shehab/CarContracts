@@ -8,7 +8,7 @@ import { IoClose } from 'react-icons/io5'
 
 const Header = () => {
     const [isSidebarOpen, setIsSidebarOpen] = React.useState(false)
-    
+
     useEffect(() => {
         const handleResize = () => {
           if (window.innerWidth >= 1024) {
@@ -21,32 +21,30 @@ const Header = () => {
       }, []);
       
   return (
-    <header className='container mx-auto py-4 px-2 lg:px-2'>
+    <header className='container mx-auto py-4 px-2 lg:px-2 mb-4 border-b'>
         <div className='flex justify-between items-center gap-6'>
             <button onClick={() => setIsSidebarOpen(true)} className="lg:hidden text-2xl">
                 <FiMenu />
             </button>
-            <div className='hidden lg:flex items-center gap-6'>
-                <div className="flex items-center gap-3">
+                <div className="hidden lg:flex items-center gap-3">
                     <button>
-                        <GoBellFill size={42} className="text-blue-200" />
+                        <GoBellFill size={42} className="text-primary-200" />
                     </button>
                     <img src={userImg} alt="User" className="w-10 h-10 rounded-full object-cover" />
                     <span className="text-gray-800 font-medium">محمد علي</span>
                     <div className="cursor-pointer text-gray-600 text-xl"><DownArrow /></div>
                 </div>
                 <nav>
-                <ul className='flex gap-6'>
-                    <NavLink to="/" className={({ isActive }) => (`text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`)}>الصفحة الرئيسية</NavLink>
-                    <NavLink to="/contracts" className={({ isActive }) => (`text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`)}>العقود</NavLink>
-                    <NavLink to="/authorizations" className={({ isActive }) => (`text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`)}>التخاويل</NavLink>
-                    <NavLink to="/clearance" className={({ isActive }) => (`text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`)}>براءة الذمة</NavLink>
-                    <NavLink to="/users" className={({ isActive }) => (`text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`)}>المستخدمين</NavLink>
-                    <NavLink to="/Payments" className={({ isActive }) => (`text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`)}>مستحقات الدفع</NavLink>
-                    <NavLink to="/account-cards" className={({ isActive }) => (`text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`)}>بطاقات الحساب</NavLink>
-                </ul>
+                    <ul className='hidden lg:flex gap-6'>
+                        <NavLink to="/" className={({ isActive }) => (`text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`)}>الصفحة الرئيسية</NavLink>
+                        <NavLink to="/contracts" className={({ isActive }) => (`text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`)}>العقود</NavLink>
+                        <NavLink to="/authorizations" className={({ isActive }) => (`text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`)}>التخاويل</NavLink>
+                        <NavLink to="/clearance" className={({ isActive }) => (`text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`)}>براءة الذمة</NavLink>
+                        <NavLink to="/users" className={({ isActive }) => (`text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`)}>المستخدمين</NavLink>
+                        <NavLink to="/Payments" className={({ isActive }) => (`text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`)}>مستحقات الدفع</NavLink>
+                        <NavLink to="/account-cards" className={({ isActive }) => (`text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`)}>بطاقات الحساب</NavLink>
+                    </ul>
                 </nav>
-            </div>
             <h2 className='text-2xl font-bold'>عقود السيارة</h2>
         </div>
         {/* Sidebar for mobile view */}
@@ -59,7 +57,7 @@ const Header = () => {
 
                 <div className="flex items-center gap-3 border-b pb-4">
                     <button>
-                        <GoBellFill size={24} className="text-blue-200" />
+                        <GoBellFill size={24} className="text-primary-200" />
                     </button>
                     <img src={userImg} alt="User" className="w-8 h-8 rounded-full object-cover" />
                     <span className="text-gray-800 font-medium text-lg">محمد علي</span>
