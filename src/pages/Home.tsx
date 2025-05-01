@@ -1,4 +1,3 @@
-import React from 'react'
 import { Circle } from 'rc-progress';
 import TrendingUp from '../assets/icons/TrendingUp';
 

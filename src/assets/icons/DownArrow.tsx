@@ -1,5 +1,7 @@
-import * as React from "react";
-const DownArrow = (props) => (
+import { SVGProps } from "react";
+import { JSX } from "react/jsx-runtime";
+
+const DownArrow = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
   <svg
     width={25}
     height={24}

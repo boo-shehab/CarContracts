@@ -1,5 +1,7 @@
-import * as React from "react";
-const TrendingUp = (props) => (
+import { SVGProps } from "react";
+import { JSX } from "react/jsx-runtime";
+
+const TrendingUp = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
   <svg
     width={24}
     height={24}
