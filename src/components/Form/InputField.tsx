@@ -1,22 +1,23 @@
-import { CiSearch, CiUser } from "react-icons/ci";
 
 interface InputFieldProps {
     name: string;
-    label: string;
-    type: string;
-    placeholder: string;
+    label?: string;
+    type: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
+    placeholder?: string;
     value: string;
     error?: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange: (e: any) => void;
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
     className?: string;
     disabled?: boolean;
 }
-const InputField = ({name, label, type, placeholder, value, error, onChange, leftIcon, rightIcon, className, disabled}: InputFieldProps) => {
+const InputField = ({name, label, type = 'text', placeholder, value, error, onChange, leftIcon, rightIcon, className, disabled}: InputFieldProps) => {
   return (
     <div className='mb-4'>
-      <label className='block mb-2 text-xl font-medium text-black' htmlFor={name}>{label}</label>
+      { label && 
+        <label className='block mb-2 text-xl font-medium text-black' htmlFor={name}>{label}</label>
+      }
       <div className={`group flex items-center justify-center gap-1 overflow-hidden px-4 py-1 border rounded-2xl border-neutral-100 focus-within:border-blue-500 transition text-black ${error ? 'border-red-500 focus-within:border-red-500 text-red-500' : ''}`}>
         {rightIcon && rightIcon}
         <input 

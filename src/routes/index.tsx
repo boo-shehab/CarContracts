@@ -3,6 +3,7 @@ import { createBrowserRouter, RouteObject } from "react-router-dom";
 import Home from "../pages/Home";
 import MainLayout from "../layouts/MainLayout";
 import Login from "../pages/Login";
+import FormComponents from "../pages/FormComponents";
 
 const routes: RouteObject[] = [
   {
@@ -14,6 +15,10 @@ const routes: RouteObject[] = [
         element: <Home />,
       },
     ],
+  },
+  {
+    path: "/formComponents",
+    element: <FormComponents />
   },
   {
     path: "/login",
