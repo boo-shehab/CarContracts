@@ -4,10 +4,12 @@ interface RadioInputProps {
     name: string;
     value: string;
     options: { value: string; label: string }[];
-
+    error?: string;
+    className?: string;
+    disabled?: boolean;
 }
 
-function RadioInput({label, name, value, options, onChange}: RadioInputProps) {
+function RadioInput({label, name, value, options, onChange, error, className, disabled}: RadioInputProps) {
   return (
     <div>
         {label && <label className='text-2xl font-normal'>{label}</label>}
@@ -17,15 +19,17 @@ function RadioInput({label, name, value, options, onChange}: RadioInputProps) {
                     <input
                     type='radio'
                     name={name}
+                    disabled={disabled}
                     value={item.value}
                     checked={value === item.value}
                     onChange={onChange}
-                    className='w-5 h-5 text-red-600'
+                    className={`w-5 h-5 text-red-600 ${className} ${disabled ? 'bg-gray-200 cursor-not-allowed' : ''}`}
                     />
                     <span className='text-2xl'>{item.label}</span>
                 </label>
             ))}
         </div>
+        {error && <p className='mt-1 text-lg text-red-500'>{error}</p>}
     </div>
   )
 }
