@@ -23,7 +23,7 @@ function RadioInput({label, name, value, options, onChange, error, className, di
                     value={item.value}
                     checked={value === item.value}
                     onChange={onChange}
-                    className={`w-5 h-5 text-red-600 ${className} ${disabled ? 'bg-gray-200 cursor-not-allowed' : ''}`}
+                    className={`w-5 h-5 ${className} ${disabled ? 'bg-gray-200 cursor-not-allowed' : ''}`}
                     />
                     <span className='text-2xl'>{item.label}</span>
                 </label>
