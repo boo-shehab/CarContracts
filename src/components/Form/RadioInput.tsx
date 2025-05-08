@@ -11,7 +11,7 @@ interface RadioInputProps {
 
 function RadioInput({label, name, value, options, onChange, error, className, disabled}: RadioInputProps) {
   return (
-    <div>
+    <div className="mb-4">
         {label && <label className='text-2xl font-normal'>{label}</label>}
         <div className='flex items-center gap-4'>
             {options.map((item) => (

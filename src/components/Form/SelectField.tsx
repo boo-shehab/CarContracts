@@ -36,7 +36,7 @@ function SelectField({
                 </label>
             )}
             <div
-                className={`w-full px-4 py-2 border rounded-2xl border-neutral-100 focus-within:border-blue-500 transition text-black ${
+                className={`w-full px-4 py-1 border rounded-2xl border-neutral-100 focus-within:border-blue-500 transition text-black ${
                     error
                         ? 'border-red-500 focus-within:border-red-500 text-red-500'
                         : ''
