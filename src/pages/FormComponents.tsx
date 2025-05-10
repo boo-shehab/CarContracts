@@ -8,6 +8,7 @@ const FormComponents = () => {
     const [test, setTest] = useState({
         inputText: '',
         selectTest: '',
+        selectTestMultiple: [],
         radioInput: '',
         dateTest: null,
     });
@@ -26,6 +27,7 @@ const FormComponents = () => {
     <div>
       <InputField label="label test" value={test.inputText} name="inputText" onChange={handleChange} placeholder="testing text" type="text" />
       <SelectField name="selectTest" value={test.selectTest} onChange={handleChange} placeholder='select an option' options={[{value: 'textOne', label: 'text one'}, {value: 'textTwo', label: 'text two'}]} />
+      <SelectField name="selectTestMultiple" multiple value={test.selectTestMultiple} onChange={handleChange} placeholder='select an option' options={[{value: 'textOne', label: 'text one'}, {value: 'textTwo', label: 'text two'}]} />
       <RadioInput label="radio label" value={test.radioInput} onChange={handleChange} name="radioInput" options={[{value: 'radio1', label: 'radio 1'},{value: 'radio2', label: 'radio 2'}]} />
       <DateField name="dateTest" value={test.dateTest} onChange={handleChange} />
     </div>
