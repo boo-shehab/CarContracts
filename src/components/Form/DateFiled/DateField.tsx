@@ -1,5 +1,5 @@
-import DatePicker from 'react-datepicker'
-import { useState } from 'react'
+import React from 'react';
+const DatePicker = React.lazy(() => import("react-datepicker"));
 import { CiCalendarDate } from 'react-icons/ci'
 import 'react-datepicker/dist/react-datepicker.css'
 import './DateField.css'

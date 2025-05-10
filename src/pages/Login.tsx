@@ -35,6 +35,16 @@ const Login = () => {
     }
   };
 
+  const handleBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    try {
+      const fieldSchema = yup.reach(loginSchema, name);
+      await fieldSchema.validate(value);
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    } catch (err: any) {
+      setErrors((prev) => ({ ...prev, [name]: err.message }));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +77,7 @@ const Login = () => {
                   value={user.email} 
                   error={errors.email}
                   onChange={(e) => handleChange(e)}
+                  onBlur={handleBlur}
                   rightIcon={<CiSearch size={24} className="group-focus-within:hidden text-black"/>}
                   leftIcon={<CiUser size={24} className="text-black"/>}
                 />
@@ -79,6 +90,7 @@ const Login = () => {
                   value={user.password}
                   error={errors.password}
                   onChange={(e) => handleChange(e)}
+                  onBlur={handleBlur}
                   leftIcon={
                     isPasswordVisible ?
                       <LuEye size={24} className="text-black" onClick={togglePasswordVisibility} /> :

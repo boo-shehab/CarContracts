@@ -97,7 +97,7 @@ function SelectField({
         } ${className}`}
         onClick={handleToggle}
       >
-        <div className={`flex justify-between items-center text-xl py-2 ${!value ? 'text-gray-400' : ''}`}>
+        <div className={`flex justify-between items-center text-xl py-2 ${(!value || value.length === 0)? 'text-gray-400' : ''}`}>
           <span>{displayValue}</span>
           {isOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
         </div>
@@ -127,7 +127,7 @@ function SelectField({
                   <button
                     type="button"
                     onClick={() => handleSingleSelect(option.value)}
-                    className="w-full text-left text-lg"
+                    className="w-full text-right text-lg"
                   >
                     {option.label}
                   </button>
