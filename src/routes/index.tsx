@@ -5,6 +5,8 @@ const Home = lazy(() => import("../pages/Home"));
 const MainLayout = lazy(() => import("../layouts/MainLayout"));
 const Login = lazy(() => import("../pages/Login"));
 const FormComponents = lazy(() => import("../pages/FormComponents"));
+const AdminDashboardLayout = lazy(() => import("../layouts/AdminDashboardLayout"));
+const Admin = lazy(() => import("../pages/Admin"));
 
 const routes: RouteObject[] = [
   {
@@ -24,6 +26,16 @@ const routes: RouteObject[] = [
         )
       },
     ],
+  },
+  {
+    path: "/adminDashboard",
+    element: <AdminDashboardLayout />,
+    children: [
+      {
+        path: "/adminDashboard",
+        element: <Admin />,
+      }
+    ]
   },
   {
     path: "/formComponents",

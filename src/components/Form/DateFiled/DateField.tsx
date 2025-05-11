@@ -8,7 +8,7 @@ interface CustomDatePickerProps {
   label?: string
   name: string
   placeholder?: string
-  value: string | null
+  value: string
   onChange: any
   disabled?: boolean
   error?: string
@@ -27,7 +27,7 @@ function CustomDatePicker({label, name, placeholder = 'YYYY / MM / DD', value, o
         <div className='relative flex items-center justify-center gap-1 px-4 py-1 border rounded-2xl border-neutral-100 focus-within:border-blue-500 transition text-black'>
           <CiCalendarDate size={24} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" />
           <DatePicker
-            selected={ value}
+            selected={value}
             onChange={(e) => onChange({target: { name, value: e } })}
             disabled={disabled}
             name={name}
