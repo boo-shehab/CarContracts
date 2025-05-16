@@ -1,13 +1,7 @@
-import { SVGProps } from "react";
-import { JSX } from "react/jsx-runtime";
+import { SVGProps } from 'react';
+import { JSX } from 'react/jsx-runtime';
 const ArrowRise = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={24}
-    height={24}
-    fill="none"
-    {...props}
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} fill="none" {...props}>
     <path
       fill="#3AB54A"
       fillRule="evenodd"
@@ -15,5 +9,5 @@ const ArrowRise = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => 
       clipRule="evenodd"
     />
   </svg>
-)
-export default ArrowRise
+);
+export default ArrowRise;

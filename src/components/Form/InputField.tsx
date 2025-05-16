@@ -25,12 +25,12 @@ const InputField = ({
   leftIcon,
   rightIcon,
   className = '',
-  disabled = false
+  disabled = false,
 }: InputFieldProps) => {
   return (
-    <div className='mb-4'>
+    <div>
       {label && (
-        <label className='block mb-2 text-xl font-medium text-black' htmlFor={name}>
+        <label className="block mb-2 text-xl font-medium text-black" htmlFor={name}>
           {label}
         </label>
       )}
@@ -62,7 +62,7 @@ const InputField = ({
         )}
       </div>
       {error && (
-        <p id={`${name}-error`} className='mt-1 text-lg text-red-500'>
+        <p id={`${name}-error`} className="mt-1 text-lg text-red-500">
           {error}
         </p>
       )}

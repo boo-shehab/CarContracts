@@ -1,16 +1,16 @@
 // routes/index.tsx
-import { lazy, Suspense } from "react";
-import { createBrowserRouter, RouteObject } from "react-router-dom";
-const Home = lazy(() => import("../pages/Home"));
-const MainLayout = lazy(() => import("../layouts/MainLayout"));
-const Login = lazy(() => import("../pages/Login"));
-const FormComponents = lazy(() => import("../pages/FormComponents"));
-const AdminDashboardLayout = lazy(() => import("../layouts/AdminDashboardLayout"));
-const Admin = lazy(() => import("../pages/Admin"));
+import { lazy, Suspense } from 'react';
+import { createBrowserRouter, RouteObject } from 'react-router-dom';
+const Home = lazy(() => import('../pages/Home'));
+const MainLayout = lazy(() => import('../layouts/MainLayout'));
+const Login = lazy(() => import('../pages/Login'));
+const FormComponents = lazy(() => import('../pages/FormComponents'));
+const AdminDashboardLayout = lazy(() => import('../layouts/AdminDashboardLayout'));
+const Admin = lazy(() => import('../pages/Admin'));
 
 const routes: RouteObject[] = [
   {
-    path: "/",
+    path: '/',
     element: (
       <Suspense fallback={<div>Loading...</div>}>
         <MainLayout />
@@ -18,43 +18,42 @@ const routes: RouteObject[] = [
     ),
     children: [
       {
-        path: "/",
+        path: '/',
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <Home />
           </Suspense>
-        )
+        ),
       },
     ],
   },
   {
-    path: "/adminDashboard",
+    path: '/adminDashboard',
     element: <AdminDashboardLayout />,
     children: [
       {
-        path: "/adminDashboard",
+        path: '/adminDashboard',
         element: <Admin />,
-      }
-    ]
+      },
+    ],
   },
   {
-    path: "/formComponents",
+    path: '/formComponents',
     element: (
       <Suspense fallback={<div>Loading...</div>}>
         <FormComponents />
       </Suspense>
-    )
+    ),
   },
   {
-    path: "/login",
+    path: '/login',
     element: (
       <Suspense fallback={<div>Loading...</div>}>
         <Login />
       </Suspense>
-    )
-  }
+    ),
+  },
 ];
-
 
 const router = createBrowserRouter(routes);
 export default router;

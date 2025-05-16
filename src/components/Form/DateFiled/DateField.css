@@ -17,7 +17,7 @@
 }
 
 .customDatepicker .react-datepicker__current-month {
-  color: #4899EA;
+  color: #4899ea;
   font-weight: 600;
   font-size: 20px;
   text-align: center;
@@ -47,7 +47,7 @@
 }
 
 .customDatepicker .react-datepicker__day--selected {
-  background-color: #4899EA;
+  background-color: #4899ea;
   color: white;
   border-radius: 50%;
 }

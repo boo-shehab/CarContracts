@@ -1,159 +1,157 @@
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
-@import "tailwindcss";
+@import 'tailwindcss';
 
 * {
-    font-family: 'Tajawal', sans-serif;
+  font-family: 'Tajawal', sans-serif;
 }
 
 @layer base {
-    h1 {
-        font-size: 40px;
-        font-weight: 700;
-    }
-    h2 {
-        font-size: 32px;
-        font-weight: 700;
-        line-height: 125%;
-    }
-    h3 {
-        font-size: 24px;
-        font-weight: 700;
-    }
-    h4 {
-        font-size: 18px;
-        font-weight: 700;
-    }
-    h5 {
-        font-size: 16px;
-        font-weight: 700;
-    }
+  h1 {
+    font-size: 40px;
+    font-weight: 700;
+  }
+  h2 {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 125%;
+  }
+  h3 {
+    font-size: 24px;
+    font-weight: 700;
+  }
+  h4 {
+    font-size: 18px;
+    font-weight: 700;
+  }
+  h5 {
+    font-size: 16px;
+    font-weight: 700;
+  }
 }
 
 .p1-r {
-    font-size: 18px;
-    font-weight: 400;
+  font-size: 18px;
+  font-weight: 400;
 }
 .p1-b {
-    font-size: 18px;
-    font-weight: 500;
+  font-size: 18px;
+  font-weight: 500;
 }
 .p2-r {
-    font-size: 16px;
-    font-weight: 400;
+  font-size: 16px;
+  font-weight: 400;
 }
 .p2-b {
-    font-size: 16px;
-    font-weight: 500;
+  font-size: 16px;
+  font-weight: 500;
 }
 .p3-r {
-    font-size: 14px;
-    font-weight: 400;
+  font-size: 14px;
+  font-weight: 400;
 }
 .p3-b {
-    font-size: 14px;
-    font-weight: 500;
+  font-size: 14px;
+  font-weight: 500;
 }
 .p4-r {
-    font-size: 12px;
-    font-weight: 400;
+  font-size: 12px;
+  font-weight: 400;
 }
 .p4-b {
-    font-size: 12px;
-    font-weight: 500;
+  font-size: 12px;
+  font-weight: 500;
 }
 .l1 {
-    font-size: 20px;
-    font-weight: 700;
+  font-size: 20px;
+  font-weight: 700;
 }
 .l2 {
-    font-size: 18px;
-    font-weight: 700;
+  font-size: 18px;
+  font-weight: 700;
 }
 .l3 {
-    font-size: 16px;
-    font-weight: 700;
+  font-size: 16px;
+  font-weight: 700;
 }
 .l4 {
-    font-size: 14px;
-    font-weight: 700;
+  font-size: 14px;
+  font-weight: 700;
 }
 .l5 {
-    font-size: 12px;
-    font-weight: 700;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 @theme {
-    --color-primary-25: #F6FAFE;
-    --color-primary-50: #DFEDFB;
-    --color-primary-100: #C8E0F9;
-    --color-primary-200: #ADD1F6;
-    --color-primary-300: #91C2F2;
-    --color-primary-400: #6DADEE;
-    --color-primary-500: #4899EA;
-    --color-primary-600: #1873CE;
-    --color-primary-700: #104D89;
-    --color-primary-800: #082645;
-    --color-primary-900: #030D17;
+  --color-primary-25: #f6fafe;
+  --color-primary-50: #dfedfb;
+  --color-primary-100: #c8e0f9;
+  --color-primary-200: #add1f6;
+  --color-primary-300: #91c2f2;
+  --color-primary-400: #6dadee;
+  --color-primary-500: #4899ea;
+  --color-primary-600: #1873ce;
+  --color-primary-700: #104d89;
+  --color-primary-800: #082645;
+  --color-primary-900: #030d17;
 
-    --color-neutral-25: #FAFAFA;
-    --color-neutral-50: #EDEDED;
-    --color-neutral-100: #D9D9D9;
-    --color-neutral-200: #CFCFCF;
-    --color-neutral-300: #B3B3B3;
-    --color-neutral-400: #9C9C9C;
-    --color-neutral-500: #808080;
-    --color-neutral-600: #6B6B6B;
-    --color-neutral-700: #474747;
-    --color-neutral-800: #262626;
-    --color-neutral-900: #0D0D0D;
+  --color-neutral-25: #fafafa;
+  --color-neutral-50: #ededed;
+  --color-neutral-100: #d9d9d9;
+  --color-neutral-200: #cfcfcf;
+  --color-neutral-300: #b3b3b3;
+  --color-neutral-400: #9c9c9c;
+  --color-neutral-500: #808080;
+  --color-neutral-600: #6b6b6b;
+  --color-neutral-700: #474747;
+  --color-neutral-800: #262626;
+  --color-neutral-900: #0d0d0d;
 
-    --color-error-25: #FFF5F5;
-    --color-error-50: #FFCDCC;
-    --color-error-100: #FFAFAD;
-    --color-error-200: #CFCFCF;
-    --color-error-300: #FF4742;
-    --color-error-400: #FF160F;
-    --color-error-500: #E10600;
-    --color-error-600: #B80500;
-    --color-error-700: #7A0300;
-    --color-error-800: #470200;
-    --color-error-900: #1A0100;
+  --color-error-25: #fff5f5;
+  --color-error-50: #ffcdcc;
+  --color-error-100: #ffafad;
+  --color-error-200: #cfcfcf;
+  --color-error-300: #ff4742;
+  --color-error-400: #ff160f;
+  --color-error-500: #e10600;
+  --color-error-600: #b80500;
+  --color-error-700: #7a0300;
+  --color-error-800: #470200;
+  --color-error-900: #1a0100;
 
-    --color-success-25: #F7FDF8;
-    --color-success-50: #D8F3DC;
-    --color-success-100: #C1EBC6;
-    --color-success-200: #9EE0A6;
-    --color-success-300: #78D483;
-    --color-success-400: #55C964;
-    --color-success-500: #3AB54A;
-    --color-success-600: #2D8B39;
-    --color-success-700: #21682B;
-    --color-success-800: #123A18;
-    --color-success-900: #061308;
+  --color-success-25: #f7fdf8;
+  --color-success-50: #d8f3dc;
+  --color-success-100: #c1ebc6;
+  --color-success-200: #9ee0a6;
+  --color-success-300: #78d483;
+  --color-success-400: #55c964;
+  --color-success-500: #3ab54a;
+  --color-success-600: #2d8b39;
+  --color-success-700: #21682b;
+  --color-success-800: #123a18;
+  --color-success-900: #061308;
 
-    --color-warning-25: #FDFBF6;
-    --color-warning-50: #F9F1E1;
-    --color-warning-100: #D9D9D9;
-    --color-warning-200: #F2E1BF;
-    --color-warning-300: #EACE94;
-    --color-warning-400: #DEB054;
-    --color-warning-500: #D69E2E;
-    --color-warning-600: #88641B;
-    --color-warning-700: #553E11;
-    --color-warning-800: #33250A;
-    --color-warning-900: #150F04;
+  --color-warning-25: #fdfbf6;
+  --color-warning-50: #f9f1e1;
+  --color-warning-100: #d9d9d9;
+  --color-warning-200: #f2e1bf;
+  --color-warning-300: #eace94;
+  --color-warning-400: #deb054;
+  --color-warning-500: #d69e2e;
+  --color-warning-600: #88641b;
+  --color-warning-700: #553e11;
+  --color-warning-800: #33250a;
+  --color-warning-900: #150f04;
 
-    --color-info-25: #F0F3FF;
-    --color-info-50: #BDCCFF;
-    --color-info-100: #85A2FF;
-    --color-info-200: #527CFF;
-    --color-info-300: #144DFF;
-    --color-info-400: #0037E5;
-    --color-info-500: #00259A;
-    --color-info-600: #001F80;
-    --color-info-700: #00165C;
-    --color-info-800: #001042;
-    --color-info-900: #00061A;
-
-
+  --color-info-25: #f0f3ff;
+  --color-info-50: #bdccff;
+  --color-info-100: #85a2ff;
+  --color-info-200: #527cff;
+  --color-info-300: #144dff;
+  --color-info-400: #0037e5;
+  --color-info-500: #00259a;
+  --color-info-600: #001f80;
+  --color-info-700: #00165c;
+  --color-info-800: #001042;
+  --color-info-900: #00061a;
 }

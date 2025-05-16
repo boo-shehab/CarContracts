@@ -61,9 +61,7 @@ function SelectField({
 
   const handleMultiSelect = (val: string) => {
     const current = value as string[];
-    const newValue = current.includes(val)
-      ? current.filter((v) => v !== val)
-      : [...current, val];
+    const newValue = current.includes(val) ? current.filter((v) => v !== val) : [...current, val];
 
     const event = {
       target: {
@@ -84,7 +82,7 @@ function SelectField({
     : options.find((opt) => opt.value === value)?.label || placeholder;
 
   return (
-    <div className="mb-4" ref={containerRef}>
+    <div ref={containerRef}>
       {label && (
         <label htmlFor={name} className="block mb-2 text-xl font-medium text-black">
           {label}
@@ -97,7 +95,9 @@ function SelectField({
         } ${className}`}
         onClick={handleToggle}
       >
-        <div className={`flex justify-between items-center text-xl py-2 ${(!value || value.length === 0)? 'text-gray-400' : ''}`}>
+        <div
+          className={`flex justify-between items-center text-xl py-2 ${!value || value.length === 0 ? 'text-gray-400' : ''}`}
+        >
           <span>{displayValue}</span>
           {isOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
         </div>
@@ -110,7 +110,6 @@ function SelectField({
             {options.map((option) => (
               <div
                 key={option.value}
-                
                 className="flex items-center justify-between px-4 py-2 hover:bg-gray-100"
               >
                 {multiple ? (
