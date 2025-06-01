@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import InputField from '../components/Form/InputField';
 import SelectField from '../components/Form/SelectField';
 import RadioInput from '../components/Form/RadioInput';
-import DateField from '../components/Form/DateFiled/DateField';
+import DateField from '../components/Form/DateFiled/CustomDatePicker';
 
 const FormComponents = () => {
   const [test, setTest] = useState({

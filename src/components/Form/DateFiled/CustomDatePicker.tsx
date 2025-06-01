@@ -1,18 +1,9 @@
-import React from 'react';
-const DatePicker = React.lazy(() => import('react-datepicker'));
+import DatePicker from 'react-datepicker';
 import { CiCalendarDate } from 'react-icons/ci';
 import 'react-datepicker/dist/react-datepicker.css';
-import './DateField.css';
+import './CustomDatePicker.css';
 
-interface CustomDatePickerProps {
-  label?: string;
-  name: string;
-  placeholder?: string;
-  value: string | null;
-  onChange: any;
-  disabled?: boolean;
-  error?: string;
-}
+import { CustomDatePickerProps } from '../types';
 
 function CustomDatePicker({
   label,
@@ -21,13 +12,14 @@ function CustomDatePicker({
   value,
   onChange,
   disabled,
+  className = '',
   error,
 }: CustomDatePickerProps) {
   return (
     <div className="mb-4">
       <div>
         {label && (
-          <label className="block mb-2 text-xl font-medium text-black text-right">{label}</label>
+          <label className="block mb-2 text-lg font-medium text-black text-right">{label}</label>
         )}
         <div className="relative flex items-center justify-center gap-1 px-4 py-1 border rounded-2xl border-neutral-100 focus-within:border-blue-500 transition text-black">
           <CiCalendarDate
@@ -41,11 +33,16 @@ function CustomDatePicker({
             name={name}
             placeholderText={placeholder}
             dateFormat="yyyy / MM / dd"
-            className="w-full p-2 text-xl border-none focus:border-none focus:outline-none text-black"
+            className={`w-full p-2 text-lg border-none focus:border-none focus:outline-none text-black ${className} ${
+              error ? 'border-red-500 text-red-500' : ''
+            }`}
             calendarClassName="customDatepicker"
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
           />
         </div>
-        {error ? <p className="mt-1 text-lg text-red-500">{error}</p> : null}
+        {error ? <p className="mt-1 text-md text-red-500">{error}</p> : null}
       </div>
     </div>
   );

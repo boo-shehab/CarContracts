@@ -1,27 +1,44 @@
 import ArrowRise from '../assets/icons/ArrowRise';
 import TrendingUp from '../assets/icons/TrendingUp';
 import TableContainer from '../components/TableContainer';
+import { TableColumn } from '../components/Form/types';
+import { useState } from 'react';
+import AddCompanyModal from '../components/Company/AddCompanyModal';
 
-const columns = [
+// GET /api/companies?searchTerm=ahmed&status=ACTIVE
+//     &subscriptionDateFrom=2024-01-01
+//     &subscriptionDateTo=2024-12-31
+//     &expirationDateFrom=2024-01-01
+//     &expirationDateTo=2024-12-31
+//     &sortBy=companyName
+//     &sortDirection=DESC
+//     &page=0
+//     &size=10
+
+const columns: TableColumn[] = [
   {
     title: 'رقم الشركة',
-    key: 'companyNumber',
+    key: 'id',
     sortable: true,
   },
   {
     title: 'تاريخ الاشتراك',
-    key: 'subscripDae',
+    key: 'subscriptionDate',
     sortable: true,
     render: (row: any) => (
-      <span className="text-lg font-normal">{new Date(row.subscripDae).toLocaleDateString()}</span>
+      <span className="text-lg font-normal">
+        {new Date(row.subscriptionDate).toLocaleDateString()}
+      </span>
     ),
   },
   {
     title: 'تاريخ الانتهاء',
-    key: 'endDate',
+    key: 'expirationDate',
     sortable: true,
     render: (row: any) => (
-      <span className="text-lg font-normal">{new Date(row.endDate).toLocaleDateString()}</span>
+      <span className="text-lg font-normal">
+        {new Date(row.expirationDate).toLocaleDateString()}
+      </span>
     ),
   },
   {
@@ -31,7 +48,8 @@ const columns = [
   },
   {
     title: 'رقم صاحب الشركة',
-    key: 'companyNumber',
+    key: 'ownerContact',
+    filterType: 'text',
     sortable: true,
   },
   {
@@ -41,18 +59,44 @@ const columns = [
   },
   {
     title: 'الحالة',
-    key: 'condition',
+    key: 'status',
+    isFilterable: true,
+    filterType: 'select',
+    filterOptions: [
+      { label: 'نشط', value: 'ACTIVE' },
+      { label: 'مقيدة', value: 'EXPIRED' },
+    ],
     render: (row: any) => (
       <span
-        className={`text-lg font-normal ${row.condition ? 'text-success-500' : 'text-danger-500'}`}
+        className={`text-lg font-normal ${row.status !== 'EXPIRED' ? 'text-success-500' : 'text-danger-500'}`}
       >
-        {row.condition ? 'مفعل' : 'غير مفعل'}
+        {row.status !== 'EXPIRED' ? 'نشط' : 'مقيدة'}
       </span>
     ),
+  },
+  {
+    title: 'تاريخ الاشتراك',
+    key: 'subscriptionDate',
+    isVisible: false,
+    isFilterable: true,
+    filterType: 'startEndDate',
+  },
+  {
+    title: 'تاريخ الانتهاء',
+    key: 'expirationDate',
+    isVisible: false,
+    isFilterable: true,
+    filterType: 'startEndDate',
   },
 ];
 
 const Admin = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+
+  const toggleRefresh = () => {
+    setRefresh(!refresh);
+  };
   return (
     <div className="bg-primary-25">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 mt-4 gap-4">
@@ -78,7 +122,28 @@ const Admin = () => {
       </div>
       <TableContainer
         columns={columns}
-        apiUrl="https://682233a9b342dce8004d79d7.mockapi.io/users"
+        apiUrl="/companies"
+        refresh={refresh}
+        headerActions={
+          <>
+            <button
+              onClick={() => setShowModal(true)}
+              type="button"
+              className="bg-primary-500 rounded-2xl py-2.5 px-4 text-white text-2xl font-normal"
+            >
+              + اضافة شركة
+            </button>
+            <AddCompanyModal
+              isOpen={showModal}
+              onClose={() => setShowModal(false)}
+              onSuccess={() => {
+                // refetch data
+                toggleRefresh(); // Toggle the refresh state to trigger a refetch
+                setShowModal(false);
+              }}
+            />
+          </>
+        }
       />
     </div>
   );

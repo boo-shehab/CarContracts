@@ -1,17 +1,4 @@
-interface InputFieldProps {
-  name: string;
-  label?: string;
-  type: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
-  placeholder?: string;
-  value: string;
-  error?: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
-  leftIcon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
-  className?: string;
-  disabled?: boolean;
-}
+import { InputFieldProps } from './types';
 
 const InputField = ({
   name,
@@ -30,7 +17,7 @@ const InputField = ({
   return (
     <div>
       {label && (
-        <label className="block mb-2 text-xl font-medium text-black" htmlFor={name}>
+        <label className="block mb-2 text-lg font-medium text-black" htmlFor={name}>
           {label}
         </label>
       )}
@@ -45,7 +32,7 @@ const InputField = ({
           value={value}
           onChange={onChange}
           onBlur={onBlur}
-          className={`w-full px-10 py-2 text-xl border rounded-2xl focus:outline-none transition-all ${
+          className={`w-full px-10 py-2 text-lg border rounded-2xl focus:outline-none transition-all ${
             error
               ? 'border-red-500 text-red-500 focus:border-red-500'
               : 'border-neutral-100 focus:border-blue-500 text-black'
@@ -62,7 +49,7 @@ const InputField = ({
         )}
       </div>
       {error && (
-        <p id={`${name}-error`} className="mt-1 text-lg text-red-500">
+        <p id={`${name}-error`} className="mt-1 text-md text-red-500">
           {error}
         </p>
       )}

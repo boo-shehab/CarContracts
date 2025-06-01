@@ -6,4 +6,7 @@ import viteCompression from 'vite-plugin-compression';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss(), svgr(), viteCompression()],
+  server: {
+    port: 8080,
+  },
 });

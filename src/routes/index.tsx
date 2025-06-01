@@ -1,59 +1,71 @@
-// routes/index.tsx
 import { lazy, Suspense } from 'react';
-import { createBrowserRouter, RouteObject } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute';
+import AdminRoute from './AdminRoute';
+import PublicRoute from './PublicRoute';
+// import Profile from '../pages/Profile';
+
 const Home = lazy(() => import('../pages/Home'));
-const MainLayout = lazy(() => import('../layouts/MainLayout'));
+const Profile = lazy(() => import('../pages/Profile'));
 const Login = lazy(() => import('../pages/Login'));
 const FormComponents = lazy(() => import('../pages/FormComponents'));
-const AdminDashboardLayout = lazy(() => import('../layouts/AdminDashboardLayout'));
+const MainLayout = lazy(() => import('../layouts/MainLayout'));
 const Admin = lazy(() => import('../pages/Admin'));
+const AdminDashboardLayout = lazy(() => import('../layouts/AdminDashboardLayout'));
 
-const routes: RouteObject[] = [
+const withSuspense = (element: React.ReactNode) => (
+  <Suspense fallback={<div>Loading...</div>}>{element}</Suspense>
+);
+
+const router = createBrowserRouter([
   {
-    path: '/',
-    element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <MainLayout />
-      </Suspense>
-    ),
+    path: '/profile',
+    element: <Profile />,
+  },
+  {
+    path: '/login',
+    element: <PublicRoute />,
     children: [
       {
-        path: '/',
-        element: (
-          <Suspense fallback={<div>Loading...</div>}>
-            <Home />
-          </Suspense>
-        ),
+        index: true,
+        element: withSuspense(<Login />),
+      },
+    ],
+  },
+  {
+    path: '/',
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: withSuspense(<MainLayout />),
+        children: [
+          {
+            index: true,
+            element: withSuspense(<Home />),
+          },
+          {
+            path: 'formComponents',
+            element: withSuspense(<FormComponents />),
+          },
+        ],
       },
     ],
   },
   {
     path: '/adminDashboard',
-    element: <AdminDashboardLayout />,
+    element: <AdminRoute />,
     children: [
       {
-        path: '/adminDashboard',
-        element: <Admin />,
+        element: withSuspense(<AdminDashboardLayout />),
+        children: [
+          {
+            index: true,
+            element: withSuspense(<Admin />),
+          },
+        ],
       },
     ],
   },
-  {
-    path: '/formComponents',
-    element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <FormComponents />
-      </Suspense>
-    ),
-  },
-  {
-    path: '/login',
-    element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <Login />
-      </Suspense>
-    ),
-  },
-];
+]);
 
-const router = createBrowserRouter(routes);
 export default router;

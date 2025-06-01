@@ -1,23 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
-
-interface Option {
-  value: string;
-  label: string;
-}
-
-interface SelectFieldProps {
-  name: string;
-  label?: string;
-  options: Option[];
-  placeholder?: string;
-  value: string | string[];
-  error?: string;
-  onChange: (e: React.ChangeEvent<{ name: string; value: any }>) => void;
-  className?: string;
-  disabled?: boolean;
-  multiple?: boolean;
-}
+import { SelectFieldProps } from './types';
 
 function SelectField({
   name,
@@ -84,7 +67,7 @@ function SelectField({
   return (
     <div ref={containerRef}>
       {label && (
-        <label htmlFor={name} className="block mb-2 text-xl font-medium text-black">
+        <label htmlFor={name} className="block mb-2 text-lg font-medium text-black">
           {label}
         </label>
       )}
@@ -96,7 +79,7 @@ function SelectField({
         onClick={handleToggle}
       >
         <div
-          className={`flex justify-between items-center text-xl py-2 ${!value || value.length === 0 ? 'text-gray-400' : ''}`}
+          className={`flex justify-between items-center text-lg py-2 ${!value || value.length === 0 ? 'text-gray-400' : ''}`}
         >
           <span>{displayValue}</span>
           {isOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
@@ -137,7 +120,7 @@ function SelectField({
         )}
       </div>
 
-      {error && <p className="mt-1 text-lg text-red-500">{error}</p>}
+      {error && <p className="mt-1 text-md text-red-500">{error}</p>}
     </div>
   );
 }
