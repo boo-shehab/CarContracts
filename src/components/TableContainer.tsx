@@ -25,6 +25,9 @@ const TableContainer = ({
     sortBy: '',
     sortDirection: 'asc',
   });
+  const [currentPage, setCurrentPage] = useState(0);
+  const [lastPage, setLastPage] = useState(1);
+  const rowsPerPage = 10;
 
   const toggleFilters = () => setShowFilters((prev) => !prev);
 
@@ -32,20 +35,30 @@ const TableContainer = ({
     setLoading(true);
     setError(null);
     try {
-      const params: Record<string, any> = { ...filters };
+      const params: Record<string, any> = {
+        ...filters,
+        page: currentPage,
+        size: rowsPerPage,
+      };
+
       if (searchTerm) params.searchTerm = searchTerm;
-      if (sortDirection.sortBy) params.sortBy = sortDirection.sortBy;
-      if (sortDirection.sortDirection && sortDirection.sortBy)
+      if (sortDirection.sortBy) {
+        params.sortBy = sortDirection.sortBy;
         params.sortDirection = sortDirection.sortDirection;
+      }
+
       const response = await axios.get(apiUrl, { params });
+
       setData(response.data.data);
+      setCurrentPage(response.data.pagination.currentPage);
+      setLastPage(response.data.pagination.lastPage);
     } catch (error) {
       console.error('Error fetching data:', error);
       setError('Error fetching data');
     } finally {
       setLoading(false);
     }
-  }, [apiUrl, filters, searchTerm, sortDirection]);
+  }, [apiUrl, filters, searchTerm, sortDirection, currentPage]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -57,7 +70,7 @@ const TableContainer = ({
 
   useEffect(() => {
     fetchData();
-  }, [sortDirection, refresh, fetchData]);
+  }, [sortDirection, refresh, fetchData, currentPage]);
 
   const handleFilterChange = (name: string, value: any) => {
     console.log(`Filter changed: ${name} = ${value}`);
@@ -137,6 +150,48 @@ const TableContainer = ({
         >
           <Table columns={columns} data={data} loading={loading} error={error} onSort={onSort} />
         </div>
+      </div>
+      {/* Pagination buttons */}
+      <div className="flex items-center mt-6 gap-2">
+        {/* Previous */}
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+          disabled={currentPage === 0}
+          className="w-[35px] h-[35px] bg-primary-500 text-white rounded-full disabled:opacity-50"
+        >
+          {'<'}
+        </button>
+
+        {/* Page Numbers */}
+        {Array.from({ length: 5 }, (_, i) => {
+          const startPage = Math.max(0, Math.min(currentPage - 2, lastPage - 5));
+          const page = startPage + i;
+
+          if (page >= lastPage) return null;
+
+          return (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`w-[35px] h-[35px] rounded-full ${
+                page === currentPage
+                  ? 'bg-primary-500 text-white font-bold'
+                  : 'border-1 border-neutral-400 text-neutral-500 hover:bg-gray-300'
+              }`}
+            >
+              {page + 1}
+            </button>
+          );
+        })}
+
+        {/* Next */}
+        <button
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, lastPage - 1))}
+          disabled={currentPage >= lastPage - 1}
+          className="w-[35px] h-[35px] bg-primary-500 text-white rounded-full disabled:opacity-50"
+        >
+          {'>'}
+        </button>
       </div>
     </div>
   );

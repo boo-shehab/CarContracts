@@ -6,6 +6,9 @@ import userImage from '../assets/userImage.png';
 import InputField from '../components/Form/InputField';
 import axios from '../services/axios';
 import { toast } from 'react-toastify';
+import { CiCamera } from 'react-icons/ci';
+import { useNavigate } from 'react-router-dom';
+import { isValidPhoneNumber } from 'libphonenumber-js';
 
 const Profile = () => {
   const [initialState, setInitialState] = useState({
@@ -21,6 +24,9 @@ const Profile = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>(initialState.imageUrl);
   const [isChanged, setIsChanged] = useState(false);
+  const [phoneError, setPhoneError] = useState('');
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -65,10 +71,27 @@ const Profile = () => {
       preview !== initialState.imageUrl;
 
     setIsChanged(changed);
-  }, [formData, preview]);
+  }, [
+    formData,
+    preview,
+    initialState.fullName,
+    initialState.email,
+    initialState.phone,
+    initialState.password,
+    initialState.imageUrl,
+  ]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+
+    if (e.target.name === 'phone') {
+      const phone = e.target.value.startsWith('+') ? e.target.value : `+${e.target.value}`;
+      if (!isValidPhoneNumber(phone)) {
+        setPhoneError('يرجى إدخال رقم هاتف دولي صالح (مثال: +964xxxxxxxxxx)');
+      } else {
+        setPhoneError('');
+      }
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,16 +111,46 @@ const Profile = () => {
       toast.error('كلمتا المرور غير متطابقتين');
       return;
     }
+    if (phoneError) {
+      toast.error('يرجى إدخال رقم هاتف صحيح');
+      return;
+    }
     try {
-      await axios.put('/users/me', { ...formData, imageUrl: preview });
+      // Handle image upload if changed
+      if (imageFile) {
+        const formDataImage = new FormData();
+        formDataImage.append('photo', imageFile);
+
+        await axios.put('/users/me/photo', formDataImage, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      }
+
+      // Only send changed fields
+      const payload: Record<string, any> = {};
+      Object.entries(formData).forEach(([key, value]) => {
+        if (
+          key !== 'confirmPassword' &&
+          value !== initialState[key as keyof typeof initialState] &&
+          value !== ''
+        ) {
+          payload[key] = value;
+        }
+      });
+
+      // Don't send if nothing changed except image
+      if (Object.keys(payload).length > 0) {
+        await axios.put('/users/me/profile', payload);
+      }
+
       toast.success('تم حفظ التعديلات بنجاح!');
     } catch (error) {
       toast.error('حدث خطأ أثناء حفظ التعديلات');
       console.error('Error saving profile:', error);
       return;
     }
-
-    // TODO: Send data to backend
   };
 
   const isPasswordMismatch = formData.password !== formData.confirmPassword;
@@ -105,23 +158,26 @@ const Profile = () => {
   return (
     <div className="p-4">
       <div className="flex items-center gap-1 py-4 text-2xl">
-        <MdKeyboardArrowRight size={40} />
+        <MdKeyboardArrowRight onClick={() => navigate(-1)} size={40} className="cursor-pointer" />
         <h3 className="text-[28px]">الملف الشخصي</h3>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Image Section */}
-        <div className="w-full lg:w-1/3 bg-white p-4 rounded-lg shadow flex flex-col items-center gap-4">
-          <img
-            src={preview || userImage}
-            alt="Profile"
-            className="w-32 h-32 rounded-full object-cover border"
-          />
+        <div className="w-full lg:w-1/3 bg-white p-4 rounded-lg shadow flex flex-col items-center justify-center gap-4">
+          {/* the input should be above the image */}
+          <div className="relative w-32 h-32 rounded-full overflow-hidden">
+            <img
+              src={preview || userImage}
+              alt="Profile"
+              className="w-full h-full rounded-full object-cover"
+            />
 
-          <label className="cursor-pointer text-blue-600 hover:underline">
-            <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-            تغيير الصورة
-          </label>
+            <label className="absolute bottom-0 left-0 w-full h-1/2 bg-black/20 flex items-center justify-center cursor-pointer">
+              <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+              <CiCamera size={30} color="white" />
+            </label>
+          </div>
 
           <button
             onClick={handleRemoveImage}
@@ -162,6 +218,7 @@ const Profile = () => {
               onChange={handleChange}
               leftIcon={<FaPhone />}
             />
+            {phoneError && <p className="text-red-600 text-sm">{phoneError}</p>}
             <InputField
               name="password"
               label="كلمة المرور"
@@ -186,9 +243,9 @@ const Profile = () => {
 
             <button
               onClick={handleSave}
-              disabled={Boolean(!isChanged || isPasswordMismatch)}
+              disabled={Boolean(!isChanged || isPasswordMismatch || phoneError)}
               className={`w-full py-2 rounded font-semibold transition-colors duration-200 ${
-                !isChanged || isPasswordMismatch
+                !isChanged || isPasswordMismatch || phoneError
                   ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
                   : 'bg-blue-600 text-white hover:bg-blue-700'
               }`}

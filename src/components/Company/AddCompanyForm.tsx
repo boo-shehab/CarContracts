@@ -4,6 +4,7 @@ import { createCompany } from '../../services/companyService';
 import CustomDatePicker from '../Form/DateFiled/CustomDatePicker';
 import { IoCloseOutline } from 'react-icons/io5';
 import { toast } from 'react-toastify';
+import { isValidPhoneNumber } from 'libphonenumber-js';
 
 interface AddCompanyFormProps {
   onSuccess: () => void;
@@ -70,6 +71,16 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
     Object.entries(formData).forEach(([key, value]) => {
       if (!value) errors[key] = 'هذا الحقل مطلوب';
     });
+
+    if (formData.ownerContact) {
+      const phone = formData.ownerContact.startsWith('+')
+        ? formData.ownerContact
+        : `+${formData.ownerContact}`;
+      if (!isValidPhoneNumber(phone)) {
+        errors.ownerContact = 'يرجى إدخال رقم هاتف دولي صالح (مثال: +964xxxxxxxxxx)';
+      }
+    }
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -96,81 +107,83 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div>
-        <button type="button" onClick={onCancel} className="text-neutral-400 hover:text-black">
-          <IoCloseOutline size={24} />
-        </button>
-      </div>
-      <InputField
-        type="text"
-        name="companyName"
-        value={formData.companyName}
-        onChange={handleChange}
-        placeholder="ادخل اسم الشركة"
-        label="اسم الشركة"
-        error={formErrors.companyName}
-      />
-      <InputField
-        type="text"
-        name="ownerName"
-        value={formData.ownerName}
-        onChange={handleChange}
-        placeholder="اسم المالك"
-        label="اسم المالك"
-        error={formErrors.ownerName}
-      />
-      <InputField
-        type="number"
-        name="ownerContact"
-        value={formData.ownerContact}
-        onChange={handleChange}
-        placeholder="رقم المالك"
-        label="رقم المالك"
-        error={formErrors.ownerContact}
-      />
-      <InputField
-        type="number"
-        name="userCount"
-        value={formData.userCount}
-        onChange={handleChange}
-        placeholder="عدد المستخدمين"
-        label="عدد المستخدمين"
-        error={formErrors.userCount}
-      />
-      <CustomDatePicker
-        name="subscriptionDate"
-        value={formData.subscriptionDate}
-        onChange={(e: any) => handleDateChange('subscriptionDate', e.target.value)}
-        label="تاريخ الاشتراك"
-        error={formErrors.subscriptionDate}
-      />
-      <CustomDatePicker
-        name="expirationDate"
-        value={formData.expirationDate}
-        onChange={(e: any) => handleDateChange('expirationDate', e.target.value)}
-        label="تاريخ الانتهاء"
-        error={formErrors.expirationDate}
-      />
-      <InputField
-        type="text"
-        name="companyLocation"
-        value={formData.companyLocation}
-        onChange={handleChange}
-        placeholder="الموقع"
-        label="موقع الشركة"
-        error={formErrors.companyLocation}
-      />
-      <div className="flex justify-end gap-2">
-        <button
-          type="submit"
-          className="px-4 py-2 bg-primary-500 text-white rounded-md w-full"
-          disabled={isLoading}
-        >
-          {isLoading ? 'جاري الاضافة...' : 'اضافة'}
-        </button>
-      </div>
-    </form>
+    <div className="bg-white rounded-xl shadow-lg z-10 w-full h-10/12 overflow-x-auto max-w-lg p-6">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div>
+          <button type="button" onClick={onCancel} className="text-neutral-400 hover:text-black">
+            <IoCloseOutline size={24} />
+          </button>
+        </div>
+        <InputField
+          type="text"
+          name="companyName"
+          value={formData.companyName}
+          onChange={handleChange}
+          placeholder="ادخل اسم الشركة"
+          label="اسم الشركة"
+          error={formErrors.companyName}
+        />
+        <InputField
+          type="text"
+          name="ownerName"
+          value={formData.ownerName}
+          onChange={handleChange}
+          placeholder="اسم المالك"
+          label="اسم المالك"
+          error={formErrors.ownerName}
+        />
+        <InputField
+          type="number"
+          name="ownerContact"
+          value={formData.ownerContact}
+          onChange={handleChange}
+          placeholder="رقم المالك"
+          label="رقم المالك"
+          error={formErrors.ownerContact}
+        />
+        <InputField
+          type="number"
+          name="userCount"
+          value={formData.userCount}
+          onChange={handleChange}
+          placeholder="عدد المستخدمين"
+          label="عدد المستخدمين"
+          error={formErrors.userCount}
+        />
+        <CustomDatePicker
+          name="subscriptionDate"
+          value={formData.subscriptionDate}
+          onChange={(e: any) => handleDateChange('subscriptionDate', e.target.value)}
+          label="تاريخ الاشتراك"
+          error={formErrors.subscriptionDate}
+        />
+        <CustomDatePicker
+          name="expirationDate"
+          value={formData.expirationDate}
+          onChange={(e: any) => handleDateChange('expirationDate', e.target.value)}
+          label="تاريخ الانتهاء"
+          error={formErrors.expirationDate}
+        />
+        <InputField
+          type="text"
+          name="companyLocation"
+          value={formData.companyLocation}
+          onChange={handleChange}
+          placeholder="الموقع"
+          label="موقع الشركة"
+          error={formErrors.companyLocation}
+        />
+        <div className="flex justify-end gap-2">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-primary-500 text-white rounded-md w-full"
+            disabled={isLoading}
+          >
+            {isLoading ? 'جاري الاضافة...' : 'اضافة'}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 

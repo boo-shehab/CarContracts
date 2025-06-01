@@ -42,7 +42,7 @@ const columns: TableColumn[] = [
     ),
   },
   {
-    title: 'اسم المالك',
+    title: 'اسم صاحب الشركة',
     key: 'ownerName',
     sortable: true,
   },
@@ -58,6 +58,11 @@ const columns: TableColumn[] = [
     sortable: true,
   },
   {
+    title: 'عدد المستخدمين',
+    key: 'userCount',
+    sortable: true,
+  },
+  {
     title: 'الحالة',
     key: 'status',
     isFilterable: true,
@@ -68,9 +73,9 @@ const columns: TableColumn[] = [
     ],
     render: (row: any) => (
       <span
-        className={`text-lg font-normal ${row.status !== 'EXPIRED' ? 'text-success-500' : 'text-danger-500'}`}
+        className={`text-lg font-normal py-1 rounded-full px-8 ${row.status !== 'EXPIRED' ? 'text-success-500 bg-success-100' : 'text-danger-500 text-danger-100'}`}
       >
-        {row.status !== 'EXPIRED' ? 'نشط' : 'مقيدة'}
+        {row.status !== 'EXPIRED' ? 'نشطة' : 'مقيدة'}
       </span>
     ),
   },
