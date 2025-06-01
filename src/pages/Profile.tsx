@@ -4,20 +4,49 @@ import { MdKeyboardArrowRight } from 'react-icons/md';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import userImage from '../assets/userImage.png';
 import InputField from '../components/Form/InputField';
+import axios from '../services/axios';
+import { toast } from 'react-toastify';
 
 const Profile = () => {
-  const initialState = {
-    name: 'محمد علي',
-    email: 'mustafaemad@gmail.com',
-    phone: '07XXXXXXXX',
-    password: 'password123',
-    image: userImage,
-  };
+  const [initialState, setInitialState] = useState({
+    email: '',
+    phone: '',
+    fullName: '',
+    password: '',
+    confirmPassword: '',
+    imageUrl: userImage,
+  });
 
   const [formData, setFormData] = useState(initialState);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>(initialState.image);
+  const [preview, setPreview] = useState<string>(initialState.imageUrl);
   const [isChanged, setIsChanged] = useState(false);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const res = await axios.get('/users/me');
+        const user = res.data.data;
+
+        const mappedUser = {
+          email: user.email || '',
+          phone: user.phone || '',
+          fullName: user.fullName || '',
+          password: '',
+          confirmPassword: '',
+          imageUrl: user.imageUrl || userImage,
+        };
+
+        setInitialState(mappedUser);
+        setFormData(mappedUser);
+        setPreview(mappedUser.imageUrl);
+      } catch (err) {
+        console.error('Error loading profile:', err);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   useEffect(() => {
     if (imageFile) {
@@ -29,11 +58,11 @@ const Profile = () => {
 
   useEffect(() => {
     const changed =
-      formData.name !== initialState.name ||
+      formData.fullName !== initialState.fullName ||
       formData.email !== initialState.email ||
       formData.phone !== initialState.phone ||
       formData.password !== initialState.password ||
-      preview !== initialState.image;
+      preview !== initialState.imageUrl;
 
     setIsChanged(changed);
   }, [formData, preview]);
@@ -54,10 +83,24 @@ const Profile = () => {
     setPreview('');
   };
 
-  const handleSave = () => {
-    console.log('Saved:', { ...formData, image: preview });
+  const handleSave = async () => {
+    if (formData.password && formData.password !== formData.confirmPassword) {
+      toast.error('كلمتا المرور غير متطابقتين');
+      return;
+    }
+    try {
+      await axios.put('/users/me', { ...formData, imageUrl: preview });
+      toast.success('تم حفظ التعديلات بنجاح!');
+    } catch (error) {
+      toast.error('حدث خطأ أثناء حفظ التعديلات');
+      console.error('Error saving profile:', error);
+      return;
+    }
+
     // TODO: Send data to backend
   };
+
+  const isPasswordMismatch = formData.password !== formData.confirmPassword;
 
   return (
     <div className="p-4">
@@ -93,11 +136,11 @@ const Profile = () => {
         <div className="flex-1 bg-white p-4 rounded-lg shadow">
           <div className="space-y-4">
             <InputField
-              name="name"
+              name="fullName"
               label="الاسم"
               type="text"
               placeholder="أدخل اسمك"
-              value={formData.name}
+              value={formData.fullName}
               onChange={handleChange}
               leftIcon={<FaUser />}
             />
@@ -113,7 +156,7 @@ const Profile = () => {
             <InputField
               name="phone"
               label="رقم الهاتف"
-              type="tel"
+              type="number"
               placeholder="أدخل رقم هاتفك"
               value={formData.phone}
               onChange={handleChange}
@@ -128,14 +171,26 @@ const Profile = () => {
               onChange={handleChange}
               leftIcon={<FaLock />}
             />
+            <InputField
+              name="confirmPassword"
+              label="تأكيد كلمة المرور"
+              type="password"
+              placeholder="أعد كتابة كلمة المرور"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              leftIcon={<FaLock />}
+            />
+            {isPasswordMismatch && (
+              <p className="text-red-600 text-sm">كلمتا المرور غير متطابقتين</p>
+            )}
 
             <button
               onClick={handleSave}
-              disabled={!isChanged}
+              disabled={Boolean(!isChanged || isPasswordMismatch)}
               className={`w-full py-2 rounded font-semibold transition-colors duration-200 ${
-                isChanged
-                  ? 'bg-blue-600 text-white hover:bg-blue-700'
-                  : 'bg-gray-300 text-gray-700 cursor-not-allowed'
+                !isChanged || isPasswordMismatch
+                  ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
+                  : 'bg-blue-600 text-white hover:bg-blue-700'
               }`}
             >
               حفظ التعديل
