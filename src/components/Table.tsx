@@ -3,7 +3,7 @@ import { TableProps } from './types';
 
 const Table = ({ columns, data, loading, error, onSort }: TableProps) => {
   return (
-    <div className="overflow-auto ml-4">
+    <div className="overflow-auto ml-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary-300 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-primary-100">
       <table className="rounded-2xl overflow-hidden bg-primary-25 shadow-[1px_2px_16px_0px_#4899EA1F] table-auto mb-4 min-w-full">
         <thead>
           <tr className="bg-primary-100 text-right text-lg font-bold">
