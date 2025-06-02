@@ -49,6 +49,26 @@ const AdminHeader = () => {
     setIsSidebarOpen(false);
   };
 
+  const DropdownMenu = () => (
+    <div className="absolute top-10 w-auto left-0 bg-white shadow-md rounded-lg z-50">
+      <ul className="flex flex-col text-right">
+        <li>
+          <NavLink to="/profile" className="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap">
+            الملف الشخصي
+          </NavLink>
+        </li>
+        <li>
+          <button
+            onClick={handleLogout}
+            className="block w-full text-right px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+          >
+            تسجيل الخروج
+          </button>
+        </li>
+      </ul>
+    </div>
+  );
+
   return (
     <header className="container mx-auto py-4 px-2 lg:px-2 mb-4 border-b border-neutral-100">
       <div className="flex justify-between items-center gap-6">
@@ -66,30 +86,19 @@ const AdminHeader = () => {
             </button>
             <img src={userImg} alt="User" className="w-10 h-10 rounded-full object-cover" />
             <span className="text-gray-800 font-medium">الاداري</span>
-            <div className="text-gray-600 text-xl">
-              <DownArrow />
+            <div className="text-gray-600 text-xl relative">
+              {
+                isDropdownOpen ? (
+                  <IoClose size={24} onClick={() => setIsDropdownOpen(false)} />
+                ) : (
+                  <DownArrow />
+                )
+              }
+              {isDropdownOpen && <DropdownMenu />}
             </div>
           </div>
 
-          {isDropdownOpen && (
-            <div className="absolute top-16 right-0 w-40 bg-white shadow-md rounded-lg z-50 border">
-              <ul className="flex flex-col text-right">
-                <li>
-                  <NavLink to="/profile" className="block px-4 py-2 hover:bg-gray-100">
-                    الملف الشخصي
-                  </NavLink>
-                </li>
-                <li>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-right px-4 py-2 hover:bg-gray-100"
-                  >
-                    تسجيل الخروج
-                  </button>
-                </li>
-              </ul>
-            </div>
-          )}
+          
         </div>
 
         <h2 className="text-2xl font-bold">عقود السيارة</h2>
@@ -119,36 +128,15 @@ const AdminHeader = () => {
             </button>
             <img src={userImg} alt="User" className="w-8 h-8 rounded-full object-cover" />
             <span className="text-gray-800 font-medium text-lg">محمد علي</span>
-            <div className="text-gray-600 text-xl">
-              <DownArrow />
+            <div className="text-gray-600 text-xl relative">
+              {isMobileDropdownOpen ? (
+                <IoClose size={24} onClick={() => setIsMobileDropdownOpen(false)} />
+              ) : (
+                <DownArrow />
+              )}
+              {isMobileDropdownOpen && <DropdownMenu />}
             </div>
 
-            {isMobileDropdownOpen && (
-              <div className="absolute top-14 right-0 w-40 bg-white shadow-md rounded-lg z-50 border">
-                <ul className="flex flex-col text-right">
-                  <li>
-                    <NavLink
-                      to="/profile"
-                      onClick={() => setIsSidebarOpen(false)}
-                      className="block px-4 py-2 hover:bg-gray-100"
-                    >
-                      الملف الشخصي
-                    </NavLink>
-                  </li>
-                  <li>
-                    <button
-                      onClick={() => {
-                        handleLogout();
-                        setIsSidebarOpen(false);
-                      }}
-                      className="block w-full text-right px-4 py-2 hover:bg-gray-100"
-                    >
-                      تسجيل الخروج
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            )}
           </div>
 
           <nav className="flex flex-col gap-3 text-right">

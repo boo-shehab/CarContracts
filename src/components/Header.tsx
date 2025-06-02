@@ -42,18 +42,19 @@ const Header = () => {
     navigate('/login');
   };
 
+  
   const DropdownMenu = () => (
-    <div className="absolute top-16 right-0 w-40 bg-white shadow-md rounded-lg z-50 border">
+    <div className="absolute top-10 w-auto left-0 bg-white shadow-md rounded-lg z-50">
       <ul className="flex flex-col text-right">
         <li>
-          <NavLink to="/profile" className="block px-4 py-2 hover:bg-gray-100">
+          <NavLink to="/profile" className="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap">
             الملف الشخصي
           </NavLink>
         </li>
         <li>
           <button
             onClick={handleLogout}
-            className="block w-full text-right px-4 py-2 hover:bg-gray-100"
+            className="block w-full text-right px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
           >
             تسجيل الخروج
           </button>
@@ -77,12 +78,16 @@ const Header = () => {
           <img src={userImg} alt="User" className="w-10 h-10 rounded-full object-cover" />
           <span className="text-gray-800 font-medium">محمد علي</span>
           <div
-            className="cursor-pointer text-gray-600 text-xl"
+            className="cursor-pointer text-gray-600 text-xl relative"
             onClick={() => setShowDropdown(!showDropdown)}
           >
-            <DownArrow />
+            {showDropdown ? (
+              <IoClose size={24} onClick={() => setShowDropdown(false)} />
+            ) : (
+              <DownArrow />
+            )}
+            {showDropdown && <DropdownMenu />}
           </div>
-          {showDropdown && <DropdownMenu />}
         </div>
 
         <nav>
@@ -168,12 +173,16 @@ const Header = () => {
             <img src={userImg} alt="User" className="w-8 h-8 rounded-full object-cover" />
             <span className="text-gray-800 font-medium text-lg">محمد علي</span>
             <div
-              className="cursor-pointer text-gray-600 text-xl"
+              className="cursor-pointer text-gray-600 text-xl relative"
               onClick={() => setShowDropdown(!showDropdown)}
             >
-              <DownArrow />
+              {showDropdown ? (
+                <IoClose size={24} onClick={() => setShowDropdown(false)} />
+              ) : (
+                <DownArrow />
+              )}
+              {showDropdown && <DropdownMenu />}
             </div>
-            {showDropdown && <DropdownMenu />}
           </div>
 
           <nav className="flex flex-col gap-3 text-right">
