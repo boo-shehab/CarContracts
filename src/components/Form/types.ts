@@ -15,6 +15,7 @@ export interface InputFieldProps {
   type: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
   placeholder?: string;
   value: string;
+  clearable?: boolean;
   error?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
@@ -30,6 +31,7 @@ export interface RadioInputProps {
   name: string;
   value: string;
   options: { value: string; label: string }[];
+  clearable?: boolean;
   error?: string;
   className?: string;
   disabled?: boolean;
@@ -65,6 +67,7 @@ export interface SelectFieldProps {
   value: string | string[];
   error?: string;
   onChange: (e: React.ChangeEvent<{ name: string; value: any }>) => void;
+  clearable?: boolean;
   className?: string;
   disabled?: boolean;
   multiple?: boolean;

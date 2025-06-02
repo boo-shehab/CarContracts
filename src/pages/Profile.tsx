@@ -156,7 +156,7 @@ const Profile = () => {
   const isPasswordMismatch = formData.password !== formData.confirmPassword;
 
   return (
-    <div className="p-4">
+    <div>
       <div className="flex items-center gap-1 py-4 text-2xl">
         <MdKeyboardArrowRight onClick={() => navigate(-1)} size={40} className="cursor-pointer" />
         <h3 className="text-[28px]">الملف الشخصي</h3>

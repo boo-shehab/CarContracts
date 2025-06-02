@@ -3,6 +3,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
 import AdminRoute from './AdminRoute';
 import PublicRoute from './PublicRoute';
+import Loading from '../components/Loading';
 // import Profile from '../pages/Profile';
 
 const Home = lazy(() => import('../pages/Home'));
@@ -14,14 +15,10 @@ const Admin = lazy(() => import('../pages/Admin'));
 const AdminDashboardLayout = lazy(() => import('../layouts/AdminDashboardLayout'));
 
 const withSuspense = (element: React.ReactNode) => (
-  <Suspense fallback={<div>Loading...</div>}>{element}</Suspense>
+  <Suspense fallback={<Loading />}>{element}</Suspense>
 );
 
 const router = createBrowserRouter([
-  {
-    path: '/profile',
-    element: <Profile />,
-  },
   {
     path: '/login',
     element: <PublicRoute />,
@@ -47,6 +44,10 @@ const router = createBrowserRouter([
             path: 'formComponents',
             element: withSuspense(<FormComponents />),
           },
+          {
+            path: 'profile',
+            element: <Profile />,
+          },
         ],
       },
     ],
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
           {
             index: true,
             element: withSuspense(<Admin />),
+          },
+          {
+            path: 'profile',
+            element: <Profile />,
           },
         ],
       },

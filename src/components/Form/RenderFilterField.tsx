@@ -18,6 +18,7 @@ const RenderFilterField = ({ column, handleFilterChange, filters }: RenderFilter
           label={column.title}
           type="text"
           placeholder={`ادخل ${column.title}`}
+          clearable={true}
           value={value}
           onChange={(e) => handleFilterChange(name, e.target.value)}
           className="mb-3"
@@ -32,6 +33,7 @@ const RenderFilterField = ({ column, handleFilterChange, filters }: RenderFilter
           label={column.title}
           options={column.filterOptions || []}
           placeholder={`اختر ${column.title}`}
+          clearable={true}
           value={value}
           onChange={(e) => handleFilterChange(name, e.target.value)}
           className="mb-3"
@@ -45,6 +47,7 @@ const RenderFilterField = ({ column, handleFilterChange, filters }: RenderFilter
           name={name}
           label={column.title}
           options={column.filterOptions || []}
+          clearable={true}
           value={value}
           onChange={(e) => handleFilterChange(name, e.target.value)}
           className="mb-3"

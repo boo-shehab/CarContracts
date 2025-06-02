@@ -12,15 +12,32 @@ const InputField = ({
   leftIcon,
   rightIcon,
   className = '',
+  clearable = false,
   disabled = false,
 }: InputFieldProps) => {
   return (
     <div>
-      {label && (
-        <label className="block mb-2 text-lg font-medium text-black" htmlFor={name}>
-          {label}
-        </label>
-      )}
+      <div className="w-full flex justify-between items-center gap-2">
+        {label && (
+          <label className="block mb-2 text-lg font-medium text-black" htmlFor={name}>
+            {label}
+          </label>
+        )}
+        {clearable && value && (
+          <button
+            type="button"
+            onClick={() => {
+              const event = {
+                target: { name, value: '' },
+              } as React.ChangeEvent<HTMLInputElement>;
+              onChange(event);
+            }}
+            className="text-primary-500 hover:text-primary-700 text-md"
+          >
+            اعادة الضبط
+          </button>
+        )}
+      </div>
       <div className={`relative`}>
         {leftIcon && (
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-black">{leftIcon}</div>

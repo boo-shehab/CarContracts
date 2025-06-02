@@ -32,7 +32,9 @@ const TableContainer = ({
   const toggleFilters = () => setShowFilters((prev) => !prev);
 
   const fetchData = useCallback(async () => {
-    setLoading(true);
+    if (columns.length === 0) {
+      setLoading(true);
+    }
     setError(null);
     try {
       const params: Record<string, any> = {
@@ -58,7 +60,7 @@ const TableContainer = ({
     } finally {
       setLoading(false);
     }
-  }, [apiUrl, filters, searchTerm, sortDirection, currentPage]);
+  }, [apiUrl, filters, searchTerm, sortDirection, currentPage, columns.length]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -66,16 +68,18 @@ const TableContainer = ({
     }, 500);
 
     return () => clearTimeout(handler);
-  }, [searchTerm, filters, fetchData]);
-
-  useEffect(() => {
-    fetchData();
-  }, [sortDirection, refresh, fetchData, currentPage]);
-
+  }, [searchTerm, filters, sortDirection, refresh, currentPage, fetchData]);
   const handleFilterChange = (name: string, value: any) => {
     console.log(`Filter changed: ${name} = ${value}`);
-
-    setFilters((prev) => ({ ...prev, [name]: value }));
+    setFilters((prev) => {
+      const updated = { ...prev };
+      if (value === null || value === '') {
+        delete updated[name];
+      } else {
+        updated[name] = value;
+      }
+      return updated;
+    });
   };
 
   const onSort = (columnKey: string) => {
@@ -89,7 +93,7 @@ const TableContainer = ({
   return (
     <div className="w-full">
       {/* Top Bar */}
-      <div className="mt-4 flex items-center gap-4">
+      <div className="mt-4 flex flex-col md:flex-row md:items-center gap-4">
         <InputField
           name="searchTerm"
           type="text"
@@ -101,7 +105,7 @@ const TableContainer = ({
         />
         {isThereFilters && (
           <button
-            className={`text-primary-500 rounded-2xl py-2.5 px-4 border border-primary-500 text-2xl font-normal ${showFilters ? 'bg-primary-500 text-white' : ''}`}
+            className={`text-primary-500 rounded-2xl py-2 px-4 border border-primary-500 text-xl font-normal w-full md:w-auto ${showFilters ? 'bg-primary-500 text-white' : ''}`}
             onClick={toggleFilters}
           >
             + اضافة فلتر
@@ -111,12 +115,14 @@ const TableContainer = ({
       </div>
 
       {/* Content Area */}
-      <div className="flex w-full gap-4 mt-4 transition-all duration-500 ease-in-out">
+      <div className="flex flex-col md:flex-row w-full gap-4 mt-4 transition-all duration-500 ease-in-out">
         {/* Filters */}
         <div
-          className={`transition-all duration-500 ease-in-out ${
-            showFilters ? 'w-[450px] opacity-100 translate-x-0' : 'w-0 opacity-0 translate-x-full'
-          } `}
+          className={`transition-all duration-500 ease-in-out overflow-hidden ${
+            showFilters
+              ? 'w-full md:w-[450px] h-auto opacity-100 translate-x-0'
+              : 'w-0 h-0 opacity-0 translate-x-full'
+          }`}
         >
           <div className="flex flex-col w-full border-none mb-4 bg-white rounded-2xl p-2 shadow-[1px_2px_16px_0px_#4899EA1F]">
             <div className="flex items-center justify-between mb-2">
@@ -145,53 +151,54 @@ const TableContainer = ({
         {/* Table */}
         <div
           className={`flex-1 transition-all duration-500 ease-in-out ${
-            showFilters ? 'w-[calc(100%-350px)]' : 'w-full'
+            showFilters ? 'w-full md:w-[calc(100%-350px)]' : 'w-full'
           }`}
         >
           <Table columns={columns} data={data} loading={loading} error={error} onSort={onSort} />
-        </div>
-      </div>
-      {/* Pagination buttons */}
-      <div className="flex items-center mt-6 gap-2">
-        {/* Previous */}
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-          disabled={currentPage === 0}
-          className="w-[35px] h-[35px] bg-primary-500 text-white rounded-full disabled:opacity-50"
-        >
-          {'<'}
-        </button>
 
-        {/* Page Numbers */}
-        {Array.from({ length: 5 }, (_, i) => {
-          const startPage = Math.max(0, Math.min(currentPage - 2, lastPage - 5));
-          const page = startPage + i;
-
-          if (page >= lastPage) return null;
-
-          return (
+          {/* Pagination buttons */}
+          <div className="flex items-center mt-6 gap-2">
+            {/* Previous */}
             <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`w-[35px] h-[35px] rounded-full ${
-                page === currentPage
-                  ? 'bg-primary-500 text-white font-bold'
-                  : 'border-1 border-neutral-400 text-neutral-500 hover:bg-gray-300'
-              }`}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+              disabled={currentPage === 0}
+              className="w-[35px] h-[35px] bg-primary-500 text-white rounded-full disabled:opacity-50"
             >
-              {page + 1}
+              {'<'}
             </button>
-          );
-        })}
 
-        {/* Next */}
-        <button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, lastPage - 1))}
-          disabled={currentPage >= lastPage - 1}
-          className="w-[35px] h-[35px] bg-primary-500 text-white rounded-full disabled:opacity-50"
-        >
-          {'>'}
-        </button>
+            {/* Page Numbers */}
+            {Array.from({ length: 5 }, (_, i) => {
+              const startPage = Math.max(0, Math.min(currentPage - 2, lastPage - 5));
+              const page = startPage + i;
+
+              if (page >= lastPage) return null;
+
+              return (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`w-[35px] h-[35px] rounded-full ${
+                    page === currentPage
+                      ? 'bg-primary-500 text-white font-bold'
+                      : 'border-1 border-neutral-400 text-neutral-500 hover:bg-gray-300'
+                  }`}
+                >
+                  {page + 1}
+                </button>
+              );
+            })}
+
+            {/* Next */}
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, lastPage - 1))}
+              disabled={currentPage >= lastPage - 1}
+              className="w-[35px] h-[35px] bg-primary-500 text-white rounded-full disabled:opacity-50"
+            >
+              {'>'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -53,7 +53,10 @@ const AdminHeader = () => {
     <div className="absolute top-10 w-auto left-0 bg-white shadow-md rounded-lg z-50">
       <ul className="flex flex-col text-right">
         <li>
-          <NavLink to="/profile" className="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap">
+          <NavLink
+            to="/adminDashboard/profile"
+            className="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+          >
             الملف الشخصي
           </NavLink>
         </li>
@@ -87,18 +90,14 @@ const AdminHeader = () => {
             <img src={userImg} alt="User" className="w-10 h-10 rounded-full object-cover" />
             <span className="text-gray-800 font-medium">الاداري</span>
             <div className="text-gray-600 text-xl relative">
-              {
-                isDropdownOpen ? (
-                  <IoClose size={24} onClick={() => setIsDropdownOpen(false)} />
-                ) : (
-                  <DownArrow />
-                )
-              }
+              {isDropdownOpen ? (
+                <IoClose size={24} onClick={() => setIsDropdownOpen(false)} />
+              ) : (
+                <DownArrow />
+              )}
               {isDropdownOpen && <DropdownMenu />}
             </div>
           </div>
-
-          
         </div>
 
         <h2 className="text-2xl font-bold">عقود السيارة</h2>
@@ -136,12 +135,11 @@ const AdminHeader = () => {
               )}
               {isMobileDropdownOpen && <DropdownMenu />}
             </div>
-
           </div>
 
           <nav className="flex flex-col gap-3 text-right">
             <NavLink
-              to="/AdminDashboard"
+              to="/adminDashboard"
               onClick={() => setIsSidebarOpen(false)}
               className={({ isActive }) =>
                 `inline text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`

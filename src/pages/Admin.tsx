@@ -134,7 +134,7 @@ const Admin = () => {
             <button
               onClick={() => setShowModal(true)}
               type="button"
-              className="bg-primary-500 rounded-2xl py-2.5 px-4 text-white text-2xl font-normal"
+              className="bg-primary-500 border border-primary-500 rounded-2xl py-2 px-4 text-white text-xl font-normal w-full md:w-auto"
             >
               + اضافة شركة
             </button>

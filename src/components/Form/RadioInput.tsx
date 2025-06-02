@@ -6,13 +6,25 @@ function RadioInput({
   value,
   options,
   onChange,
+  clearable = false,
   error,
   className,
   disabled,
 }: RadioInputProps) {
   return (
     <div>
-      {label && <label className="text-lg font-normal">{label}</label>}
+      <div className="flex justify-between items-center gap-2">
+        {label && <label className="text-lg font-normal">{label}</label>}
+        {clearable && value && (
+          <button
+            type="button"
+            onClick={() => onChange({ target: { name, value: '' } })}
+            className="text-primary-500 hover:text-primary-700 text-md"
+          >
+            اعادة الضبط
+          </button>
+        )}
+      </div>
       <div className="flex items-center gap-4">
         {options.map((item) => (
           <label key={item.value} className="flex items-center gap-2 cursor-pointer">

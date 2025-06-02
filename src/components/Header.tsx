@@ -42,7 +42,6 @@ const Header = () => {
     navigate('/login');
   };
 
-  
   const DropdownMenu = () => (
     <div className="absolute top-10 w-auto left-0 bg-white shadow-md rounded-lg z-50">
       <ul className="flex flex-col text-right">

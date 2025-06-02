@@ -10,6 +10,7 @@ function SelectField({
   value,
   error,
   onChange,
+  clearable = false,
   className = '',
   disabled = false,
   multiple = false,
@@ -65,12 +66,31 @@ function SelectField({
     : options.find((opt) => opt.value === value)?.label || placeholder;
 
   return (
-    <div ref={containerRef}>
-      {label && (
-        <label htmlFor={name} className="block mb-2 text-lg font-medium text-black">
-          {label}
-        </label>
-      )}
+    <div ref={containerRef} className="mb-3">
+      <div className="flex justify-between items-center gap-2">
+        {label && (
+          <label htmlFor={name} className="block mb-2 text-lg font-medium text-black">
+            {label}
+          </label>
+        )}
+        {clearable && value && (
+          <button
+            type="button"
+            onClick={() => {
+              const event = {
+                target: {
+                  name,
+                  value: multiple ? [] : '',
+                },
+              } as any;
+              onChange(event);
+            }}
+            className="text-primary-500 hover:text-primary-700 text-md"
+          >
+            اعادة الضبط
+          </button>
+        )}
+      </div>
 
       <div
         className={`relative w-full px-4 py-1 border rounded-2xl border-neutral-100 focus-within:border-blue-500 transition text-black cursor-pointer ${
