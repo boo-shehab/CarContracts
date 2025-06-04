@@ -1,14 +1,12 @@
-// routes/AdminRoute.tsx
 import { Navigate, Outlet } from 'react-router-dom';
-import { getAccessToken, isSuperAdmin } from '../utilities/token';
+import useAuth from '../hooks/useAuth';
 
 const AdminRoute = () => {
-  const token = getAccessToken();
-  const role = isSuperAdmin();
+  const { user, isAdmin } = useAuth();
 
-  if (!token) return <Navigate to="/login" />;
+  if (!user) return <Navigate to="/login" />;
 
-  if (!role) return <Navigate to="/" />;
+  if (!isAdmin) return <Navigate to="/" />;
 
   return <Outlet />;
 };

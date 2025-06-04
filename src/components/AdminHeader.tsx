@@ -5,6 +5,7 @@ import { GoBellFill } from 'react-icons/go';
 import DownArrow from '../assets/icons/DownArrow';
 import { FiMenu } from 'react-icons/fi';
 import { IoClose } from 'react-icons/io5';
+import { useSelector } from 'react-redux';
 
 const AdminHeader = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -12,6 +13,8 @@ const AdminHeader = () => {
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const mobileDropdownRef = useRef(null);
+
+  const { user } = useSelector((state: any) => state.auth);
 
   const navigate = useNavigate();
 
@@ -80,16 +83,20 @@ const AdminHeader = () => {
         </button>
 
         <div className="flex items-center gap-6 relative" ref={dropdownRef}>
-          <div
-            className="hidden lg:flex items-center gap-3 cursor-pointer"
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          >
+          <div className="hidden lg:flex items-center gap-3">
             <button>
               <GoBellFill size={42} className="text-primary-200" />
             </button>
-            <img src={userImg} alt="User" className="w-10 h-10 rounded-full object-cover" />
-            <span className="text-gray-800 font-medium">الاداري</span>
-            <div className="text-gray-600 text-xl relative">
+            <img
+              src={user?.imageUrl || userImg}
+              alt="User"
+              className="w-10 h-10 rounded-full object-cover"
+            />
+            <span className="text-gray-800 font-medium">{user?.username || 'مدير الادارة'}</span>
+            <div
+              className="text-gray-600 text-xl relative cursor-pointer"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
               {isDropdownOpen ? (
                 <IoClose size={24} onClick={() => setIsDropdownOpen(false)} />
               ) : (
@@ -117,17 +124,23 @@ const AdminHeader = () => {
             </button>
           </div>
 
-          <div
-            className="flex items-center gap-3 border-b pb-4 cursor-pointer relative"
-            onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
-            ref={mobileDropdownRef}
-          >
+          <div className="flex items-center gap-3 border-b pb-4 relative" ref={mobileDropdownRef}>
             <button>
               <GoBellFill size={24} className="text-primary-200" />
             </button>
-            <img src={userImg} alt="User" className="w-8 h-8 rounded-full object-cover" />
-            <span className="text-gray-800 font-medium text-lg">محمد علي</span>
-            <div className="text-gray-600 text-xl relative">
+
+            <img
+              src={user?.imageUrl || userImg}
+              alt="User"
+              className="w-8 h-8 rounded-full object-cover"
+            />
+            <span className="text-gray-800 font-medium text-lg">
+              {user?.username || 'مدير الادارة'}
+            </span>
+            <div
+              className="text-gray-600 text-xl relative cursor-pointer"
+              onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
+            >
               {isMobileDropdownOpen ? (
                 <IoClose size={24} onClick={() => setIsMobileDropdownOpen(false)} />
               ) : (

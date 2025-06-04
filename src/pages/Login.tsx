@@ -2,24 +2,27 @@ import { useState } from 'react';
 import InputField from '../components/Form/InputField';
 import { CiSearch, CiUser } from 'react-icons/ci';
 import { LuEye, LuEyeClosed } from 'react-icons/lu';
-import { login } from '../services/authService';
+import { getMe, login } from '../services/authService';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../features/auth/authSlice';
 
 const Login = () => {
-  const [user, setUser] = useState({ username: '', password: '' });
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [user, setUserState] = useState({ username: '', password: '' });
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setUser((prev) => ({ ...prev, [name]: value }));
+    setUserState((prev) => ({ ...prev, [name]: value }));
   };
 
   const togglePasswordVisibility = () => {
-    setIsPasswordVisible((prev) => !prev);
+    setPasswordVisible((prev) => !prev);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,17 +31,31 @@ const Login = () => {
     try {
       setLoading(true);
       const { data } = await login(user.username, user.password);
-      const { accessToken, refreshToken } = data;
+
+      const getUserData = await getMe(data.accessToken);
+      const userData = getUserData.data;
+
+      const { accessToken, refreshToken, roles } = data;
 
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
-      localStorage.setItem('roles', JSON.stringify(data.roles));
+      localStorage.setItem('roles', JSON.stringify(roles));
+      localStorage.setItem('user', JSON.stringify(userData));
+
+      dispatch(
+        setUser({
+          token: accessToken,
+          user: userData,
+          refreshToken,
+          roles: roles,
+        })
+      );
 
       navigate('/');
     } catch (err: any) {
       console.error('Login failed', err);
       toast.error(err?.response?.data?.message || 'فشل تسجيل الدخول');
-      setUser({ username: '', password: '' });
+      setUserState({ username: '', password: '' });
     } finally {
       setLoading(false);
     }
@@ -51,6 +68,7 @@ const Login = () => {
       <div className="w-full max-w-lg min-h-[80vh] p-6 bg-white rounded-2xl shadow-md border flex flex-col">
         <h2 className="mb-1 text-[28px] font-bold">الاداري لادارة عقود السيارات</h2>
         <p className="mb-6 text-2xl text-neutral-400">يرجى تسجيل الدخول للمتابعة !</p>
+
         <form onSubmit={handleSubmit} className="flex flex-col justify-between flex-1 gap-4">
           <div className="flex flex-col gap-4">
             <InputField
@@ -88,6 +106,7 @@ const Login = () => {
               }
             />
           </div>
+
           <button
             type="submit"
             className="w-full p-2 rounded-2xl text-2xl bg-primary-500 text-white hover:bg-primary-600 disabled:bg-neutral-100 disabled:text-neutral-400 transition"

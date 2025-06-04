@@ -4,7 +4,6 @@ import ProtectedRoute from './ProtectedRoute';
 import AdminRoute from './AdminRoute';
 import PublicRoute from './PublicRoute';
 import Loading from '../components/Loading';
-// import Profile from '../pages/Profile';
 
 const Home = lazy(() => import('../pages/Home'));
 const Profile = lazy(() => import('../pages/Profile'));
