@@ -9,16 +9,19 @@ import { toast } from 'react-toastify';
 import { CiCamera } from 'react-icons/ci';
 import { useNavigate } from 'react-router-dom';
 import { isValidPhoneNumber } from 'libphonenumber-js';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUser } from '../features/auth/authSlice'; // adjust path if needed
 
 const Profile = () => {
   const [initialState, setInitialState] = useState({
     email: '',
     phone: '',
-    fullName: '',
+    username: '',
     password: '',
     confirmPassword: '',
     imageUrl: userImage,
   });
+  const {user, roles, accessToken, refreshToken} = useSelector((state: any) => state.auth);
 
   const [formData, setFormData] = useState(initialState);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -27,32 +30,24 @@ const Profile = () => {
   const [phoneError, setPhoneError] = useState('');
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const res = await axios.get('/users/me');
-        const user = res.data.data;
+    if (user) {
+      const userData = {
+        email: user.email || '',
+        phone: user.phone || '',
+        username: user.username || '',
+        imageUrl: user.imageUrl || userImage,
+        password: '',
+        confirmPassword: '',
+      };
 
-        const mappedUser = {
-          email: user.email || '',
-          phone: user.phone || '',
-          fullName: user.fullName || '',
-          password: '',
-          confirmPassword: '',
-          imageUrl: user.imageUrl || userImage,
-        };
-
-        setInitialState(mappedUser);
-        setFormData(mappedUser);
-        setPreview(mappedUser.imageUrl);
-      } catch (err) {
-        console.error('Error loading profile:', err);
-      }
-    };
-
-    fetchUserData();
-  }, []);
+      setInitialState(userData);
+      setFormData(userData);
+      setPreview(userData.imageUrl);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (imageFile) {
@@ -64,7 +59,7 @@ const Profile = () => {
 
   useEffect(() => {
     const changed =
-      formData.fullName !== initialState.fullName ||
+      formData.username !== initialState.username ||
       formData.email !== initialState.email ||
       formData.phone !== initialState.phone ||
       formData.password !== initialState.password ||
@@ -74,7 +69,7 @@ const Profile = () => {
   }, [
     formData,
     preview,
-    initialState.fullName,
+    initialState.username,
     initialState.email,
     initialState.phone,
     initialState.password,
@@ -82,6 +77,8 @@ const Profile = () => {
   ]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(formData);
+
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
     if (e.target.name === 'phone') {
@@ -117,15 +114,19 @@ const Profile = () => {
     }
     try {
       // Handle image upload if changed
-      if (imageFile) {
+      if (imageFile && imageFile instanceof File) {
         const formDataImage = new FormData();
         formDataImage.append('photo', imageFile);
 
-        await axios.put('/users/me/photo', formDataImage, {
+        const image = await axios.put('/users/me/photo', formDataImage, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
+        formData.imageUrl = image.data.imageUrl; // Update image URL in formData
+        setPreview(image.data.imageUrl); // Update preview with new image URL
+        
+      
       }
 
       // Only send changed fields
@@ -143,8 +144,19 @@ const Profile = () => {
       // Don't send if nothing changed except image
       if (Object.keys(payload).length > 0) {
         await axios.put('/users/me/profile', payload);
-      }
+        setInitialState((prev) => ({ ...prev, ...payload }));
+        setFormData((prev) => ({ ...prev, ...payload }));
 
+      }
+      // Update Redux user, keeping tokens and roles
+      dispatch(
+        setUser({
+          user: { ...user, ...payload, imageUrl: preview },
+          accessToken: accessToken || '',
+          refreshToken: refreshToken || '',
+          roles: roles || [],
+        })
+      );
       toast.success('تم حفظ التعديلات بنجاح!');
     } catch (error) {
       toast.error('حدث خطأ أثناء حفظ التعديلات');
@@ -192,11 +204,11 @@ const Profile = () => {
         <div className="flex-1 bg-white p-4 rounded-lg shadow">
           <div className="space-y-4">
             <InputField
-              name="fullName"
+              name="username"
               label="الاسم"
               type="text"
               placeholder="أدخل اسمك"
-              value={formData.fullName}
+              value={formData.username}
               onChange={handleChange}
               leftIcon={<FaUser />}
             />
