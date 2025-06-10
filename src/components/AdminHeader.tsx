@@ -85,7 +85,7 @@ const AdminHeader = () => {
         <div className="flex items-center gap-6 relative" ref={dropdownRef}>
           <div className="hidden lg:flex items-center gap-3">
             <button>
-              <GoBellFill size={42} className="text-primary-200" />
+              <GoBellFill size={30} className="text-primary-200" />
             </button>
             <img
               src={user?.imageUrl || userImg}

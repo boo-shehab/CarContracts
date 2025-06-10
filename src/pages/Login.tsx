@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import InputField from '../components/Form/InputField';
-import { CiSearch, CiUser } from 'react-icons/ci';
+import { CiUser } from 'react-icons/ci';
 import { LuEye, LuEyeClosed } from 'react-icons/lu';
 import { getMe, login } from '../services/authService';
 import { toast } from 'react-toastify';
@@ -78,7 +78,6 @@ const Login = () => {
               name="username"
               value={user.username}
               onChange={handleChange}
-              rightIcon={<CiSearch size={24} className="group-focus-within:hidden text-black" />}
               leftIcon={<CiUser size={24} className="text-black" />}
             />
 

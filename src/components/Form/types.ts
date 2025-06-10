@@ -13,8 +13,9 @@ export interface InputFieldProps {
   name: string;
   label?: string;
   type: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
+  monyType?: string;
   placeholder?: string;
-  value: string;
+  value: string | number | undefined;
   clearable?: boolean;
   error?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;

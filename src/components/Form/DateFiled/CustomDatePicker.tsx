@@ -16,12 +16,12 @@ function CustomDatePicker({
   error,
 }: CustomDatePickerProps) {
   return (
-    <div className="mb-4">
+    <div>
       <div>
         {label && (
           <label className="block mb-2 text-lg font-medium text-black text-right">{label}</label>
         )}
-        <div className="relative flex items-center justify-center gap-1 px-4 py-1 border rounded-2xl border-neutral-100 focus-within:border-blue-500 transition text-black">
+        <div className="relative flex items-center px-4 justify-center gap-1 border rounded-lg border-neutral-100 focus-within:border-blue-500 transition text-black">
           <CiCalendarDate
             size={24}
             className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"

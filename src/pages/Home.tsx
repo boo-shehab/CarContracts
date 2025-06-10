@@ -1,5 +1,7 @@
 import TrendingUp from '../assets/icons/TrendingUp';
 import ArrowRise from '../assets/icons/ArrowRise';
+import { useState } from 'react';
+import AddCompanyModal from '../components/AddNewModal';
 
 const cardsData = [
   {
@@ -33,10 +35,15 @@ const cardsData = [
 ];
 
 const Home = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <div>
+      <AddCompanyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <div>
-        <button className="bg-primary-500 rounded-2xl py-2.5 px-4 text-white text-2xl font-normal">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-primary-500 rounded-2xl py-2.5 px-4 text-white text-2xl font-normal"
+        >
           + اضافة جديد
         </button>
       </div>

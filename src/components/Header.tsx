@@ -63,16 +63,16 @@ const Header = () => {
   );
 
   return (
-    <header className="container mx-auto py-4 px-2 lg:px-2 mb-4 border-b">
+    <header className="container mx-auto py-4 px-2 xl:px-2 mb-4 border-b">
       <div className="flex justify-between items-center gap-6 relative">
-        <button onClick={() => setIsSidebarOpen(true)} className="lg:hidden text-2xl">
+        <button onClick={() => setIsSidebarOpen(true)} className="xl:hidden text-2xl">
           <FiMenu />
         </button>
 
         {/* Desktop Section */}
-        <div className="hidden lg:flex items-center gap-3 relative" ref={dropdownRef}>
+        <div className="hidden xl:flex items-center gap-3 relative" ref={dropdownRef}>
           <button>
-            <GoBellFill size={42} className="text-primary-200" />
+            <GoBellFill size={30} className="text-primary-200" />
           </button>
           <img src={userImg} alt="User" className="w-10 h-10 rounded-full object-cover" />
           <span className="text-gray-800 font-medium">محمد علي</span>
@@ -90,11 +90,11 @@ const Header = () => {
         </div>
 
         <nav>
-          <ul className="hidden lg:flex gap-6">
+          <ul className="hidden xl:flex gap-6">
             <NavLink
               to="/"
               className={({ isActive }) =>
-                `text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
+                `text-lg font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
               }
             >
               الصفحة الرئيسية
@@ -102,7 +102,7 @@ const Header = () => {
             <NavLink
               to="/contracts"
               className={({ isActive }) =>
-                `text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
+                `text-lg font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
               }
             >
               العقود
@@ -110,7 +110,7 @@ const Header = () => {
             <NavLink
               to="/authorizations"
               className={({ isActive }) =>
-                `text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
+                `text-lg font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
               }
             >
               التخاويل
@@ -118,7 +118,7 @@ const Header = () => {
             <NavLink
               to="/clearance"
               className={({ isActive }) =>
-                `text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
+                `text-lg font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
               }
             >
               براءة الذمة
@@ -126,15 +126,15 @@ const Header = () => {
             <NavLink
               to="/users"
               className={({ isActive }) =>
-                `text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
+                `text-lg font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
               }
             >
               المستخدمين
             </NavLink>
             <NavLink
-              to="/Payments"
+              to="/payments"
               className={({ isActive }) =>
-                `text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
+                `text-lg font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
               }
             >
               مستحقات الدفع
@@ -142,7 +142,7 @@ const Header = () => {
             <NavLink
               to="/account-cards"
               className={({ isActive }) =>
-                `text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
+                `text-lg font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
               }
             >
               بطاقات الحساب
@@ -150,7 +150,7 @@ const Header = () => {
           </ul>
         </nav>
 
-        <h2 className="text-2xl font-bold">عقود السيارة</h2>
+        <h2 className="text-xl font-bold">عقود السيارة</h2>
       </div>
 
       {/* Sidebar for mobile view */}

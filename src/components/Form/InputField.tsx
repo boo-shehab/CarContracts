@@ -49,7 +49,7 @@ const InputField = ({
           value={value}
           onChange={onChange}
           onBlur={onBlur}
-          className={`w-full px-10 py-2 text-lg border rounded-2xl focus:outline-none transition-all ${
+          className={`w-full px-10 py-2 text-lg border rounded-lg focus:outline-none transition-all ${
             error
               ? 'border-red-500 text-red-500 focus:border-red-500'
               : 'border-neutral-100 focus:border-blue-500 text-black'

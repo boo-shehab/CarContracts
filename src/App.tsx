@@ -12,8 +12,6 @@ function App() {
   const { accessToken, isLoading } = useSelector((state: any) => state.auth);
 
   useEffect(() => {
-    console.log('App component mounted, fetching user data...');
-
     const fetchUser = async () => {
       try {
         if (accessToken) {
@@ -35,11 +33,12 @@ function App() {
     };
 
     fetchUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading) return <Loading />;
   return (
-    <div className="px-4 bg-primary-25">
+    <div className="px-4 bg-primary-25 min-h-screen">
       <RouterProvider router={router} />
       <ToastContainer />
     </div>

@@ -66,7 +66,7 @@ function SelectField({
     : options.find((opt) => opt.value === value)?.label || placeholder;
 
   return (
-    <div ref={containerRef} className="mb-3">
+    <div ref={containerRef}>
       <div className="flex justify-between items-center gap-2">
         {label && (
           <label htmlFor={name} className="block mb-2 text-lg font-medium text-black">
@@ -93,7 +93,7 @@ function SelectField({
       </div>
 
       <div
-        className={`relative w-full px-4 py-1 border rounded-2xl border-neutral-100 focus-within:border-blue-500 transition text-black cursor-pointer ${
+        className={`relative w-full px-4 border rounded-lg border-neutral-100 focus-within:border-blue-500 transition text-black cursor-pointer ${
           error ? 'border-red-500 text-red-500' : ''
         } ${className}`}
         onClick={handleToggle}

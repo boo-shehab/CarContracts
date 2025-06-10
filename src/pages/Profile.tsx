@@ -21,7 +21,8 @@ const Profile = () => {
     confirmPassword: '',
     imageUrl: userImage,
   });
-  const {user, roles, accessToken, refreshToken} = useSelector((state: any) => state.auth);
+  const [isLoading, setIsLoading] = useState(false);
+  const { user, roles, accessToken, refreshToken } = useSelector((state: any) => state.auth);
 
   const [formData, setFormData] = useState(initialState);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -114,6 +115,7 @@ const Profile = () => {
     }
     try {
       // Handle image upload if changed
+      setIsLoading(true);
       if (imageFile && imageFile instanceof File) {
         const formDataImage = new FormData();
         formDataImage.append('photo', imageFile);
@@ -125,8 +127,6 @@ const Profile = () => {
         });
         formData.imageUrl = image.data.imageUrl; // Update image URL in formData
         setPreview(image.data.imageUrl); // Update preview with new image URL
-        
-      
       }
 
       // Only send changed fields
@@ -146,7 +146,6 @@ const Profile = () => {
         await axios.put('/users/me/profile', payload);
         setInitialState((prev) => ({ ...prev, ...payload }));
         setFormData((prev) => ({ ...prev, ...payload }));
-
       }
       // Update Redux user, keeping tokens and roles
       dispatch(
@@ -162,6 +161,8 @@ const Profile = () => {
       toast.error('حدث خطأ أثناء حفظ التعديلات');
       console.error('Error saving profile:', error);
       return;
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -208,6 +209,7 @@ const Profile = () => {
               label="الاسم"
               type="text"
               placeholder="أدخل اسمك"
+              disabled={isLoading}
               value={formData.username}
               onChange={handleChange}
               leftIcon={<FaUser />}
@@ -217,6 +219,7 @@ const Profile = () => {
               label="البريد الإلكتروني"
               type="email"
               placeholder="أدخل بريدك الإلكتروني"
+              disabled={isLoading}
               value={formData.email}
               onChange={handleChange}
               leftIcon={<FaEnvelope />}
@@ -226,6 +229,7 @@ const Profile = () => {
               label="رقم الهاتف"
               type="number"
               placeholder="أدخل رقم هاتفك"
+              disabled={isLoading}
               value={formData.phone}
               onChange={handleChange}
               leftIcon={<FaPhone />}
@@ -236,6 +240,7 @@ const Profile = () => {
               label="كلمة المرور"
               type="password"
               placeholder="أدخل كلمة المرور"
+              disabled={isLoading}
               value={formData.password}
               onChange={handleChange}
               leftIcon={<FaLock />}
@@ -245,6 +250,7 @@ const Profile = () => {
               label="تأكيد كلمة المرور"
               type="password"
               placeholder="أعد كتابة كلمة المرور"
+              disabled={isLoading}
               value={formData.confirmPassword}
               onChange={handleChange}
               leftIcon={<FaLock />}
@@ -255,14 +261,14 @@ const Profile = () => {
 
             <button
               onClick={handleSave}
-              disabled={Boolean(!isChanged || isPasswordMismatch || phoneError)}
+              disabled={Boolean(!isChanged || isPasswordMismatch || phoneError || isLoading)}
               className={`w-full py-2 rounded font-semibold transition-colors duration-200 ${
-                !isChanged || isPasswordMismatch || phoneError
+                !isChanged || isPasswordMismatch || phoneError || isLoading
                   ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
                   : 'bg-blue-600 text-white hover:bg-blue-700'
               }`}
             >
-              حفظ التعديل
+              {isLoading ? 'جاري الحفظ...' : 'حفظ التعديل'}
             </button>
           </div>
         </div>

@@ -91,7 +91,7 @@ const TableContainer = ({
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full pb-4">
       {/* Top Bar */}
       <div className="mt-4 flex flex-col md:flex-row md:items-center gap-4">
         <InputField
