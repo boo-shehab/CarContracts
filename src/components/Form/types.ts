@@ -7,6 +7,7 @@ export interface CustomDatePickerProps {
   className?: string;
   disabled?: boolean;
   error?: string;
+  showQuickSelect?: boolean;
 }
 
 export interface InputFieldProps {

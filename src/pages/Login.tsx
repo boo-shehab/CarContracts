@@ -76,6 +76,7 @@ const Login = () => {
               type="text"
               placeholder="ادخل اسم المستخدم"
               name="username"
+              disabled={loading}
               value={user.username}
               onChange={handleChange}
               leftIcon={<CiUser size={24} className="text-black" />}
@@ -86,6 +87,7 @@ const Login = () => {
               type={isPasswordVisible ? 'text' : 'password'}
               placeholder="ادخل كلمة السر"
               name="password"
+              disabled={loading}
               value={user.password}
               onChange={handleChange}
               leftIcon={

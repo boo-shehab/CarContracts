@@ -7,10 +7,14 @@ import RenderFilterField from './Form/RenderFilterField';
 import { TableContainerProps } from './types';
 import { IoClose } from 'react-icons/io5';
 import axios from '../services/axios';
+import AxiosMockAdapter from 'axios-mock-adapter';
+import { default as mockingAxios } from 'axios';
 
 const TableContainer = ({
   columns,
   apiUrl,
+  isMocked = false,
+  isExpander = false,
   isThereFilters = true,
   headerActions,
   refresh,
@@ -19,7 +23,9 @@ const TableContainer = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  // this for the search input
+  // it will be used to filter the data based on the search term
+  const [keyword, setKeyword] = useState('');
   const [filters, setFilters] = useState<Record<string, any>>({});
   const [sortDirection, setSortDirection] = useState<any>({
     sortBy: '',
@@ -29,9 +35,81 @@ const TableContainer = ({
   const [lastPage, setLastPage] = useState(1);
   const rowsPerPage = 10;
 
+  const [expandedRowId, setExpandedRowId] = useState<string | number | null>(null);
+  const [loadingRowId, setLoadingRowId] = useState<string | number | null>(null);
+  const [childData, setChildData] = useState<Record<string, any>[]>([]);
+
   const toggleFilters = () => setShowFilters((prev) => !prev);
 
+  const fetchChildData = async (rowId: string | number) => {
+    setLoadingRowId(rowId);
+    const mock = new AxiosMockAdapter(mockingAxios);
+    mock.onGet(apiUrl).reply(200, {
+      data: [
+        {id: 1, subscriberName: 'John Doe', carType: 'Sedan', amountDue: 'active', paymentNumber: '3/10', status: 'UNPAID'},
+        {id: 2, subscriberName: 'Jane Smith', carType: 'SUV', amountDue: 'inactive', paymentNumber: '5/10', status: 'PAID'},
+        {id: 3, subscriberName: 'Alice Johnson', carType: 'Truck', amountDue: 'active', paymentNumber: '2/10', status: 'UNPAID'},
+        {id: 4, subscriberName: 'Bob Brown', carType: 'Coupe', amountDue: 'inactive', paymentNumber: '8/10', status: 'PAID'},
+        {id: 5, subscriberName: 'Charlie Davis', carType: 'Convertible', amountDue: 'active', paymentNumber: '1/10', status: 'UNPAID'},
+        {id: 6, subscriberName: 'Eve White', carType: 'Hatchback', amountDue: 'inactive', paymentNumber: '6/10', status: 'PAID'},
+      ], // Mocked data
+    });
+    try {
+      const response = await mockingAxios.get(apiUrl);
+      setTimeout(() => {
+        setChildData(response.data.data);
+        setLoadingRowId(null);
+      }, 500); // Simulate a delay for loading state
+      } catch (error) {
+        console.error('Error fetching child data:', error);
+        setError('Error fetching child data');
+        setLoadingRowId(null);
+      }
+      return;
+  }
+
+  useEffect(() => {
+    if (isExpander && expandedRowId !== null) {
+      fetchChildData(expandedRowId);
+    } else {
+      setChildData([]);
+    }
+  }, [expandedRowId, isExpander]);
+
   const fetchData = useCallback(async () => {
+    setChildData([]);
+    setLoadingRowId(null)
+    setExpandedRowId(null)
+    if (isMocked) {
+      const mock = new AxiosMockAdapter(mockingAxios);
+      mock.onGet(apiUrl).reply(200, {
+        data: [
+          {id: 1, subscriberName: 'John Doe', carType: 'Sedan', amountDue: 'active', paymentNumber: '3/10', status: 'UNPAID'},
+          {id: 2, subscriberName: 'Jane Smith', carType: 'SUV', amountDue: 'inactive', paymentNumber: '5/10', status: 'PAID'},
+          {id: 3, subscriberName: 'Alice Johnson', carType: 'Truck', amountDue: 'active', paymentNumber: '2/10', status: 'UNPAID'},
+          {id: 4, subscriberName: 'Bob Brown', carType: 'Coupe', amountDue: 'inactive', paymentNumber: '8/10', status: 'PAID'},
+          {id: 5, subscriberName: 'Charlie Davis', carType: 'Convertible', amountDue: 'active', paymentNumber: '1/10', status: 'UNPAID'},
+          {id: 6, subscriberName: 'Eve White', carType: 'Hatchback', amountDue: 'inactive', paymentNumber: '6/10', status: 'PAID'},
+        ], // Mocked data
+        pagination: {
+          currentPage: 1,
+          lastPage: 1,
+        },
+      });
+      try {
+        const response = await mockingAxios.get(apiUrl);
+        setData(response.data.data);
+        setCurrentPage(response.data.pagination.currentPage);
+        setLastPage(response.data.pagination.lastPage);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setError('Error fetching data');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     if (columns.length === 0) {
       setLoading(true);
     }
@@ -43,7 +121,7 @@ const TableContainer = ({
         size: rowsPerPage,
       };
 
-      if (searchTerm) params.searchTerm = searchTerm;
+      if (keyword) params.searchTerm = keyword;
       if (sortDirection.sortBy) {
         params.sortBy = sortDirection.sortBy;
         params.sortDirection = sortDirection.sortDirection;
@@ -60,7 +138,7 @@ const TableContainer = ({
     } finally {
       setLoading(false);
     }
-  }, [apiUrl, filters, searchTerm, sortDirection, currentPage, columns.length]);
+  }, [apiUrl, filters, keyword, sortDirection, currentPage, columns.length]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -68,7 +146,8 @@ const TableContainer = ({
     }, 500);
 
     return () => clearTimeout(handler);
-  }, [searchTerm, filters, sortDirection, refresh, currentPage, fetchData]);
+  }, [keyword, filters, sortDirection, refresh, currentPage, fetchData]);
+  
   const handleFilterChange = (name: string, value: any) => {
     console.log(`Filter changed: ${name} = ${value}`);
     setFilters((prev) => {
@@ -97,9 +176,9 @@ const TableContainer = ({
         <InputField
           name="searchTerm"
           type="text"
-          value={searchTerm}
+          value={keyword}
           placeholder="ابحث عن الشركة"
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => setKeyword(e.target.value)}
           className="m-0"
           leftIcon={<CiSearch size={24} />}
         />
@@ -154,7 +233,18 @@ const TableContainer = ({
             showFilters ? 'w-full md:w-[calc(100%-350px)]' : 'w-full'
           }`}
         >
-          <Table columns={columns} data={data} loading={loading} error={error} onSort={onSort} />
+          <Table 
+            columns={columns} 
+            data={data} 
+            loading={loading} 
+            error={error} 
+            onSort={onSort} 
+            expandedRowId={expandedRowId}
+            isExpander={isExpander}
+            setExpandedRowId={setExpandedRowId}
+            loadingRowId={loadingRowId}
+            childData={childData}
+          />
 
           {/* Pagination buttons */}
           <div className="flex items-center mt-6 gap-2">

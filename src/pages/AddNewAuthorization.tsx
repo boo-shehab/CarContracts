@@ -8,22 +8,21 @@ function AddNewAuthorization() {
   const [isFormValid, setIsFormValid] = useState(false);
 
   const [accountInformation, setAccountInformation] = useState({
-    firstName: '',
-    fatherName: '',
-    grandfatherName: '',
-    fourthName: '',
+    username: '',
+    first_name: '',
+    father_name: '',
+    grandfather_name: '',
+    fourth_name: '',
     lastName: '',
-    idNumber: '',
-    phoneNumber: '',
-    residenceCardNumber: '',
-    residence: {
-      housing: '',
-      district: '',
-      alley: '',
-      houseNumber: '',
-    },
-    issuingOffice: '',
-    issuingAuthority: '',
+    nationalId: '',
+    phone: '',
+    housing_card_number: '',
+    housing: '',
+    neighborhood: '',
+    alley: '',
+    house_number: '',
+    info_office: '',
+    issuing_authority: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {

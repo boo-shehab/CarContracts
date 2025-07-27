@@ -1,28 +1,17 @@
 import { useEffect, useCallback, useState } from 'react';
+import axios from '../../services/axios';
 import InputField from '../Form/InputField';
+import { AccountInformation } from './type';
+import SearchSelect from '../Form/SearchSelect';
 
 interface AddAccountInformationProps {
-  formData: {
-    firstName: string;
-    fatherName: string;
-    grandfatherName: string;
-    fourthName: string;
-    lastName: string;
-    idNumber: string;
-    phoneNumber: string;
-    residenceCardNumber: string;
-    residence: {
-      housing: string;
-      district: string;
-      alley: string;
-      houseNumber: string;
-    };
-    issuingOffice: string;
-    issuingAuthority: string;
-  };
+  formData: AccountInformation;
   title: string;
   setFormData: (data: any) => void;
   onValidationChange?: (isValid: boolean) => void;
+  isLoading?: boolean;
+  returnedValue: any;
+  disabled: boolean
 }
 
 function AddAccountInformation({
@@ -30,6 +19,9 @@ function AddAccountInformation({
   setFormData,
   title,
   onValidationChange,
+  isLoading = false,
+  disabled,
+  returnedValue
 }: AddAccountInformationProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -39,26 +31,29 @@ function AddAccountInformation({
       formData.fatherName,
       formData.grandfatherName,
       formData.fourthName,
-      formData.lastName,
-      formData.idNumber,
+      formData.surname,
+      formData.nationalId,
       formData.phoneNumber,
-      formData.residenceCardNumber,
-      formData.residence.housing,
-      formData.residence.district,
-      formData.residence.alley,
-      formData.residence.houseNumber,
-      formData.issuingOffice,
+      formData.residenceCardNo,
+      
+      formData.residence,
+      formData.district,
+      formData.alley,
+      formData.houseNo,
+
+      formData.infoOffice,
       formData.issuingAuthority,
     ];
-    return requiredFields.every((val) => val && val.trim() !== '');
-  }, [formData]);
+    return requiredFields.every((val) => val && val.trim() !== '') && Object.keys(errors).every((key) => !errors[key] || errors[key].trim() === '');
+  }, [errors, formData.alley, formData.fatherName, formData.firstName, formData.fourthName, formData.grandfatherName, formData.houseNo, formData.residence, formData.residenceCardNo, formData.infoOffice, formData.issuingAuthority, formData.surname, formData.nationalId, formData.district, formData.phoneNumber]);
 
   useEffect(() => {
     if (onValidationChange) {
       onValidationChange(isFormFilled());
     }
-  }, [formData, isFormFilled, onValidationChange]);
-  const validateField = (field: string, value: string, nested?: boolean) => {
+  }, [formData, isFormFilled, onValidationChange, errors]);
+  
+  const validateField = async(field: string, value: string) => {
     let error = '';
     if (!value.trim()) {
       switch (field) {
@@ -74,19 +69,19 @@ function AddAccountInformation({
         case 'fourthName':
           error = 'اسم الرابع مطلوب';
           break;
-        case 'lastName':
+        case 'surname':
           error = 'اللقب مطلوب';
           break;
         case 'phoneNumber':
           error = 'رقم الهاتف مطلوب';
           break;
-        case 'idNumber':
+        case 'nationalId':
           error = 'رقم الهوية مطلوب';
           break;
-        case 'residenceCardNumber':
+        case 'residenceCardNo':
           error = 'رقم بطاقة السكن مطلوب';
           break;
-        case 'housing':
+        case 'residence':
           error = 'السكن مطلوب';
           break;
         case 'district':
@@ -95,41 +90,67 @@ function AddAccountInformation({
         case 'alley':
           error = 'الزقاق مطلوب';
           break;
-        case 'houseNumber':
+        case 'houseNo':
           error = 'الدار مطلوب';
           break;
         case 'issuingAuthority':
           error = 'الجهة الاصدار مطلوبة';
           break;
-        case 'issuingOffice':
+        case 'infoOffice':
           error = 'مكتب المعلومات مطلوب';
           break;
         default:
           break;
       }
     }
+
+    if(field === 'nationalId') {
+      // Check if the nationalId is existing in the database
+      await axios.get(`/person?nationalId=${value}`)
+      .then(response => {
+        console.log(response.data.data.length > 0);
+        if (response.data.data.length > 0) {
+            error = 'رقم الهوية موجود بالفعل';
+            
+          }
+        })
+        .catch(err => {
+          console.error('Error checking national ID:', err);
+        });
+    }
+
     setErrors((prev) => ({
       ...prev,
-      [nested ? `residence.${field}` : field]: error,
+      [field]: error,
     }));
   };
 
-  const handleChange = (field: string, value: string, nested?: boolean) => {
-    let newFormData: any;
-    if (nested) {
-      newFormData = {
-        ...formData,
-        residence: { ...formData.residence, [field]: value },
-      };
-    } else {
-      newFormData = { ...formData, [field]: value };
-    }
-    setFormData(newFormData);
-    validateField(field, value, nested);
+
+  const handleChange = (field: string, value: string) => {
+    setFormData({ ...formData, [field]: value });
+    validateField(field, value);
   };
 
   return (
     <div className="w-full bg-white rounded-xl shadow-lg p-4 my-4">
+        <div className='flex flex-col'>
+          {returnedValue && (
+            <SearchSelect
+              api='person'
+              returnedValue={(data) => {
+                returnedValue(data);
+                setErrors({});
+              }}
+              disabled={isLoading}
+              inputValueKey='nationalId'
+              dropdownItem={(item) => (
+                <div>
+                  {item.nationalId}
+                </div>
+              )}
+            />
+          )}
+        </div>
       <p className="text-2xl text-neutral-500 font-normal">{title}</p>
       <div className="mt-4">
         <div className="flex flex-col sm:flex-row gap-4 flex-wrap mb-4">
@@ -137,6 +158,7 @@ function AddAccountInformation({
             value={formData.firstName}
             error={errors.firstName}
             className="w-full"
+            disabled={isLoading || disabled}
             name="firstName"
             onChange={(e) => handleChange('firstName', e.target.value)}
             label="الاسم الاول"
@@ -147,6 +169,7 @@ function AddAccountInformation({
             value={formData.fatherName}
             error={errors.fatherName}
             name="fatherName"
+            disabled={isLoading || disabled}
             onChange={(e) => handleChange('fatherName', e.target.value)}
             label="اسم الاب"
             placeholder="اسم الاب"
@@ -156,6 +179,7 @@ function AddAccountInformation({
             value={formData.grandfatherName}
             error={errors.grandfatherName}
             name="grandfatherName"
+            disabled={isLoading || disabled}
             onChange={(e) => handleChange('grandfatherName', e.target.value)}
             label="اسم الجد"
             placeholder="اسم الجد"
@@ -165,16 +189,18 @@ function AddAccountInformation({
             value={formData.fourthName}
             error={errors.fourthName}
             name="fourthName"
+            disabled={isLoading || disabled}
             onChange={(e) => handleChange('fourthName', e.target.value)}
             label="اسم الرابع"
             placeholder="اسم الرابع"
             type="text"
           />
           <InputField
-            value={formData.lastName}
-            error={errors.lastName}
-            name="lastName"
-            onChange={(e) => handleChange('lastName', e.target.value)}
+            value={formData.surname}
+            error={errors.surname}
+            name="surname"
+            disabled={isLoading || disabled}
+            onChange={(e) => handleChange('surname', e.target.value)}
             label="اللقب"
             placeholder="اللقب"
             type="text"
@@ -185,16 +211,18 @@ function AddAccountInformation({
             value={formData.phoneNumber}
             error={errors.phoneNumber}
             name="phoneNumber"
+            disabled={isLoading || disabled}
             onChange={(e) => handleChange('phoneNumber', e.target.value)}
             label="رقم الهاتف"
             placeholder="رقم الهاتف"
             type="number"
           />
           <InputField
-            value={formData.idNumber}
-            error={errors.idNumber}
-            name="idNumber"
-            onChange={(e) => handleChange('idNumber', e.target.value)}
+            value={formData.nationalId}
+            error={errors.nationalId}
+            name="nationalId"
+            disabled={isLoading || disabled}
+            onChange={(e) => handleChange('nationalId', e.target.value)}
             label="رقم الهوية"
             placeholder="رقم الهوية"
             type="number"
@@ -202,10 +230,11 @@ function AddAccountInformation({
         </div>
         <div className="flex flex-col sm:flex-row gap-4 flex-wrap mb-4">
           <InputField
-            value={formData.residenceCardNumber}
-            error={errors.residenceCardNumber}
-            name="residenceCardNumber"
-            onChange={(e) => handleChange('residenceCardNumber', e.target.value)}
+            value={formData.residenceCardNo}
+            error={errors.residenceCardNo}
+            name="residenceCardNo"
+            disabled={isLoading || disabled}
+            onChange={(e) => handleChange('residenceCardNo', e.target.value)}
             label="رقم بطاقة السكن"
             placeholder="رقم بطاقة السكن"
             type="number"
@@ -213,37 +242,41 @@ function AddAccountInformation({
         </div>
         <div className="flex flex-col sm:flex-row gap-4 flex-wrap mb-4">
           <InputField
-            value={formData.residence.housing}
-            error={errors['residence.housing']}
-            name="residence.housing"
-            onChange={(e) => handleChange('housing', e.target.value, true)}
+            value={formData.residence}
+            error={errors['residence']}
+            name="residence"
+            disabled={isLoading || disabled}
+            onChange={(e) => handleChange('residence', e.target.value)}
             label="السكن"
             placeholder="السكن"
             type="text"
           />
           <InputField
-            value={formData.residence.district}
-            error={errors['residence.district']}
-            name="residence.district"
-            onChange={(e) => handleChange('district', e.target.value, true)}
+            value={formData.district}
+            error={errors['district']}
+            name="district"
+            disabled={isLoading || disabled}
+            onChange={(e) => handleChange('district', e.target.value)}
             label="المحلة"
             placeholder="المحلة"
             type="text"
           />
           <InputField
-            value={formData.residence.alley}
-            error={errors['residence.alley']}
-            name="residence.alley"
-            onChange={(e) => handleChange('alley', e.target.value, true)}
+            value={formData.alley}
+            error={errors['alley']}
+            name="alley"
+            disabled={isLoading || disabled}
+            onChange={(e) => handleChange('alley', e.target.value)}
             label="الزقاق"
             placeholder="الزقاق"
             type="text"
           />
           <InputField
-            value={formData.residence.houseNumber}
-            error={errors['residence.houseNumber']}
-            name="residence.houseNumber"
-            onChange={(e) => handleChange('houseNumber', e.target.value, true)}
+            value={formData.houseNo}
+            error={errors['houseNo']}
+            name="houseNo"
+            disabled={isLoading || disabled}
+            onChange={(e) => handleChange('houseNo', e.target.value)}
             label="الدار"
             placeholder="الدار"
             type="text"
@@ -254,16 +287,18 @@ function AddAccountInformation({
             value={formData.issuingAuthority}
             error={errors.issuingAuthority}
             name="issuingAuthority"
+            disabled={isLoading || disabled}
             onChange={(e) => handleChange('issuingAuthority', e.target.value)}
             label="الجهة الاصدار"
             placeholder="الجهة الاصدار"
             type="text"
           />
           <InputField
-            value={formData.issuingOffice}
-            error={errors.issuingOffice}
-            name="issuingOffice"
-            onChange={(e) => handleChange('issuingOffice', e.target.value)}
+            value={formData.infoOffice}
+            error={errors.infoOffice}
+            name="infoOffice"
+            disabled={isLoading || disabled}
+            onChange={(e) => handleChange('infoOffice', e.target.value)}
             label="مكتب المعلومات"
             placeholder="مكتب المعلومات"
             type="text"

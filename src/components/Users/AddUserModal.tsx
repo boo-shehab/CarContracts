@@ -1,8 +1,7 @@
 import { Dialog } from '@headlessui/react';
-import AddCompanyForm from './AddCompanyForm';
 import SuccessModal from '../SuccessModal';
 import { useState } from 'react';
-import { CompanyFormData } from './types';
+import AddUserForm from './AddUserForm';
 
 interface Props {
   isOpen: boolean;
@@ -10,10 +9,10 @@ interface Props {
   onSuccess: () => void;
 }
 
-const AddCompanyModal = ({ isOpen, onClose, onSuccess }: Props) => {
+const AddUserModal = ({ isOpen, onClose, onSuccess }: Props) => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const [dataInfo, setDataInfo] = useState<CompanyFormData | null>(null);
-  const handleSuccess = (data: CompanyFormData) => {
+  const [dataInfo, setDataInfo] = useState(null);
+  const handleSuccess = (data: any) => {
     setDataInfo(data);
     setIsSuccessModalOpen(true);
   };
@@ -34,14 +33,13 @@ const AddCompanyModal = ({ isOpen, onClose, onSuccess }: Props) => {
         <SuccessModal
           onClose={handleCloseInSuccessModal}
           open={isSuccessModalOpen}
-          data={dataInfo}
-          message="تم اضافة الشركة بنجاح !"
+          message="تم اضافة المستخدم بنجاح !"
         />
       ) : (
-        <AddCompanyForm onCancel={onClose} onSuccess={(data) => handleSuccess(data)} />
+        <AddUserForm onCancel={onClose} onSuccess={(data) => handleSuccess(data)} />
       )}
     </Dialog>
   );
 };
 
-export default AddCompanyModal;
+export default AddUserModal;

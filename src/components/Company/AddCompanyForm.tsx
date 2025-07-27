@@ -4,15 +4,15 @@ import { createCompany } from '../../services/companyService';
 import CustomDatePicker from '../Form/DateFiled/CustomDatePicker';
 import { IoCloseOutline } from 'react-icons/io5';
 import { toast } from 'react-toastify';
-import { isValidPhoneNumber } from 'libphonenumber-js';
+import { CompanyFormData } from './types';
 
 interface AddCompanyFormProps {
-  onSuccess: () => void;
+  onSuccess: (data: CompanyFormData) => void;
   onCancel: () => void;
 }
 
 const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<CompanyFormData>({
     companyName: '',
     ownerName: '',
     ownerContact: '',
@@ -20,9 +20,12 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
     subscriptionDate: '',
     expirationDate: '',
     companyLocation: '',
+    companyUsername: '',
+    companyPassword: '',
+    companyEmail: '',
   });
 
-  const [formErrors, setFormErrors] = useState({
+  const [formErrors, setFormErrors] = useState<CompanyFormData>({
     companyName: '',
     ownerName: '',
     ownerContact: '',
@@ -30,6 +33,9 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
     subscriptionDate: '',
     expirationDate: '',
     companyLocation: '',
+    companyUsername: '',
+    companyPassword: '',
+    companyEmail: '',
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -43,6 +49,9 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
       subscriptionDate: '',
       expirationDate: '',
       companyLocation: '',
+      companyUsername: '',
+      companyPassword: '',
+      companyEmail: '',
     });
     setFormErrors({
       companyName: '',
@@ -52,6 +61,9 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
       subscriptionDate: '',
       expirationDate: '',
       companyLocation: '',
+      companyUsername: '',
+      companyPassword: '',
+      companyEmail: '',
     });
   };
 
@@ -72,14 +84,15 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
       if (!value) errors[key] = 'هذا الحقل مطلوب';
     });
 
-    if (formData.ownerContact) {
-      const phone = formData.ownerContact.startsWith('+')
-        ? formData.ownerContact
-        : `+${formData.ownerContact}`;
-      if (!isValidPhoneNumber(phone)) {
-        errors.ownerContact = 'يرجى إدخال رقم هاتف دولي صالح (مثال: +964xxxxxxxxxx)';
-      }
-    }
+    // if (formData.ownerContact) {
+    //   // Remove any non-digit characters
+    //   const phone = formData.ownerContact.replace(/\D/g, '');
+    //   // Iraqi numbers: 10 or 11 digits, must start with 07
+    //   const iraqMobileRegex = /^07[3-9]\d{8}$/;
+    //   if (!(phone.length === 11 && iraqMobileRegex.test(phone))) {
+    //     errors.ownerContact = 'يرجى إدخال رقم هاتف عراقي صحيح مكون من 11 رقم ويبدأ بـ 07';
+    //   }
+    // }
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -97,7 +110,7 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
       });
       toast.success('تم اضافة الشركة بنجاح');
       resetForm();
-      onSuccess();
+      onSuccess(formData);
     } catch (err) {
       console.error('Failed to create company', err);
       toast.error('فشل في اضافة الشركة');
@@ -119,6 +132,7 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
           name="companyName"
           value={formData.companyName}
           onChange={handleChange}
+          disabled={isLoading}
           placeholder="ادخل اسم الشركة"
           label="اسم الشركة"
           error={formErrors.companyName}
@@ -128,6 +142,7 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
           name="ownerName"
           value={formData.ownerName}
           onChange={handleChange}
+          disabled={isLoading}
           placeholder="اسم المالك"
           label="اسم المالك"
           error={formErrors.ownerName}
@@ -137,6 +152,7 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
           name="ownerContact"
           value={formData.ownerContact}
           onChange={handleChange}
+          disabled={isLoading}
           placeholder="رقم المالك"
           label="رقم المالك"
           error={formErrors.ownerContact}
@@ -146,6 +162,7 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
           name="userCount"
           value={formData.userCount}
           onChange={handleChange}
+          disabled={isLoading}
           placeholder="عدد المستخدمين"
           label="عدد المستخدمين"
           error={formErrors.userCount}
@@ -155,6 +172,7 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
           value={formData.subscriptionDate}
           onChange={(e: any) => handleDateChange('subscriptionDate', e.target.value)}
           label="تاريخ الاشتراك"
+          disabled={isLoading}
           error={formErrors.subscriptionDate}
         />
         <CustomDatePicker
@@ -162,6 +180,7 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
           value={formData.expirationDate}
           onChange={(e: any) => handleDateChange('expirationDate', e.target.value)}
           label="تاريخ الانتهاء"
+          disabled={isLoading}
           error={formErrors.expirationDate}
         />
         <InputField
@@ -169,9 +188,40 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
           name="companyLocation"
           value={formData.companyLocation}
           onChange={handleChange}
+          disabled={isLoading}
           placeholder="الموقع"
           label="موقع الشركة"
           error={formErrors.companyLocation}
+        />
+        <InputField
+          type="text"
+          name="companyUsername"
+          value={formData.companyUsername}
+          onChange={handleChange}
+          disabled={isLoading}
+          placeholder="معرف الشركة"
+          label="معرف الشركة"
+          error={formErrors.companyUsername}
+        />
+          <InputField
+            type="text"
+            name="companyEmail"
+            value={formData.companyEmail}
+            onChange={handleChange}
+          disabled={isLoading}
+            placeholder="البريد الالكتروني"
+            label="البريد الالكتروني"
+            error={formErrors.companyEmail}
+          />
+        <InputField
+          type="text"
+          name="companyPassword"
+          value={formData.companyPassword}
+          onChange={handleChange}
+          disabled={isLoading}
+          placeholder="كلمة المرور"
+          label="كلمة المرور"
+          error={formErrors.companyPassword}
         />
         <div className="flex justify-end gap-2">
           <button

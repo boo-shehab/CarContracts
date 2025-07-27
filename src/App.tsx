@@ -18,17 +18,36 @@ function App() {
           const { data } = await getMe(accessToken);
           const roles = JSON.parse(localStorage.getItem('roles') || '[]');
           const refreshToken = localStorage.getItem('refreshToken');
-
           dispatch(setUser({ user: data, accessToken, refreshToken, roles }));
         } else {
-          logout();
-          console.warn('No access token found, logging out...');
           dispatch(setUser({ user: null, accessToken: null, refreshToken: null, roles: [] }));
         }
-      } catch (error) {
-        logout();
-        console.error('Error fetching user data:', error);
-        dispatch(setUser({ user: null, accessToken: null, refreshToken: null, roles: [] }));
+      } catch (error: any) {
+        if (error?.response?.status === 401 || error?.response?.status === 403) {
+          const refreshToken = localStorage.getItem('refreshToken');
+          if (refreshToken) {
+            try {
+              // Assume you have a refreshToken API function
+              const { data } = await import('./services/authService').then(m => m.refreshToken(refreshToken));
+              localStorage.setItem('accessToken', data.accessToken);
+              dispatch(setUser({
+                user: data.user,
+                accessToken: data.accessToken,
+                refreshToken,
+                roles: data.roles || [],
+              }));
+            } catch (refreshError: any) {
+              logout();
+              dispatch(setUser({ user: null, accessToken: null, refreshToken: null, roles: [] }));
+              console.error('Error refreshing token:', refreshError);
+            }
+          } else {
+            logout();
+            dispatch(setUser({ user: null, accessToken: null, refreshToken: null, roles: [] }));
+          }
+        } else {
+          console.error('Error fetching user data:', error);
+        }
       }
     };
 

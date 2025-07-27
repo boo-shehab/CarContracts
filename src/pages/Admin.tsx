@@ -2,18 +2,12 @@ import ArrowRise from '../assets/icons/ArrowRise';
 import TrendingUp from '../assets/icons/TrendingUp';
 import TableContainer from '../components/TableContainer';
 import { TableColumn } from '../components/Form/types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AddCompanyModal from '../components/Company/AddCompanyModal';
-
-// GET /api/companies?searchTerm=ahmed&status=ACTIVE
-//     &subscriptionDateFrom=2024-01-01
-//     &subscriptionDateTo=2024-12-31
-//     &expirationDateFrom=2024-01-01
-//     &expirationDateTo=2024-12-31
-//     &sortBy=companyName
-//     &sortDirection=DESC
-//     &page=0
-//     &size=10
+import axios from '../services/axios';
+import { Dialog } from '@headlessui/react';
+import { IoCloseOutline } from 'react-icons/io5';
+import CustomDatePicker from '../components/Form/DateFiled/CustomDatePicker';
 
 const columns: TableColumn[] = [
   {
@@ -63,23 +57,6 @@ const columns: TableColumn[] = [
     sortable: true,
   },
   {
-    title: 'الحالة',
-    key: 'status',
-    isFilterable: true,
-    filterType: 'select',
-    filterOptions: [
-      { label: 'نشط', value: 'ACTIVE' },
-      { label: 'مقيدة', value: 'EXPIRED' },
-    ],
-    render: (row: any) => (
-      <span
-        className={`text-lg font-normal py-1 rounded-full px-8 ${row.status !== 'EXPIRED' ? 'text-success-500 bg-success-100' : 'text-danger-500 text-danger-100'}`}
-      >
-        {row.status !== 'EXPIRED' ? 'نشطة' : 'مقيدة'}
-      </span>
-    ),
-  },
-  {
     title: 'تاريخ الاشتراك',
     key: 'subscriptionDate',
     isVisible: false,
@@ -95,9 +72,91 @@ const columns: TableColumn[] = [
   },
 ];
 
+const UpdateDatesModal = ({ isOpen, onClose, company, onSuccess }: any) => {
+  const [subscriptionDate, setSubscriptionDate] = useState('');
+  const [expirationDate, setExpirationDate] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Set initial values when modal opens
+  useEffect(() => {
+    if (company) {      
+      setSubscriptionDate(new Date().toISOString().split('T')[0]);
+      setExpirationDate(company.expirationDate);
+    }
+  }, []);
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      await axios.put(`/companies/${company.id}`, {
+        subscriptionDate,
+        expirationDate,
+      });
+      onSuccess();
+      onClose();
+    } catch (err: any) {
+      // handle error
+      console.log(err);
+      
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!isOpen || !company) return null;
+
+  return (
+    
+        <Dialog
+          open={isOpen}
+          onClose={onClose}
+          className="fixed inset-0 z-50 flex items-center justify-center"
+        >
+          <div className="fixed inset-0 bg-black opacity-30" />
+          <div className="bg-white rounded-xl shadow-lg z-10 w-full max-w-lg p-6">
+            <div className="flex items-center justify-between w-full gap-2 mb-4">
+              <h2 className="text-2xl font-bold text-gray-800">اختار نوع البطاقة</h2>
+              <button type="button" onClick={onClose} className="text-neutral-400 hover:text-black">
+                <IoCloseOutline size={24} />
+              </button>
+            </div>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <CustomDatePicker
+                name="subscriptionDate"
+                value={subscriptionDate}
+                onChange={(e: any) => setSubscriptionDate(e.target.value)}
+                disabled={isLoading}
+                label="تاريخ الاشتراك"
+              />
+              <CustomDatePicker
+                name="expirationDate"
+                value={expirationDate}
+                onChange={(e: any) => setExpirationDate(e.target.value)}
+                disabled={isLoading}
+                label="تاريخ الانتهاء"
+              />
+              <div className="flex gap-2 mt-4">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="bg-primary-500 text-white px-4 py-2 rounded"
+                >
+                  {isLoading ? 'جاري التحديث...' : 'تحديث'}
+                </button>
+              </div>
+            </form>
+          </div>
+
+        </Dialog>
+  );
+};
+
 const Admin = () => {
   const [showModal, setShowModal] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const [showUpdateDates, setShowUpdateDates] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState(null);
 
   const toggleRefresh = () => {
     setRefresh(!refresh);
@@ -126,7 +185,31 @@ const Admin = () => {
         </div>
       </div>
       <TableContainer
-        columns={columns}
+        columns={[...columns,
+  {
+    title: 'الحالة',
+    key: 'status',
+    isFilterable: true,
+    filterType: 'select',
+    filterOptions: [
+      { label: 'نشطة', value: 'ACTIVE' },
+      { label: 'مقيدة', value: 'EXPIRED' },
+    ],
+    render: (row: any) => (
+      <span
+        onClick={() => {
+          if(row.status === 'EXPIRED'){
+            setSelectedCompany(row);
+            setTimeout(() => setShowUpdateDates(true), 0);
+          }
+          
+        }}
+        className={`text-lg font-normal py-1 rounded-full px-8 ${row.status !== 'EXPIRED' ? 'text-success-500 bg-success-100' : 'text-error-500 bg-error-100 cursor-pointer'}`}
+      >
+        {row.status !== 'EXPIRED' ? 'نشطة' : 'مقيدة'}
+      </span>
+    ),
+  },]}
         apiUrl="/companies"
         refresh={refresh}
         headerActions={
@@ -150,6 +233,14 @@ const Admin = () => {
           </>
         }
       />
+      {showUpdateDates && (
+        <UpdateDatesModal
+          isOpen={showUpdateDates}
+          onClose={() => setShowUpdateDates(false)}
+          company={selectedCompany}
+          onSuccess={toggleRefresh}
+        />
+      )}
     </div>
   );
 };

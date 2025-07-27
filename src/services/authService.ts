@@ -18,3 +18,13 @@ export const logout = () => {
   localStorage.removeItem('roles');
   localStorage.removeItem('user');
 };
+
+
+export const refreshToken = async (token: string) => {
+  const response = await axios.post('/auth/refresh', {}, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};

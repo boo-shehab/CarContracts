@@ -107,7 +107,7 @@ const columns: TableColumn[] = [
 function Contracts() {
   return (
     <div>
-      <TableContainer columns={columns} apiUrl="/contracts" />
+      <TableContainer columns={columns} apiUrl="/Contract" />
     </div>
   );
 }

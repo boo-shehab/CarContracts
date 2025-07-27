@@ -1,10 +1,10 @@
-// features/authSlice.ts
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   user: null,
   accessToken: localStorage.getItem('accessToken'),
   refreshToken: localStorage.getItem('refreshToken'),
+  companyUserId: null,
   roles: JSON.parse(localStorage.getItem('roles') || '[]'),
   isLoading: true,
   error: null,
@@ -16,6 +16,7 @@ const authSlice = createSlice({
   reducers: {
     setUser: (state, action) => {
       state.user = action.payload.user;
+      state.companyUserId = action.payload.user?.companyUserId || null;
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
       state.roles = action.payload.roles;

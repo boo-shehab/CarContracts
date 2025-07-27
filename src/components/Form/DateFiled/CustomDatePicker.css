@@ -81,6 +81,10 @@
   text-align: center;
 }
 
+.react-datepicker-popper {
+  z-index: 20;
+}
+
 .customDatepicker .react-datepicker__year-dropdown,
 .customDatepicker .react-datepicker__month-dropdown {
   background-color: white;

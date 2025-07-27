@@ -1,7 +1,9 @@
 import { HiChevronUpDown } from 'react-icons/hi2';
 import { TableProps } from './types';
+import { CiCirclePlus } from 'react-icons/ci';
+import { IoIosArrowUp } from 'react-icons/io';
 
-const Table = ({ columns, data, loading, error, onSort }: TableProps) => {
+const Table = ({ columns, data, loading, error, onSort, expandedRowId, setExpandedRowId, childData, loadingRowId, isExpander }: TableProps) => {
   return (
     <div className="overflow-auto ml-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary-300 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-primary-100">
       <table className="rounded-2xl overflow-hidden bg-primary-25 shadow-[1px_2px_16px_0px_#4899EA1F] table-auto mb-4 min-w-full">
@@ -43,26 +45,70 @@ const Table = ({ columns, data, loading, error, onSort }: TableProps) => {
             </tr>
           ) : (
             data.map((item, index) => (
-              <tr
-                key={index}
-                className={`${
-                  index !== data.length - 1 ? 'border-b border-neutral-100' : ''
-                } text-lg font-normal text-right`}
-              >
-                {columns
-                  .filter((col) => col.isVisible !== false)
-                  .map((column, colIndex) =>
-                    column.render ? (
-                      <td key={colIndex} className="p-2.5">
-                        {column.render(item, index)}
-                      </td>
-                    ) : (
-                      <td key={colIndex} className="p-2.5">
-                        {item[column.key]}
-                      </td>
-                    )
-                  )}
-              </tr>
+              <>
+                <tr
+                  key={index}
+                  className={`${
+                    index !== data.length - 1 ? 'border-b border-neutral-100' : ''
+                  } text-lg font-normal text-right`}
+                >
+                  {columns
+                    .filter((col) => col.isVisible !== false)
+                    .map((column, colIndex) =>
+                      column.render ? (
+                        <td key={colIndex} className="p-2.5">
+                          {isExpander && colIndex === 0 && (
+                            <CiCirclePlus onClick={() => setExpandedRowId(index)} />
+                          )}
+                          {column.render(item, index)}
+                        </td>
+                      ) : (
+                        <td key={colIndex} className="p-2.5">
+                          <div className='flex items-center flex-nowrap gap-1'>
+                            {isExpander && colIndex === 0 && (
+                              <button onClick={() => setExpandedRowId(index)} disabled={loadingRowId !== null} className='text-primary-500 text-2xl disabled:text-neutral-400'>
+                                {loadingRowId === index ? (
+                                  
+                                  <div className='relative w-6 h-6'>
+                                    <span className="w-6 h-6 absolute inset-0 rounded-full
+                       border-[3px] border-current
+                       border-t-transparent opacity-60
+                       animate-spin"></span>
+                                  </div>
+                                ) : loadingRowId === null && expandedRowId === index ? (
+                                  <IoIosArrowUp size={26} />
+                                ) : (
+                                  <CiCirclePlus size={26} />
+                                )}
+                              </button>
+                            )}
+                            {item[column.key]}
+                          </div>
+                        </td>
+                      )
+                    )}
+                </tr>
+                {expandedRowId === index && loadingRowId === null && isExpander && (
+                  <>
+                    {childData.map((childItem, childIndex) => (
+                      <tr key={`${index}-${childIndex}`} className="bg-primary-50">
+                        {columns?.map((column, colIndex) => (
+                            <td key={colIndex} className="p-2.5">
+                              {column.render ? column.render(childItem, index) : childItem[column.key]}
+                            </td>
+                          ))}
+                      </tr>
+                    ))}
+                    {childData.length === 0 && (
+                      <tr>
+                        <td colSpan={columns.length} className="text-center py-4 text-gray-500">
+                          لا توجد بيانات
+                        </td>
+                      </tr>
+                    )}
+                  </>
+                )}
+              </>
             ))
           )}
         </tbody>

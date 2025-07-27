@@ -6,8 +6,11 @@ export interface CompanyFormData {
   companyName: string;
   ownerName: string;
   ownerContact: string;
-  userCount: number;
+  userCount: string;
   subscriptionDate: string;
   expirationDate: string;
   companyLocation: string;
+  companyUsername: string;
+  companyPassword: string;
+  companyEmail: string;
 }
