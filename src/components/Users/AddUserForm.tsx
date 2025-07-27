@@ -4,14 +4,16 @@ import { IoCloseOutline } from 'react-icons/io5';
 import { toast } from 'react-toastify';
 import { UserFormData } from './types';
 import { useSelector } from 'react-redux';
-import { createUserToCompany } from '../../services/UserService';
+import { createUserToCompany, updateUserToCompany } from '../../services/UserService';
 
 interface AddUserFormProps {
   onSuccess: (data: UserFormData) => void;
   onCancel: () => void;
+  initialData?: Partial<UserFormData>;
+  isEdit?: boolean;
 }
 
-const AddUserForm = ({ onSuccess, onCancel }: AddUserFormProps) => {
+const AddUserForm = ({ onSuccess, onCancel, initialData, isEdit }: AddUserFormProps) => {
   const companyUserId = useSelector((state: any) => state.auth.companyUserId);
   const [formData, setFormData] = useState<UserFormData>({
     fullName: '',
@@ -20,6 +22,7 @@ const AddUserForm = ({ onSuccess, onCancel }: AddUserFormProps) => {
     confirmPassword: '',
     phone: '',
     username: '',
+    ...initialData,
   });
 
   const [formErrors, setFormErrors] = useState<Partial<UserFormData>>({});
@@ -47,13 +50,25 @@ const AddUserForm = ({ onSuccess, onCancel }: AddUserFormProps) => {
 
   const validateForm = () => {
     const errors: Partial<UserFormData> = {};
+
+    // List of disabled fields in edit mode
+    const disabledFields = isEdit
+      ? ['fullName', 'email', 'password', 'confirmPassword']
+      : [];
+
     Object.entries(formData).forEach(([key, value]) => {
-      if (!value && key !== 'userType' && key !== 'username')
+      if (
+        !value &&
+        key !== 'userType' &&
+        key !== 'username' &&
+        !disabledFields.includes(key)
+      ) {
         errors[key as keyof UserFormData] = 'هذا الحقل مطلوب';
+      }
     });
 
-    // Password match validation
     if (
+      !disabledFields.includes('password') &&
       formData.password &&
       formData.confirmPassword &&
       formData.password !== formData.confirmPassword
@@ -61,13 +76,20 @@ const AddUserForm = ({ onSuccess, onCancel }: AddUserFormProps) => {
       errors.confirmPassword = 'كلمة المرور غير متطابقة';
     }
 
-    // Example: Email format validation
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    // Email format validation (only if not disabled)
+    if (
+      !disabledFields.includes('email') &&
+      formData.email &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+    ) {
       errors.email = 'يرجى إدخال بريد إلكتروني صحيح';
     }
 
-    // Example: Iraqi phone number validation
-    if (formData.phone) {
+    // Iraqi phone number validation (only if not disabled)
+    if (
+      !disabledFields.includes('phone') &&
+      formData.phone
+    ) {
       const phone = formData.phone.replace(/\D/g, '');
       const iraqMobileRegex = /^07[3-9]\d{8}$/;
       if (!(phone.length === 11 && iraqMobileRegex.test(phone))) {
@@ -86,16 +108,28 @@ const AddUserForm = ({ onSuccess, onCancel }: AddUserFormProps) => {
     setIsLoading(true);
     try {
       const { confirmPassword, ...dataToSend } = formData;
-      await createUserToCompany({
-        ...dataToSend,
-        companyId: companyUserId,
-      });
-      toast.success('تم اضافة المستخدم بنجاح');
+      if (isEdit && initialData?.id) {
+        // Call your update API here
+        // await updateUserToCompany({ ...dataToSend, companyId: companyUserId, id: initialData.id });
+        await updateUserToCompany({
+          username: dataToSend.username,
+          phone: dataToSend.phone,
+          companyId: companyUserId, 
+          userId: initialData?.id
+        });
+        toast.success('تم تعديل المستخدم بنجاح');
+      } else {
+        await createUserToCompany({
+          ...dataToSend,
+          companyId: companyUserId,
+        });
+        toast.success('تم اضافة المستخدم بنجاح');
+      }
       resetForm();
       onSuccess(formData);
     } catch (err) {
-      console.error('Failed to create user', err);
-      toast.error('فشل في اضافة المستخدم');
+      console.error('Failed to save user', err);
+      toast.error(isEdit ? 'فشل في تعديل المستخدم' : 'فشل في اضافة المستخدم');
     } finally {
       setIsLoading(false);
     }
@@ -115,7 +149,7 @@ const AddUserForm = ({ onSuccess, onCancel }: AddUserFormProps) => {
             name="fullName"
             value={formData.fullName}
             onChange={handleChange}
-            disabled={isLoading}
+            disabled={isLoading || isEdit}
             placeholder="ادخل اسم المستخدم"
             label="اسم المستخدم"
             error={formErrors.fullName}
@@ -135,7 +169,7 @@ const AddUserForm = ({ onSuccess, onCancel }: AddUserFormProps) => {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            disabled={isLoading}
+            disabled={isLoading  || isEdit}
             placeholder="البريد الالكتروني"
             label="البريد الالكتروني"
             error={formErrors.email}
@@ -155,7 +189,7 @@ const AddUserForm = ({ onSuccess, onCancel }: AddUserFormProps) => {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            disabled={isLoading}
+            disabled={isLoading || isEdit}
             placeholder="كلمة المرور"
             label="كلمة المرور"
             error={formErrors.password}
@@ -165,7 +199,7 @@ const AddUserForm = ({ onSuccess, onCancel }: AddUserFormProps) => {
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
-            disabled={isLoading}
+            disabled={isLoading || isEdit}
             placeholder="تأكيد كلمة المرور"
             label="تأكيد كلمة المرور"
             error={formErrors.confirmPassword}

@@ -22,6 +22,7 @@ const AddNewCar = lazy(() => import('../pages/AddNewCar'));
 const AddNewAccount = lazy(() => import('../pages/AddNewAccount'));
 const AddNewContract = lazy(() => import('../pages/AddNewContract'));
 const AddNewAuthorization = lazy(() => import('../pages/AddNewAuthorization'));
+const ViewPerson = lazy(() => import('../pages/ViewPerson'));
 
 const withSuspense = (element: React.ReactNode) => (
   <Suspense fallback={<Loading />}>{element}</Suspense>
@@ -76,6 +77,10 @@ const router = createBrowserRouter([
           {
             path: 'account-cards',
             element: withSuspense(<AccountCards />),
+          },
+          {
+            path: `account-cards/:id`,
+            element: withSuspense(<ViewPerson />),
           },
           {
             path: 'new-car',

@@ -5,58 +5,72 @@ import { LiaEditSolid } from 'react-icons/lia';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import AddUserModal from '../components/Users/AddUserModal';
 import { useSelector } from 'react-redux';
-
-const columns: TableColumn[] = [
-  {
-    title: 'رقم المستخدم',
-    key: 'id',
-    sortable: true,
-  },
-  {
-    title: 'اسم المستخدم',
-    key: 'fullName',
-    sortable: true,
-    isFilterable: true,
-    filterType: 'text',
-  },
-  {
-    title: 'البريد الالكتروني',
-    key: 'email',
-    sortable: true,
-    isFilterable: true,
-    filterType: 'text',
-  },
-  {
-    title: 'رقم الهاتف',
-    key: 'phone',
-    isFilterable: true,
-    filterType: 'text',
-  },
-  {
-    title: 'الاجرائات',
-    key: 'procedures',
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    render: (_row: any) => (
-      <div className="flex items-center gap-2">
-        <RiDeleteBinLine />
-        <LiaEditSolid onClick={() => {
-          // Handle edit user
-        }} />
-      </div>
-    ),
-  },
-];
+import DeleteModal from '../components/DeleteModal';
 
 function Users() {
   const [showModal, setShowModal] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editUserData, setEditUserData] = useState<any>(null);
 
   const companyUserId = useSelector((state: any) => state.auth.companyUserId);
-  
 
   const toggleRefresh = () => {
     setRefresh(!refresh);
   };
+
+  const columns: TableColumn[] = [
+    {
+      title: 'رقم المستخدم',
+      key: 'id',
+      sortable: true,
+    },
+    {
+      title: 'اسم المستخدم',
+      key: 'fullName',
+      sortable: true,
+      isFilterable: true,
+      filterType: 'text',
+    },
+    {
+      title: 'البريد الالكتروني',
+      key: 'email',
+      sortable: true,
+      isFilterable: true,
+      filterType: 'text',
+    },
+    {
+      title: 'رقم الهاتف',
+      key: 'phone',
+      isFilterable: true,
+      filterType: 'text',
+    },
+    {
+      title: 'الاجرائات',
+      key: 'procedures',
+      render: (row: any) => (
+        <div className="flex items-center gap-2">
+          <RiDeleteBinLine
+            className="cursor-pointer text-red-600"
+            onClick={() => {
+              setSelectedUser(row);
+              setDeleteModalOpen(true);
+            }}
+          />
+          <LiaEditSolid
+            className="cursor-pointer"
+            onClick={() => {
+              setEditUserData(row);
+              setEditModalOpen(true);
+            }}
+          />
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div>
       <TableContainer
@@ -84,6 +98,32 @@ function Users() {
             />
           </>
         }
+      />
+      <AddUserModal
+        isOpen={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        onSuccess={() => {
+          toggleRefresh();
+          setEditModalOpen(false);
+        }}
+        initialData={editUserData}
+        isEdit={true}
+      />
+      <DeleteModal
+        open={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onDelete={() => {
+          setDeleteModalOpen(false);
+          setSelectedUser(null);
+          toggleRefresh();
+        }}
+        title="تأكيد الحذف"
+        description={`هل أنت متأكد أنك تريد حذف المستخدم ${selectedUser?.fullName || ''}؟ لا يمكن التراجع عن هذا الإجراء.`}
+        loading={false}
+        apiEndpoint={
+          selectedUser
+            ? `/companies/${companyUserId}/users/${selectedUser.id}`
+            : undefined}
       />
     </div>
   );

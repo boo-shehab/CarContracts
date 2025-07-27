@@ -7,9 +7,11 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  initialData?: any;
+  isEdit?: boolean;
 }
 
-const AddUserModal = ({ isOpen, onClose, onSuccess }: Props) => {
+const AddUserModal = ({ isOpen, onClose, onSuccess, initialData, isEdit }: Props) => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [dataInfo, setDataInfo] = useState(null);
   const handleSuccess = (data: any) => {
@@ -33,10 +35,15 @@ const AddUserModal = ({ isOpen, onClose, onSuccess }: Props) => {
         <SuccessModal
           onClose={handleCloseInSuccessModal}
           open={isSuccessModalOpen}
-          message="تم اضافة المستخدم بنجاح !"
+          message={isEdit ? "تم تعديل المستخدم بنجاح !" : "تم اضافة المستخدم بنجاح !"}
         />
       ) : (
-        <AddUserForm onCancel={onClose} onSuccess={(data) => handleSuccess(data)} />
+        <AddUserForm
+          onCancel={onClose}
+          onSuccess={(data) => handleSuccess(data)}
+          initialData={initialData}
+          isEdit={isEdit}
+        />
       )}
     </Dialog>
   );

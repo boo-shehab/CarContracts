@@ -4,6 +4,10 @@ export const createUserToCompany = async (data: any) => {
   return axios.post('/companies/addUserToCompany', data);
 };
 
+export const updateUserToCompany = async (data: any) => {
+  return axios.put('/companies/updateUserInCompany', data);
+};
+
 export const createNewAccount = async (data: object, images: any) => {
     console.log("Creating new account with data:", data);
     
