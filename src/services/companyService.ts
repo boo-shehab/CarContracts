@@ -6,3 +6,7 @@ export const createCompany = async (data: any) => {
 export const getCompanies = async (params: any) => {
   return axios.get('/companies', { params });
 };
+
+export const updateCompany = async (id: string, data: any) => {
+  return axios.put(`/companies/${id}`, data);
+};

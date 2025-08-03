@@ -8,9 +8,11 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  initialData?: any;
+  isEdit?: boolean;
 }
 
-const AddCompanyModal = ({ isOpen, onClose, onSuccess }: Props) => {
+const AddCompanyModal = ({ isOpen, onClose, onSuccess, initialData, isEdit=false }: Props) => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [dataInfo, setDataInfo] = useState<CompanyFormData | null>(null);
   const handleSuccess = (data: CompanyFormData) => {
@@ -35,10 +37,14 @@ const AddCompanyModal = ({ isOpen, onClose, onSuccess }: Props) => {
           onClose={handleCloseInSuccessModal}
           open={isSuccessModalOpen}
           data={dataInfo}
-          message="تم اضافة الشركة بنجاح !"
+          message={isEdit ? "تم تعديل الشركة بنجاح !" : "تم اضافة الشركة بنجاح !"}
         />
       ) : (
-        <AddCompanyForm onCancel={onClose} onSuccess={(data) => handleSuccess(data)} />
+        <AddCompanyForm 
+          onCancel={onClose} 
+          onSuccess={(data) => handleSuccess(data)} 
+          initialData={initialData}
+          isEdit={isEdit} />
       )}
     </Dialog>
   );

@@ -1,72 +1,57 @@
-import ArrowRise from '../assets/icons/ArrowRise';
-import TrendingUp from '../assets/icons/TrendingUp';
 import TableContainer from '../components/TableContainer';
 import { TableColumn } from '../components/Form/types';
 import { useState } from 'react';
-import AddCompanyModal from '../components/Company/AddCompanyModal';
 import { Link } from 'react-router-dom';
 
 const columns: TableColumn[] = [
   {
-    title: 'رقم الشركة',
+    title: 'رقم الحساب',
     key: 'id',
     sortable: true,
   },
   {
-    title: 'تاريخ الاشتراك',
-    key: 'subscriptionDate',
-    sortable: true,
-    render: (row: any) => (
-      <span className="text-lg font-normal">
-        {new Date(row.subscriptionDate).toLocaleDateString()}
-      </span>
-    ),
-  },
-  {
-    title: 'تاريخ الانتهاء',
-    key: 'expirationDate',
-    sortable: true,
-    render: (row: any) => (
-      <span className="text-lg font-normal">
-        {new Date(row.expirationDate).toLocaleDateString()}
-      </span>
-    ),
-  },
-  {
-    title: 'اسم صاحب الشركة',
+    title: 'اسم صاحب الحساب',
     key: 'ownerName',
     sortable: true,
   },
   {
-    title: 'رقم صاحب الشركة',
-    key: 'ownerContact',
+    title: 'رقم الهاتف',
+    key: 'phoneNumber',
+    sortable: true,
+  },
+  {
+    title: 'رقم الهوية الوطنية',
+    key: 'nationalId',
+    sortable: true,
+  },
+  {
+    title: 'رقم السكن',
+    key: 'residenceCardNo',
     filterType: 'text',
     sortable: true,
   },
   {
-    title: 'اسم الشركة',
-    key: 'companyName',
+    title: 'السكن',
+    key: 'residence',
     sortable: true,
   },
   {
-    title: 'عدد المستخدمين',
-    key: 'userCount',
-    sortable: true,
-  },
-  {
-    title: 'تاريخ الاشتراك',
-    key: 'subscriptionDate',
-    isVisible: false,
-    isFilterable: true,
-    filterType: 'startEndDate',
-  },
-  {
-    title: 'تاريخ الانتهاء',
-    key: 'expirationDate',
-    isVisible: false,
-    isFilterable: true,
-    filterType: 'startEndDate',
-  },
+    title: 'الاجرائات',
+    key: 'actions',
+    actions: [
+      {
+        label: 'تعديل',
+        type: 'edit',
+        link: (row) => `/account/${row.id}/edit`,
+      },
+      {
+        label: 'حذف',
+        type: 'delete',
+        apiUrl: (row) => `/person/${row.id}`,
+        refreshAfterAction: true,
+      },
+    ],
+  }
 ];
 
 const AccountCards = () => {

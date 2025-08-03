@@ -8,8 +8,10 @@ import { IoClose } from 'react-icons/io5';
 
 const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [showDesktopDropdown, setShowDesktopDropdown] = useState(false);
+  const [showMobileDropdown, setShowMobileDropdown] = useState(false);
+  const desktopDropdownRef = useRef<HTMLDivElement>(null);
+  const mobileDropdownRef = useRef<HTMLDivElement>(null);
 
   const navigate = useNavigate();
 
@@ -20,29 +22,40 @@ const Header = () => {
       }
     };
 
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
+    const handleClickOutsideDesktop = (event: MouseEvent) => {
+      if (
+        desktopDropdownRef.current &&
+        !desktopDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowDesktopDropdown(false);
+      }
+    };
+
+    const handleClickOutsideMobile = (event: MouseEvent) => {
+      if (mobileDropdownRef.current && !mobileDropdownRef.current.contains(event.target as Node)) {
+        setShowMobileDropdown(false);
       }
     };
 
     window.addEventListener('resize', handleResize);
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutsideDesktop);
+    document.addEventListener('mousedown', handleClickOutsideMobile);
+
     return () => {
       window.removeEventListener('resize', handleResize);
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutsideDesktop);
+      document.removeEventListener('mousedown', handleClickOutsideMobile);
     };
   }, []);
 
   const handleLogout = () => {
-    console.log('User logged out');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('roles');
     navigate('/login');
   };
 
-  const DropdownMenu = () => (
+  const DropdownMenu = ({ onLogout }: { onLogout: () => void }) => (
     <div className="absolute top-10 w-auto left-0 bg-white shadow-md rounded-lg z-50">
       <ul className="flex flex-col text-right">
         <li>
@@ -52,7 +65,7 @@ const Header = () => {
         </li>
         <li>
           <button
-            onClick={handleLogout}
+            onClick={onLogout}
             className="block w-full text-right px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
           >
             تسجيل الخروج
@@ -70,7 +83,7 @@ const Header = () => {
         </button>
 
         {/* Desktop Section */}
-        <div className="hidden xl:flex items-center gap-3 relative" ref={dropdownRef}>
+        <div className="hidden xl:flex items-center gap-3 relative" ref={desktopDropdownRef}>
           <button>
             <GoBellFill size={30} className="text-primary-200" />
           </button>
@@ -78,14 +91,14 @@ const Header = () => {
           <span className="text-gray-800 font-medium">محمد علي</span>
           <div
             className="cursor-pointer text-gray-600 text-xl relative"
-            onClick={() => setShowDropdown(!showDropdown)}
+            onClick={() => setShowDesktopDropdown((prev) => !prev)}
           >
-            {showDropdown ? (
-              <IoClose size={24} onClick={() => setShowDropdown(false)} />
+            {showDesktopDropdown ? (
+              <IoClose size={24} onClick={() => setShowDesktopDropdown(false)} />
             ) : (
               <DownArrow />
             )}
-            {showDropdown && <DropdownMenu />}
+            {showDesktopDropdown && <DropdownMenu onLogout={handleLogout} />}
           </div>
         </div>
 
@@ -155,7 +168,9 @@ const Header = () => {
 
       {/* Sidebar for mobile view */}
       <div
-        className={`fixed top-0 right-0 w-3/4 sm:w-1/2 md:w-1/3 h-full bg-white shadow-lg transform transition-transform duration-300 z-50 ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed top-0 right-0 w-3/4 sm:w-1/2 md:w-1/3 h-full bg-white shadow-lg transform transition-transform duration-300 z-50 ${
+          isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
       >
         <div className="bg-white h-full p-4 flex flex-col gap-6 relative">
           <div className="flex justify-between items-center">
@@ -165,7 +180,7 @@ const Header = () => {
             </button>
           </div>
 
-          <div className="flex items-center gap-3 border-b pb-4 relative" ref={dropdownRef}>
+          <div className="flex items-center gap-3 border-b pb-4 relative" ref={mobileDropdownRef}>
             <button>
               <GoBellFill size={24} className="text-primary-200" />
             </button>
@@ -173,14 +188,14 @@ const Header = () => {
             <span className="text-gray-800 font-medium text-lg">محمد علي</span>
             <div
               className="cursor-pointer text-gray-600 text-xl relative"
-              onClick={() => setShowDropdown(!showDropdown)}
+              onClick={() => setShowMobileDropdown((prev) => !prev)}
             >
-              {showDropdown ? (
-                <IoClose size={24} onClick={() => setShowDropdown(false)} />
+              {showMobileDropdown ? (
+                <IoClose size={24} onClick={() => setShowMobileDropdown(false)} />
               ) : (
                 <DownArrow />
               )}
-              {showDropdown && <DropdownMenu />}
+              {showMobileDropdown && <DropdownMenu onLogout={handleLogout} />}
             </div>
           </div>
 

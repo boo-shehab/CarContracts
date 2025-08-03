@@ -27,7 +27,7 @@ function CustomDatePicker({
   disabled,
   className = '',
   error,
-  showQuickSelect = true,
+  showQuickSelect = false,
 }: CustomDatePickerProps) {
   
   const [pickerDate, setPickerDate] = useState(value ? new Date(value) : null);

@@ -8,78 +8,17 @@ import axios from '../services/axios';
 import { Dialog } from '@headlessui/react';
 import { IoCloseOutline } from 'react-icons/io5';
 import CustomDatePicker from '../components/Form/DateFiled/CustomDatePicker';
-
-const columns: TableColumn[] = [
-  {
-    title: 'رقم الشركة',
-    key: 'id',
-    sortable: true,
-  },
-  {
-    title: 'تاريخ الاشتراك',
-    key: 'subscriptionDate',
-    sortable: true,
-    render: (row: any) => (
-      <span className="text-lg font-normal">
-        {new Date(row.subscriptionDate).toLocaleDateString()}
-      </span>
-    ),
-  },
-  {
-    title: 'تاريخ الانتهاء',
-    key: 'expirationDate',
-    sortable: true,
-    render: (row: any) => (
-      <span className="text-lg font-normal">
-        {new Date(row.expirationDate).toLocaleDateString()}
-      </span>
-    ),
-  },
-  {
-    title: 'اسم صاحب الشركة',
-    key: 'ownerName',
-    sortable: true,
-  },
-  {
-    title: 'رقم صاحب الشركة',
-    key: 'ownerContact',
-    filterType: 'text',
-    sortable: true,
-  },
-  {
-    title: 'اسم الشركة',
-    key: 'companyName',
-    sortable: true,
-  },
-  {
-    title: 'عدد المستخدمين',
-    key: 'userCount',
-    sortable: true,
-  },
-  {
-    title: 'تاريخ الاشتراك',
-    key: 'subscriptionDate',
-    isVisible: false,
-    isFilterable: true,
-    filterType: 'startEndDate',
-  },
-  {
-    title: 'تاريخ الانتهاء',
-    key: 'expirationDate',
-    isVisible: false,
-    isFilterable: true,
-    filterType: 'startEndDate',
-  },
-];
+import { RiDeleteBinLine } from 'react-icons/ri';
+import { LiaEditSolid } from 'react-icons/lia';
+import DeleteModal from '../components/DeleteModal';
 
 const UpdateDatesModal = ({ isOpen, onClose, company, onSuccess }: any) => {
   const [subscriptionDate, setSubscriptionDate] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Set initial values when modal opens
   useEffect(() => {
-    if (company) {      
+    if (company) {
       setSubscriptionDate(new Date().toISOString().split('T')[0]);
       setExpirationDate(company.expirationDate);
     }
@@ -98,7 +37,6 @@ const UpdateDatesModal = ({ isOpen, onClose, company, onSuccess }: any) => {
     } catch (err: any) {
       // handle error
       console.log(err);
-      
     } finally {
       setIsLoading(false);
     }
@@ -107,48 +45,48 @@ const UpdateDatesModal = ({ isOpen, onClose, company, onSuccess }: any) => {
   if (!isOpen || !company) return null;
 
   return (
-    
-        <Dialog
-          open={isOpen}
-          onClose={onClose}
-          className="fixed inset-0 z-50 flex items-center justify-center"
-        >
-          <div className="fixed inset-0 bg-black opacity-30" />
-          <div className="bg-white rounded-xl shadow-lg z-10 w-full max-w-lg p-6">
-            <div className="flex items-center justify-between w-full gap-2 mb-4">
-              <h2 className="text-2xl font-bold text-gray-800">اختار نوع البطاقة</h2>
-              <button type="button" onClick={onClose} className="text-neutral-400 hover:text-black">
-                <IoCloseOutline size={24} />
-              </button>
-            </div>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <CustomDatePicker
-                name="subscriptionDate"
-                value={subscriptionDate}
-                onChange={(e: any) => setSubscriptionDate(e.target.value)}
-                disabled={isLoading}
-                label="تاريخ الاشتراك"
-              />
-              <CustomDatePicker
-                name="expirationDate"
-                value={expirationDate}
-                onChange={(e: any) => setExpirationDate(e.target.value)}
-                disabled={isLoading}
-                label="تاريخ الانتهاء"
-              />
-              <div className="flex gap-2 mt-4">
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="bg-primary-500 text-white px-4 py-2 rounded"
-                >
-                  {isLoading ? 'جاري التحديث...' : 'تحديث'}
-                </button>
-              </div>
-            </form>
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center"
+    >
+      <div className="fixed inset-0 bg-black opacity-30" />
+      <div className="bg-white rounded-xl shadow-lg z-10 w-full max-w-lg p-6">
+        <div className="flex items-center justify-between w-full gap-2 mb-4">
+          <h2 className="text-2xl font-bold text-gray-800">اختار نوع البطاقة</h2>
+          <button type="button" onClick={onClose} className="text-neutral-400 hover:text-black">
+            <IoCloseOutline size={24} />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <CustomDatePicker
+            name="subscriptionDate"
+            value={subscriptionDate}
+            showQuickSelect={true}
+            onChange={(e: any) => setSubscriptionDate(e.target.value)}
+            disabled={isLoading}
+            label="تاريخ الاشتراك"
+          />
+          <CustomDatePicker
+            name="expirationDate"
+            value={expirationDate}
+            showQuickSelect={true}
+            onChange={(e: any) => setExpirationDate(e.target.value)}
+            disabled={isLoading}
+            label="تاريخ الانتهاء"
+          />
+          <div className="flex gap-2 mt-4">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="bg-primary-500 text-white px-4 py-2 rounded"
+            >
+              {isLoading ? 'جاري التحديث...' : 'تحديث'}
+            </button>
           </div>
-
-        </Dialog>
+        </form>
+      </div>
+    </Dialog>
   );
 };
 
@@ -157,6 +95,122 @@ const Admin = () => {
   const [refresh, setRefresh] = useState(false);
   const [showUpdateDates, setShowUpdateDates] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+
+  const columns: TableColumn[] = [
+    {
+      title: 'رقم الشركة',
+      key: 'id',
+      sortable: true,
+    },
+    {
+      title: 'تاريخ الاشتراك',
+      key: 'subscriptionDate',
+      sortable: true,
+      render: (row: any) => (
+        <span className="text-lg font-normal">
+          {new Date(row.subscriptionDate).toLocaleDateString()}
+        </span>
+      ),
+    },
+    {
+      title: 'تاريخ الانتهاء',
+      key: 'expirationDate',
+      sortable: true,
+      render: (row: any) => (
+        <span className="text-lg font-normal">
+          {new Date(row.expirationDate).toLocaleDateString()}
+        </span>
+      ),
+    },
+    {
+      title: 'اسم صاحب الشركة',
+      key: 'ownerName',
+      sortable: true,
+    },
+    {
+      title: 'رقم صاحب الشركة',
+      key: 'ownerContact',
+      filterType: 'text',
+      sortable: true,
+    },
+    {
+      title: 'اسم الشركة',
+      key: 'companyName',
+      sortable: true,
+    },
+    {
+      title: 'عدد المستخدمين',
+      key: 'userCount',
+      sortable: true,
+    },
+    {
+      title: 'تاريخ الاشتراك',
+      key: 'subscriptionDate',
+      isVisible: false,
+      isFilterable: true,
+      filterType: 'startEndDate',
+    },
+    {
+      title: 'تاريخ الانتهاء',
+      key: 'expirationDate',
+      isVisible: false,
+      isFilterable: true,
+      filterType: 'startEndDate',
+    },
+    {
+      title: 'الحالة',
+      key: 'status',
+      isFilterable: true,
+      filterType: 'select',
+      filterOptions: [
+        { label: 'نشطة', value: 'ACTIVE' },
+        { label: 'مقيدة', value: 'EXPIRED' },
+      ],
+      render: (row: any) => (
+        <span
+          onClick={() => {
+            if (row.status === 'EXPIRED') {
+              setSelectedCompany(row);
+              setTimeout(() => setShowUpdateDates(true), 0);
+            }
+          }}
+          className={`text-lg font-normal py-1 rounded-full px-8 ${
+            row.status !== 'EXPIRED'
+              ? 'text-success-500 bg-success-100'
+              : 'text-error-500 bg-error-100 cursor-pointer'
+          }`}
+        >
+          {row.status !== 'EXPIRED' ? 'نشطة' : 'مقيدة'}
+        </span>
+      ),
+    },
+    {
+      title: 'الاجرائات',
+      key: 'actions',
+      render: (row: any) => (
+        <div className="flex items-center gap-2">
+          <RiDeleteBinLine
+            className="cursor-pointer text-red-600"
+            onClick={() => {
+              setSelectedCompany(row);
+              setDeleteModalOpen(true);
+            }}
+          />
+          <LiaEditSolid
+            className="cursor-pointer"
+            onClick={() => {
+              setSelectedCompany(row);
+              setEditModalOpen(true);
+            }}
+          />
+        </div>
+      ),
+      isFilterable: false,
+      isVisible: true,
+    },
+  ];
 
   const toggleRefresh = () => {
     setRefresh(!refresh);
@@ -185,31 +239,7 @@ const Admin = () => {
         </div>
       </div>
       <TableContainer
-        columns={[...columns,
-  {
-    title: 'الحالة',
-    key: 'status',
-    isFilterable: true,
-    filterType: 'select',
-    filterOptions: [
-      { label: 'نشطة', value: 'ACTIVE' },
-      { label: 'مقيدة', value: 'EXPIRED' },
-    ],
-    render: (row: any) => (
-      <span
-        onClick={() => {
-          if(row.status === 'EXPIRED'){
-            setSelectedCompany(row);
-            setTimeout(() => setShowUpdateDates(true), 0);
-          }
-          
-        }}
-        className={`text-lg font-normal py-1 rounded-full px-8 ${row.status !== 'EXPIRED' ? 'text-success-500 bg-success-100' : 'text-error-500 bg-error-100 cursor-pointer'}`}
-      >
-        {row.status !== 'EXPIRED' ? 'نشطة' : 'مقيدة'}
-      </span>
-    ),
-  },]}
+        columns={columns}
         apiUrl="/companies"
         refresh={refresh}
         headerActions={
@@ -225,8 +255,7 @@ const Admin = () => {
               isOpen={showModal}
               onClose={() => setShowModal(false)}
               onSuccess={() => {
-                // refetch data
-                toggleRefresh(); // Toggle the refresh state to trigger a refetch
+                toggleRefresh();
                 setShowModal(false);
               }}
             />
@@ -241,6 +270,31 @@ const Admin = () => {
           onSuccess={toggleRefresh}
         />
       )}
+
+      <AddCompanyModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSuccess={() => {
+          toggleRefresh();
+          setShowModal(false);
+        }}
+      />
+
+      <DeleteModal
+        open={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onDelete={() => {
+          setDeleteModalOpen(false);
+          setSelectedCompany(null);
+          toggleRefresh();
+        }}
+        title="تأكيد الحذف"
+        description={`هل أنت متأكد أنك تريد حذف الشركة ${
+          selectedCompany?.companyName || ''
+        }؟ لا يمكن التراجع عن هذا الإجراء.`}
+        loading={false}
+        apiEndpoint={selectedCompany ? `/companies/${selectedCompany.id}` : undefined}
+      />
     </div>
   );
 };

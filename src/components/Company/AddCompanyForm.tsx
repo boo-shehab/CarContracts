@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import InputField from '../Form/InputField';
-import { createCompany } from '../../services/companyService';
+import { createCompany, updateCompany } from '../../services/companyService';
 import CustomDatePicker from '../Form/DateFiled/CustomDatePicker';
 import { IoCloseOutline } from 'react-icons/io5';
 import { toast } from 'react-toastify';
@@ -9,9 +9,11 @@ import { CompanyFormData } from './types';
 interface AddCompanyFormProps {
   onSuccess: (data: CompanyFormData) => void;
   onCancel: () => void;
+  initialData?: Partial<CompanyFormData>;
+  isEdit?: boolean;
 }
 
-const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
+const AddCompanyForm = ({ onSuccess, onCancel, initialData, isEdit }: AddCompanyFormProps) => {
   const [formData, setFormData] = useState<CompanyFormData>({
     companyName: '',
     ownerName: '',
@@ -23,6 +25,7 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
     companyUsername: '',
     companyPassword: '',
     companyEmail: '',
+    ...initialData,
   });
 
   const [formErrors, setFormErrors] = useState<CompanyFormData>({
@@ -39,6 +42,15 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData((prev) => ({
+        ...prev,
+        ...initialData,
+      }));
+    }
+  }, [initialData]);
 
   const resetForm = () => {
     setFormData({
@@ -81,18 +93,10 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
   const validateForm = () => {
     const errors: any = {};
     Object.entries(formData).forEach(([key, value]) => {
-      if (!value) errors[key] = 'هذا الحقل مطلوب';
+      if (!value && !(isEdit && (key === 'companyPassword' || key === 'companyUsername'))) {
+        errors[key] = 'هذا الحقل مطلوب';
+      }
     });
-
-    // if (formData.ownerContact) {
-    //   // Remove any non-digit characters
-    //   const phone = formData.ownerContact.replace(/\D/g, '');
-    //   // Iraqi numbers: 10 or 11 digits, must start with 07
-    //   const iraqMobileRegex = /^07[3-9]\d{8}$/;
-    //   if (!(phone.length === 11 && iraqMobileRegex.test(phone))) {
-    //     errors.ownerContact = 'يرجى إدخال رقم هاتف عراقي صحيح مكون من 11 رقم ويبدأ بـ 07';
-    //   }
-    // }
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -104,16 +108,24 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
 
     setIsLoading(true);
     try {
-      await createCompany({
-        ...formData,
-        userCount: Number(formData.userCount),
-      });
-      toast.success('تم اضافة الشركة بنجاح');
-      resetForm();
+      if (isEdit && initialData?.id) {
+        await updateCompany(initialData.id, {
+          ...formData,
+          userCount: Number(formData.userCount),
+        });
+        toast.success('تم تعديل الشركة بنجاح');
+      } else {
+        await createCompany({
+          ...formData,
+          userCount: Number(formData.userCount),
+        });
+        toast.success('تم اضافة الشركة بنجاح');
+        resetForm();
+      }
       onSuccess(formData);
     } catch (err) {
-      console.error('Failed to create company', err);
-      toast.error('فشل في اضافة الشركة');
+      console.error('Failed to save company', err);
+      toast.error(isEdit ? 'فشل في تعديل الشركة' : 'فشل في اضافة الشركة');
     } finally {
       setIsLoading(false);
     }
@@ -198,27 +210,27 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
           name="companyUsername"
           value={formData.companyUsername}
           onChange={handleChange}
-          disabled={isLoading}
+          disabled={isLoading || isEdit}
           placeholder="معرف الشركة"
           label="معرف الشركة"
           error={formErrors.companyUsername}
         />
-          <InputField
-            type="text"
-            name="companyEmail"
-            value={formData.companyEmail}
-            onChange={handleChange}
+        <InputField
+          type="text"
+          name="companyEmail"
+          value={formData.companyEmail}
+          onChange={handleChange}
           disabled={isLoading}
-            placeholder="البريد الالكتروني"
-            label="البريد الالكتروني"
-            error={formErrors.companyEmail}
-          />
+          placeholder="البريد الالكتروني"
+          label="البريد الالكتروني"
+          error={formErrors.companyEmail}
+        />
         <InputField
           type="text"
           name="companyPassword"
           value={formData.companyPassword}
           onChange={handleChange}
-          disabled={isLoading}
+          disabled={isLoading || isEdit}
           placeholder="كلمة المرور"
           label="كلمة المرور"
           error={formErrors.companyPassword}
@@ -229,7 +241,13 @@ const AddCompanyForm = ({ onSuccess, onCancel }: AddCompanyFormProps) => {
             className="px-4 py-2 bg-primary-500 text-white rounded-md w-full"
             disabled={isLoading}
           >
-            {isLoading ? 'جاري الاضافة...' : 'اضافة'}
+            {isLoading
+              ? isEdit
+                ? 'جاري التعديل...'
+                : 'جاري الاضافة...'
+              : isEdit
+              ? 'تعديل'
+              : 'اضافة'}
           </button>
         </div>
       </form>
