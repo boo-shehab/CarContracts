@@ -1,8 +1,7 @@
 import TableContainer from '../components/TableContainer';
 import { TableColumn } from '../components/Form/types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
 const columns: TableColumn[] = [
   {
     title: 'رقم الحساب',
@@ -38,19 +37,25 @@ const columns: TableColumn[] = [
   {
     title: 'الاجرائات',
     key: 'actions',
-    actions: [
-      {
-        label: 'تعديل',
-        type: 'edit',
-        link: (row) => `/account/${row.id}/edit`,
-      },
-      {
-        label: 'حذف',
-        type: 'delete',
-        apiUrl: (row) => `/person/${row.id}`,
-        refreshAfterAction: true,
-      },
-    ],
+    render(row, index) {
+      return (
+        <div className="flex gap-2">
+          <Link
+            to={`/account/${row.id}/edit`}
+            className="bg-primary-500 text-white px-4 py-2 rounded"
+          >
+            تعديل
+          </Link>
+          <button
+            onClick={() => {
+            }}
+            className="bg-red-500 text-white px-4 py-2 rounded"
+          >
+            حذف
+          </button>
+        </div>
+      );
+    },
   }
 ];
 

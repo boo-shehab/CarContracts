@@ -83,15 +83,14 @@ function AddNewContract() {
   });
 
   const [paymentInformation, setPaymentInformation] = useState<paymentInformationData>({
-    paymentMethod: 'cash',
-    totalPrice: '',
-    paidAmount: '',
+    paymentType: 'CASH',
+    totalAmount: '',
+    downPayment: '',
     remainingAmount: '',
-    installmentPayment: {
-      numberOfInstallments: '',
-      installmentPeriod: '',
-      payments: [],
-    },
+    numberOfInstallments: '',
+    installmentPeriodDays: '',
+    firstInstallmentDate: '',
+    installment: [],
   });
   
   const handleReturnedSellerInfo = (data) => {
@@ -228,13 +227,6 @@ function AddNewContract() {
   const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
     if (currentStep === 3) {
-      const payment = {
-        "paymentType": "CASH",
-        "totalAmount": 20000000,
-        "downPayment": 0,
-        "numberOfInstallments": 1,
-        "installmentPeriodDays": 1
-      }
       // here we will handle the submission logic for the contract
       // check if the seller is existing in the database if not create a new one
       // check if the buyer is existing in the database if not create a new one
@@ -273,6 +265,14 @@ function AddNewContract() {
           console.log("Created car entry:", carResponse.data);
         } else {
           car = checkCarResponse.data.data[0];
+        }
+        const payment = paymentInformation;
+        if(paymentInformation.paymentType === 'CASH') {
+          // remove installment related fields
+          delete payment.numberOfInstallments;
+          delete payment.installmentPeriodDays;
+          delete payment.firstInstallmentDate;
+          delete payment.installment;
         }
 
         const paymentResponse = await axios.post('/payment', payment)

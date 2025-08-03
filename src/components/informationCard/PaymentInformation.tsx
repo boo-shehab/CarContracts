@@ -4,22 +4,21 @@ import RadioInput from '../Form/RadioInput';
 import CustomDatePicker from '../Form/DateFiled/CustomDatePicker';
 
 export interface paymentInformationData {
-  paymentMethod: 'cash' | 'installments';
-  totalPrice: number | '';
-  paidAmount: number | '';
+  paymentType: 'CASH' | 'INSTALLMENT';
+  totalAmount: number | '';
+  downPayment: number | '';
+  numberOfInstallments?: number | '';
+  installmentPeriodDays?: number | '';
+  firstInstallmentDate?: string | '';
   remainingAmount: number | '';
-  installmentPayment: {
-    numberOfInstallments: number | '';
-    installmentPeriod: number | '';
-    payments:
+    installment?:
       | [
           {
-            installmentNumber: number | '';
+            amount: number | '';
             dueDate: string | '';
           },
         ]
       | [];
-  };
 }
 
 interface PaymentInformationProps {
@@ -28,18 +27,18 @@ interface PaymentInformationProps {
 }
 
 function PaymentInformation({ formData, setFormData }: PaymentInformationProps) {
-  const [lastChanged, setLastChanged] = useState<'total' | 'paid' | 'remaining' | null>(null);
+  const [lastChanged, setLastChanged] = useState<'total' | 'down' | 'remaining' | null>(null);
 
   // Auto update related fields when values change
   useEffect(() => {
-    const total = Number(formData.totalPrice) || 0;
-    const paid = Number(formData.paidAmount) || 0;
+    const total = Number(formData.totalAmount) || 0;
+    const paid = Number(formData.downPayment) || 0;
     const remaining = Number(formData.remainingAmount) || 0;
 
     if (lastChanged === 'total') {
       const newRemaining = total - paid;
       setFormData((prev: any) => ({ ...prev, remainingAmount: newRemaining }));
-    } else if (lastChanged === 'paid') {
+    } else if (lastChanged === 'down') {
       const newRemaining = total - paid;
       setFormData((prev: any) => ({ ...prev, remainingAmount: newRemaining }));
     } else if (lastChanged === 'remaining') {
@@ -47,23 +46,23 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
       setFormData((prev: any) => ({ ...prev, paidAmount: newPaid }));
     }
   }, [
-    formData.totalPrice,
-    formData.paidAmount,
+    formData.totalAmount,
+    formData.downPayment,
     formData.remainingAmount,
     lastChanged,
     setFormData,
   ]);
   useEffect(() => {
-    if (formData.paymentMethod === 'installments') {
-      const currentPayments = formData.installmentPayment.payments || [];
-      const targetLength = Number(formData.installmentPayment.numberOfInstallments) || 0;
+    if (formData.paymentType === 'INSTALLMENT') {
+      const currentPayments = formData.installment || [];
+      const targetLength = Number(formData.numberOfInstallments) || 0;
       let newPayments = [...currentPayments];
 
       if (currentPayments.length < targetLength) {
         // Add new payments at the end
         for (let i = currentPayments.length; i < targetLength; i++) {
           newPayments.push({
-            installmentNumber: 0,
+            amount: 0,
             dueDate: new Date().toISOString().split('T')[0],
           });
         }
@@ -75,18 +74,15 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
       if (newPayments.length !== currentPayments.length) {
         setFormData((prev: any) => ({
           ...prev,
-          installmentPayment: {
-            ...prev.installmentPayment,
-            payments: newPayments,
-          },
+          installment: newPayments,
         }));
       }
     }
   }, [
-    formData.paymentMethod,
-    formData.installmentPayment.numberOfInstallments,
+    formData.paymentType,
+    formData.numberOfInstallments,
     setFormData,
-    formData.installmentPayment.payments,
+    formData.installment,
   ]);
 
   const handleNumberInput = (value: string) => {
@@ -144,30 +140,32 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
       });
       setLastChanged(key as any);
     }
+    
   };
-
+  console.log('formData', formData);
+  
   return (
     <div className="w-full bg-white rounded-xl shadow-lg p-4 my-4">
       <p className="text-2xl text-neutral-500 font-normal">طريقة البيع</p>
       <div className="mt-4">
         <RadioInput
           label=""
-          value={formData.paymentMethod}
-          onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
-          name="paymentMethod"
+          value={formData.paymentType}
+          onChange={(e) => setFormData({ ...formData, paymentType: e.target.value })}
+          name="paymentType"
           options={[
-            { value: 'cash', label: 'نقد' },
-            { value: 'installments', label: 'اقساط' },
+            { value: 'CASH', label: 'نقد' },
+            { value: 'INSTALLMENT', label: 'اقساط' },
           ]}
         />
 
         <div className="flex flex-col sm:flex-row gap-4 flex-wrap mb-4">
           <InputField
-            value={formData.totalPrice}
+            value={formData.totalAmount}
             className="w-full"
-            name="totalPrice"
+            name="totalAmount"
             onChange={(e) => {
-              handleInputChange(e.target.value, 'totalPrice');
+              handleInputChange(e.target.value, 'totalAmount');
               setLastChanged('total');
             }}
             label="المبلغ الكلي"
@@ -175,11 +173,11 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
             type="number"
           />
           <InputField
-            value={formData.paidAmount}
-            name="paidAmount"
+            value={formData.downPayment}
+            name="downPayment"
             onChange={(e) => {
-              handleInputChange(e.target.value, 'paidAmount');
-              setLastChanged('paid');
+              handleInputChange(e.target.value, 'downPayment');
+              setLastChanged('down');
             }}
             label="المبلغ المدفوع"
             placeholder="ادخل المبلغ المدفوع"
@@ -196,31 +194,31 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
             placeholder="ادخل المبلغ المتبقي"
             type="number"
           />
-          {formData.paymentMethod === 'installments' && (
+          {formData.paymentType === 'INSTALLMENT' && (
             <InputField
-              value={formData.installmentPayment.numberOfInstallments}
+              value={formData.numberOfInstallments}
               name="numberOfInstallments"
-              onChange={(e) => handleInputChange(e.target.value, '', 'numberOfInstallments')}
+              onChange={(e) => handleInputChange(e.target.value, 'numberOfInstallments')}
               label="عدد الاقساط"
               placeholder="ادخل عدد الاقساط"
               type="number"
             />
           )}
         </div>
-        {formData.paymentMethod === 'installments' && (
+        {formData.paymentType === 'INSTALLMENT' && (
           <div>
             <div className="flex items-center gap-2 text-2xl mb-4">
               <span>فترة التقسيط كل</span>
               <InputField
-                value={formData.installmentPayment.installmentPeriod}
-                name="installmentPeriod"
-                onChange={(e) => handleInputChange(e.target.value, '', 'installmentPeriod')}
+                value={formData.installmentPeriodDays}
+                name="installmentPeriodDays"
+                onChange={(e) => handleInputChange(e.target.value, 'installmentPeriodDays')}
                 type="number"
               />
               <span>يوم</span>
             </div>
             <div>
-              {formData.installmentPayment.payments.map((payment, index) => (
+              {formData.installment.map((payment, index) => (
                 <div key={index} className="">
                   <span className="text-xl font-bold">الدفعة {index + 1}</span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
@@ -228,27 +226,29 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
                       value={payment.dueDate}
                       label="تاريخ الدفع"
                       onChange={(date: any) => {
-                        const newPayments = [...formData.installmentPayment.payments];
+                        const newPayments = [...formData.installment];
                         newPayments[index].dueDate = date.target.value.toISOString().split('T')[0];
                         setFormData({
                           ...formData,
-                          installmentPayment: {
-                            ...formData.installmentPayment,
-                            payments: newPayments,
-                          },
+                          installment: newPayments,
                         });
                       }}
                       name={`dueDate-${index}`}
                     />
                     <InputField
-                      value={payment.installmentNumber}
-                      name={`installmentNumber`}
+                      value={payment.amount}
+                      name={`AMOUNT-${index}`}
                       label="المبلغ المطلوب"
                       leftIcon={<span className="text-primary-500 bg-transparent">د.ع </span>}
                       type="number"
-                      onChange={(e) =>
-                        handleInputChange(e.target.value, '', 'installmentNumber', index)
-                      }
+                      onChange={(e) => {
+                        const newPayments = [...formData.installment];
+                        newPayments[index].amount = e.target.value === '' ? '' : Number(e.target.value);
+                        setFormData({
+                          ...formData,
+                          installment: newPayments,
+                        });
+                      }}
                     />
                   </div>
                 </div>
