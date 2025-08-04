@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import InputField from '../Form/InputField';
 import RadioInput from '../Form/RadioInput';
 import CustomDatePicker from '../Form/DateFiled/CustomDatePicker';
@@ -28,62 +28,106 @@ interface PaymentInformationProps {
 
 function PaymentInformation({ formData, setFormData }: PaymentInformationProps) {
   const [lastChanged, setLastChanged] = useState<'total' | 'down' | 'remaining' | null>(null);
+  const userEditedInstallment = useRef(false);
 
   // Auto update related fields when values change
   useEffect(() => {
     const total = Number(formData.totalAmount) || 0;
-    const paid = Number(formData.downPayment) || 0;
-    const remaining = Number(formData.remainingAmount) || 0;
+    const down = Number(formData.downPayment) || 0;
+    const remaining = total - down;
 
-    if (lastChanged === 'total') {
-      const newRemaining = total - paid;
-      setFormData((prev: any) => ({ ...prev, remainingAmount: newRemaining }));
-    } else if (lastChanged === 'down') {
-      const newRemaining = total - paid;
-      setFormData((prev: any) => ({ ...prev, remainingAmount: newRemaining }));
-    } else if (lastChanged === 'remaining') {
-      const newPaid = total - remaining;
-      setFormData((prev: any) => ({ ...prev, paidAmount: newPaid }));
-    }
-  }, [
-    formData.totalAmount,
-    formData.downPayment,
-    formData.remainingAmount,
-    lastChanged,
-    setFormData,
-  ]);
+    setFormData((prev: any) => ({
+      ...prev,
+      remainingAmount: remaining,
+    }));
+  }, [formData.totalAmount, formData.downPayment]);
   useEffect(() => {
-    if (formData.paymentType === 'INSTALLMENT') {
-      const currentPayments = formData.installment || [];
+    if (
+      formData.paymentType === 'INSTALLMENT' &&
+      !userEditedInstallment.current
+    ) {
       const targetLength = Number(formData.numberOfInstallments) || 0;
-      let newPayments = [...currentPayments];
+      const totalAmount = Number(formData.totalAmount) || 0;
+      const downPayment = Number(formData.downPayment) || 0;
+      const remainingAmountOriginal = totalAmount - downPayment;
+      const minUnit = 250;
 
-      if (currentPayments.length < targetLength) {
-        // Add new payments at the end
-        for (let i = currentPayments.length; i < targetLength; i++) {
-          newPayments.push({
-            amount: 0,
-            dueDate: new Date().toISOString().split('T')[0],
-          });
-        }
-      } else if (currentPayments.length > targetLength) {
-        // Remove payments from the end
-        newPayments = newPayments.slice(0, targetLength);
+      const rawBase = remainingAmountOriginal / targetLength;
+      const baseAmount = Math.floor(rawBase / minUnit) * minUnit;
+      const distributedTotal = baseAmount * targetLength;
+      const remainder = remainingAmountOriginal - distributedTotal;
+      const extraUnits = Math.floor(remainder / minUnit);
+
+      const newPayments: Array<{ amount: number | ''; dueDate: string | '' }> = [];
+
+      const baseDate = formData.firstInstallmentDate
+        ? new Date(formData.firstInstallmentDate)
+        : new Date();
+
+      const intervalDays = Number(formData.installmentPeriodDays) || 30;
+
+      for (let i = 0; i < targetLength; i++) {
+        const extra = i < extraUnits ? minUnit : 0;
+
+        const due = new Date(baseDate);
+        due.setDate(baseDate.getDate() + i * intervalDays);
+
+        newPayments.push({
+          amount: baseAmount + extra,
+          dueDate: due.toISOString().split('T')[0],
+        });
       }
 
-      if (newPayments.length !== currentPayments.length) {
-        setFormData((prev: any) => ({
-          ...prev,
-          installment: newPayments,
-        }));
-      }
+      // 🔄 نحسب المجموع الجديد ونحدث remainingAmount بعد توزيع الأقساط
+      const newSum = newPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+      const newRemaining = totalAmount - downPayment - newSum;
+
+      setFormData((prev: any) => ({
+        ...prev,
+        installment: newPayments,
+        remainingAmount: newRemaining,
+      }));
     }
+
+    userEditedInstallment.current = false;
   }, [
     formData.paymentType,
     formData.numberOfInstallments,
-    setFormData,
-    formData.installment,
+    formData.remainingAmount,
+    formData.firstInstallmentDate,
+    formData.installmentPeriodDays,
+    formData.totalAmount,
+    formData.downPayment,
   ]);
+
+
+  useEffect(() => {
+  if (
+    formData.paymentType === 'INSTALLMENT' &&
+    formData.firstInstallmentDate &&
+    formData.installmentPeriodDays &&
+    Array.isArray(formData.installment)
+  ) {
+    const baseDate = new Date(formData.firstInstallmentDate);
+    const period = Number(formData.installmentPeriodDays);
+
+    const updated = formData.installment.map((payment, index) => {
+      const due = new Date(baseDate);
+      due.setDate(baseDate.getDate() + index * period);
+      return {
+        ...payment,
+        dueDate: due.toISOString().split('T')[0],
+      };
+    });
+
+    setFormData((prev: any) => ({ ...prev, installment: updated }));
+  }
+}, [
+  formData.firstInstallmentDate,
+  formData.installmentPeriodDays,
+  formData.numberOfInstallments,
+  formData.paymentType,
+]);
 
   const handleNumberInput = (value: string) => {
     if (value === '') return value;
@@ -218,7 +262,7 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
               <span>يوم</span>
             </div>
             <div>
-              {formData.installment.map((payment, index) => (
+              {formData.installment?.map((payment, index) => (
                 <div key={index} className="">
                   <span className="text-xl font-bold">الدفعة {index + 1}</span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
@@ -226,7 +270,7 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
                       value={payment.dueDate}
                       label="تاريخ الدفع"
                       onChange={(date: any) => {
-                        const newPayments = [...formData.installment];
+                        const newPayments = [...formData.installment ? formData.installment : []];
                         newPayments[index].dueDate = date.target.value.toISOString().split('T')[0];
                         setFormData({
                           ...formData,
@@ -242,11 +286,21 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
                       leftIcon={<span className="text-primary-500 bg-transparent">د.ع </span>}
                       type="number"
                       onChange={(e) => {
-                        const newPayments = [...formData.installment];
-                        newPayments[index].amount = e.target.value === '' ? '' : Number(e.target.value);
+                        userEditedInstallment.current = true; // 🔴 أعلِم أن المستخدم تدخل يدوياً
+
+                        const value = e.target.value === '' ? '' : Number(e.target.value);
+                        const newPayments = [...formData.installment ? formData.installment : []];
+                        newPayments[index].amount = value;
+
+                        const total = Number(formData.totalAmount) || 0;
+                        const paid = Number(formData.downPayment) || 0;
+                        const sumInstallments = newPayments.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+                        const remaining = total - paid - sumInstallments;
+
                         setFormData({
                           ...formData,
                           installment: newPayments,
+                          remainingAmount: remaining,
                         });
                       }}
                     />
