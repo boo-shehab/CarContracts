@@ -7,18 +7,17 @@ import RenderFilterField from './Form/RenderFilterField';
 import { TableContainerProps } from './types';
 import { IoClose } from 'react-icons/io5';
 import axios from '../services/axios';
-import AxiosMockAdapter from 'axios-mock-adapter';
-import { default as mockingAxios } from 'axios';
 
 const TableContainer = ({
   columns,
   apiUrl,
-  isMocked = false,
   isExpander = false,
   isThereFilters = true,
   headerActions,
   refresh,
-}: TableContainerProps) => {
+  childColumns,
+  childKey = 'installments',
+}: TableContainerProps & { childColumns?: any[]; childKey?: string }) => {
   const [data, setData] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,97 +40,41 @@ const TableContainer = ({
 
   const toggleFilters = () => setShowFilters((prev) => !prev);
 
-  const fetchChildData = async (rowId: string | number) => {
-    setLoadingRowId(rowId);
-    const mock = new AxiosMockAdapter(mockingAxios);
-    mock.onGet(apiUrl).reply(200, {
-      data: [
-        {id: 1, subscriberName: 'John Doe', carType: 'Sedan', amountDue: 'active', paymentNumber: '3/10', status: 'UNPAID'},
-        {id: 2, subscriberName: 'Jane Smith', carType: 'SUV', amountDue: 'inactive', paymentNumber: '5/10', status: 'PAID'},
-        {id: 3, subscriberName: 'Alice Johnson', carType: 'Truck', amountDue: 'active', paymentNumber: '2/10', status: 'UNPAID'},
-        {id: 4, subscriberName: 'Bob Brown', carType: 'Coupe', amountDue: 'inactive', paymentNumber: '8/10', status: 'PAID'},
-        {id: 5, subscriberName: 'Charlie Davis', carType: 'Convertible', amountDue: 'active', paymentNumber: '1/10', status: 'UNPAID'},
-        {id: 6, subscriberName: 'Eve White', carType: 'Hatchback', amountDue: 'inactive', paymentNumber: '6/10', status: 'PAID'},
-      ], // Mocked data
-    });
-    try {
-      const response = await mockingAxios.get(apiUrl);
-      setTimeout(() => {
-        setChildData(response.data.data);
-        setLoadingRowId(null);
-      }, 500); // Simulate a delay for loading state
-      } catch (error) {
-        console.error('Error fetching child data:', error);
-        setError('Error fetching child data');
-        setLoadingRowId(null);
-      }
-      return;
-  }
+  // When expanding a row, set childData from the expanded row's childKey
+  const handleExpandRow = (rowId: string | number, rowData: any) => {
+    setExpandedRowId(rowId);
+    setChildData(Array.isArray(rowData[childKey]) ? rowData[childKey] : []);
+  };
 
-  useEffect(() => {
-    if (isExpander && expandedRowId !== null) {
-      fetchChildData(expandedRowId);
-    } else {
-      setChildData([]);
+  // Build params for filters and sorting
+  const buildParams = () => {
+    const params: any = {};
+    Object.entries(filters).forEach(([key, value]) => {
+      const column = columns.find((col) => col.key === key);
+      const paramKey = column?.paramKey || key;
+      params[paramKey] = value;
+    });
+    // Correct: always send sortBy and sortDirection as separate params
+    if (sortDirection.sortBy) {
+      const column = columns.find((col) => col.key === sortDirection.sortBy);
+      const sortKey = column?.paramKey || sortDirection.sortBy;
+      params.sortBy = sortKey;
+      params.sortDirection = sortDirection.sortDirection;
     }
-  }, [expandedRowId, isExpander]);
+    params.page = currentPage;
+    params.size = rowsPerPage;
+    return params;
+  };
 
   const fetchData = useCallback(async () => {
-    setChildData([]);
-    setLoadingRowId(null)
-    setExpandedRowId(null)
-    if (isMocked) {
-      const mock = new AxiosMockAdapter(mockingAxios);
-      mock.onGet(apiUrl).reply(200, {
-        data: [
-          {id: 1, subscriberName: 'John Doe', carType: 'Sedan', amountDue: 'active', paymentNumber: '3/10', status: 'UNPAID'},
-          {id: 2, subscriberName: 'Jane Smith', carType: 'SUV', amountDue: 'inactive', paymentNumber: '5/10', status: 'PAID'},
-          {id: 3, subscriberName: 'Alice Johnson', carType: 'Truck', amountDue: 'active', paymentNumber: '2/10', status: 'UNPAID'},
-          {id: 4, subscriberName: 'Bob Brown', carType: 'Coupe', amountDue: 'inactive', paymentNumber: '8/10', status: 'PAID'},
-          {id: 5, subscriberName: 'Charlie Davis', carType: 'Convertible', amountDue: 'active', paymentNumber: '1/10', status: 'UNPAID'},
-          {id: 6, subscriberName: 'Eve White', carType: 'Hatchback', amountDue: 'inactive', paymentNumber: '6/10', status: 'PAID'},
-        ], // Mocked data
-        pagination: {
-          currentPage: 1,
-          lastPage: 1,
-        },
-      });
-      try {
-        const response = await mockingAxios.get(apiUrl);
-        setData(response.data.data);
-        setCurrentPage(response.data.pagination.currentPage);
-        setLastPage(response.data.pagination.lastPage);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setError('Error fetching data');
-      } finally {
-        setLoading(false);
-      }
-      return;
-    }
-
-    if (columns.length === 0) {
-      setLoading(true);
-    }
+    setLoading(true);
     setError(null);
     try {
-      const params: Record<string, any> = {
-        ...filters,
-        page: currentPage,
-        size: rowsPerPage,
-      };
-
-      if (keyword) params.searchTerm = keyword;
-      if (sortDirection.sortBy) {
-        params.sortBy = sortDirection.sortBy;
-        params.sortDirection = sortDirection.sortDirection;
-      }
-
+      const params = buildParams();
       const response = await axios.get(apiUrl, { params });
-
       setData(response.data.data);
-      setCurrentPage(response.data.pagination.currentPage);
-      setLastPage(response.data.pagination.lastPage);
+      setCurrentPage(response.data?.pagination?.currentPage || 0);
+      setLastPage(response.data?.pagination?.lastPage || 1);
     } catch (error) {
       console.error('Error fetching data:', error);
       setError('Error fetching data');
@@ -147,7 +90,7 @@ const TableContainer = ({
 
     return () => clearTimeout(handler);
   }, [keyword, filters, sortDirection, refresh, currentPage, fetchData]);
-  
+
   const handleFilterChange = (name: string, value: any) => {
     console.log(`Filter changed: ${name} = ${value}`);
     setFilters((prev) => {
@@ -174,7 +117,7 @@ const TableContainer = ({
       {/* Top Bar */}
       <div className="mt-4 flex flex-col md:flex-row md:items-center gap-4">
         <InputField
-          name="searchTerm"
+          name="keyword"
           type="text"
           value={keyword}
           placeholder="ابحث عن الشركة"
@@ -184,7 +127,9 @@ const TableContainer = ({
         />
         {isThereFilters && (
           <button
-            className={`text-primary-500 rounded-2xl py-2 px-4 border border-primary-500 text-xl font-normal w-full md:w-auto ${showFilters ? 'bg-primary-500 text-white' : ''}`}
+            className={`text-primary-500 rounded-2xl py-2 px-4 border border-primary-500 text-xl font-normal w-full md:w-auto ${
+              showFilters ? 'bg-primary-500 text-white' : ''
+            }`}
             onClick={toggleFilters}
           >
             + اضافة فلتر
@@ -233,17 +178,18 @@ const TableContainer = ({
             showFilters ? 'w-full md:w-[calc(100%-350px)]' : 'w-full'
           }`}
         >
-          <Table 
-            columns={columns} 
-            data={data} 
-            loading={loading} 
-            error={error} 
-            onSort={onSort} 
+          <Table
+            columns={columns}
+            data={data}
+            loading={loading}
+            error={error}
+            onSort={onSort}
             expandedRowId={expandedRowId}
             isExpander={isExpander}
-            setExpandedRowId={setExpandedRowId}
+            setExpandedRowId={(rowId, rowData) => handleExpandRow(rowId, rowData)}
             loadingRowId={loadingRowId}
             childData={childData}
+            childColumns={childColumns}
           />
 
           {/* Pagination buttons */}

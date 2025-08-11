@@ -10,7 +10,8 @@ import { CiCamera } from 'react-icons/ci';
 import { useNavigate } from 'react-router-dom';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import { useDispatch, useSelector } from 'react-redux';
-import { setUser } from '../features/auth/authSlice'; // adjust path if needed
+import { setUser } from '../features/auth/authSlice';
+import Activities from '../components/ActivitiesTimeline';
 
 const Profile = () => {
   const [initialState, setInitialState] = useState({
@@ -273,6 +274,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      <Activities />
     </div>
   );
 };

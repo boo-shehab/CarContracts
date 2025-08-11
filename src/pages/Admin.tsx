@@ -13,13 +13,11 @@ import { LiaEditSolid } from 'react-icons/lia';
 import DeleteModal from '../components/DeleteModal';
 
 const UpdateDatesModal = ({ isOpen, onClose, company, onSuccess }: any) => {
-  const [subscriptionDate, setSubscriptionDate] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (company) {
-      setSubscriptionDate(new Date().toISOString().split('T')[0]);
       setExpirationDate(company.expirationDate);
     }
   }, []);
@@ -29,7 +27,6 @@ const UpdateDatesModal = ({ isOpen, onClose, company, onSuccess }: any) => {
     setIsLoading(true);
     try {
       await axios.put(`/companies/${company.id}`, {
-        subscriptionDate,
         expirationDate,
       });
       onSuccess();
@@ -59,14 +56,6 @@ const UpdateDatesModal = ({ isOpen, onClose, company, onSuccess }: any) => {
           </button>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <CustomDatePicker
-            name="subscriptionDate"
-            value={subscriptionDate}
-            showQuickSelect={true}
-            onChange={(e: any) => setSubscriptionDate(e.target.value)}
-            disabled={isLoading}
-            label="تاريخ الاشتراك"
-          />
           <CustomDatePicker
             name="expirationDate"
             value={expirationDate}
@@ -171,15 +160,13 @@ const Admin = () => {
       render: (row: any) => (
         <span
           onClick={() => {
-            if (row.status === 'EXPIRED') {
-              setSelectedCompany(row);
-              setTimeout(() => setShowUpdateDates(true), 0);
-            }
+            setSelectedCompany(row);
+            setTimeout(() => setShowUpdateDates(true), 0);
           }}
-          className={`text-lg font-normal py-1 rounded-full px-8 ${
+          className={`text-lg font-normal py-1 rounded-full px-8 block text-center cursor-pointer ${
             row.status !== 'EXPIRED'
               ? 'text-success-500 bg-success-100'
-              : 'text-error-500 bg-error-100 cursor-pointer'
+              : 'text-error-500 bg-error-100'
           }`}
         >
           {row.status !== 'EXPIRED' ? 'نشطة' : 'مقيدة'}

@@ -4,6 +4,7 @@ export interface TableContainerProps {
   columns: TableColumn[];
   apiUrl: string;
   refresh?: boolean;
+  isExpander?: boolean
   isThereFilters?: boolean;
   headerActions?: React.ReactNode;
 }

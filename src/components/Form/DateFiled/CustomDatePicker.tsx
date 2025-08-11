@@ -7,9 +7,9 @@ import { CustomDatePickerProps } from '../types';
 import { useEffect, useState } from 'react';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
-function addDays(date: Date, days: number) {
+function addYears(date: Date, years: number) {
   const result = new Date(date);
-  result.setDate(result.getDate() + days);
+  result.setFullYear(result.getFullYear() + years);
   return result;
 }
 
@@ -40,14 +40,14 @@ function CustomDatePicker({
     
     let newDate: Date;
     switch (type) {
-      case '+3days':
-        newDate = addDays(baseDate, 3);
-        break;
       case '+1month':
         newDate = addMonths(baseDate, 1);
         break;
       case '+3months':
         newDate = addMonths(baseDate, 3);
+        break;
+        case '+1year':
+        newDate = addYears(baseDate, 1);
         break;
       default:
         newDate = baseDate;
@@ -87,14 +87,6 @@ function CustomDatePicker({
                   <button
                     type="button"
                     className="block w-full text-right px-4 py-2 hover:bg-gray-100"
-                    onClick={() => handleQuickSelect('+3days')}
-                    disabled={disabled}
-                  >
-                    +3 أيام
-                  </button>
-                  <button
-                    type="button"
-                    className="block w-full text-right px-4 py-2 hover:bg-gray-100"
                     onClick={() => handleQuickSelect('+1month')}
                     disabled={disabled}
                   >
@@ -107,6 +99,14 @@ function CustomDatePicker({
                     disabled={disabled}
                   >
                     +3 أشهر
+                  </button>
+                  <button
+                    type="button"
+                    className="block w-full text-right px-4 py-2 hover:bg-gray-100"
+                    onClick={() => handleQuickSelect('+1year')}
+                    disabled={disabled}
+                  >
+                    +1 سنة
                   </button>
                 </div>
               )}

@@ -42,6 +42,7 @@ export interface RadioInputProps {
 export interface TableColumn {
   title: string;
   key: string;
+  paramKey?: string;
   sortable?: boolean;
   isFilterable?: boolean;
   isVisible?: boolean;

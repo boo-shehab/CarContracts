@@ -55,6 +55,10 @@ const router = createBrowserRouter([
             element: <Profile />,
           },
           {
+            path: 'profile/:id',
+            element: <Profile />,
+          },
+          {
             path: 'contracts',
             element: withSuspense(<Contracts />),
           },
@@ -79,8 +83,12 @@ const router = createBrowserRouter([
             element: withSuspense(<AccountCards />),
           },
           {
-            path: `account-cards/:id`,
-            element: withSuspense(<ViewPerson />),
+            path: `account-cards/:id/view`,
+            element: withSuspense(<AddNewAccount />),
+          },
+          {
+            path: `account-cards/:id/edit`,
+            element: withSuspense(<AddNewAccount />),
           },
           {
             path: 'new-car',

@@ -10,7 +10,7 @@ interface AddAccountInformationProps {
   setFormData: (data: any) => void;
   onValidationChange?: (isValid: boolean) => void;
   isLoading?: boolean;
-  returnedValue: any;
+  returnedValue?: any;
   disabled: boolean
 }
 
