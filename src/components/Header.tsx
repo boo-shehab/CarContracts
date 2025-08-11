@@ -5,6 +5,7 @@ import { GoBellFill } from 'react-icons/go';
 import DownArrow from '../assets/icons/DownArrow';
 import { FiMenu } from 'react-icons/fi';
 import { IoClose } from 'react-icons/io5';
+import Notifications from './Notifications';
 
 const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -84,9 +85,7 @@ const Header = () => {
 
         {/* Desktop Section */}
         <div className="hidden xl:flex items-center gap-3 relative" ref={desktopDropdownRef}>
-          <button>
-            <GoBellFill size={30} className="text-primary-200" />
-          </button>
+          <Notifications />
           <img src={userImg} alt="User" className="w-10 h-10 rounded-full object-cover" />
           <span className="text-gray-800 font-medium">محمد علي</span>
           <div
@@ -181,9 +180,7 @@ const Header = () => {
           </div>
 
           <div className="flex items-center gap-3 border-b pb-4 relative" ref={mobileDropdownRef}>
-            <button>
-              <GoBellFill size={24} className="text-primary-200" />
-            </button>
+            <Notifications />
             <img src={userImg} alt="User" className="w-8 h-8 rounded-full object-cover" />
             <span className="text-gray-800 font-medium text-lg">محمد علي</span>
             <div
