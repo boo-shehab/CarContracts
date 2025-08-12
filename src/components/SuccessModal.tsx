@@ -77,9 +77,13 @@ const SuccessModal = ({ message = 'تم اضافة الشركة بنجاح !', d
       console.log(response.data);
       toast.success('تم إرسال البيانات بنجاح!');
       onClose();
-    } catch (err) {
-      console.log(err);
-      toast.error('فشل في إرسال البيانات. يرجى المحاولة مرة أخرى.');
+    } catch (error: any) {
+      console.log(error);
+      const message =
+            error?.response?.data?.message ||
+            error?.message ||
+            "فشل في إرسال البيانات. يرجى المحاولة مرة أخرى.";
+        toast.error(message);
     } finally {
       setIsLoading(false);
     }

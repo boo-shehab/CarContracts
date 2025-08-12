@@ -52,9 +52,13 @@ const Login = () => {
       );
 
       navigate('/');
-    } catch (err: any) {
-      console.error('Login failed', err);
-      toast.error(err?.response?.data?.message || 'فشل تسجيل الدخول');
+    } catch (error: any) {
+      console.error('Login failed', error);
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        'فشل تسجيل الدخول';
+      toast.error(message);
       setUserState({ username: '', password: '' });
     } finally {
       setLoading(false);

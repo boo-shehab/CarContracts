@@ -2,7 +2,6 @@ import { useState } from 'react';
 import AddCarInformation from '../components/informationCard/AddCarInformation';
 import { MdKeyboardArrowRight } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
-import axios from '../services/axios';
 import DocumentsInformation from '../components/informationCard/DocumentsInformation';
 import { toast } from 'react-toastify';
 import { CarInformation } from '../components/informationCard/type';
@@ -106,13 +105,17 @@ function AddNewCar() {
 
     try {
       await createNewCar(carInformation, images);
-
+      
       resetData();
       toast.success('تم إضافة السيارة بنجاح');
       navigate('/');
-    } catch (err) {
+    } catch (error: any) {
       setIsLoading(false);
-      toast.error('فشل في إضافة السيارة');
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        'فشل في إضافة السيارة';
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }

@@ -2,6 +2,7 @@ import React from "react";
 import { Dialog } from '@headlessui/react';
 import axios from "../services/axios"; 
 import { MdDeleteForever } from "react-icons/md";
+import { toast } from "react-toastify";
 
 interface DeleteModalProps {
     open: boolean;
@@ -32,10 +33,15 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
             if(apiEndpoint) {
                 await axios.delete(apiEndpoint);
             }
-
+            toast.success("تم الحذف بنجاح");
             onDelete();
             onClose();
-        } catch (error) {
+        } catch (error: any) {
+          const message =
+            error?.response?.data?.message ||
+            error?.message ||
+            "حدث خطأ أثناء الحذف";
+        toast.error(message);
             console.error("Error deleting item:", error);
         }
     };

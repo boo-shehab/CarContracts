@@ -11,6 +11,7 @@ import {
   updatePersonAttachment,
 } from '../services/UserService';
 import { printAccountDocs } from '../utilities/printAccountDocs';
+import { toast } from 'react-toastify';
 
 function getChangedFields(original: any, updated: any) {
   const changed: any = {};
@@ -68,7 +69,6 @@ function AddNewAccount() {
       getAccountById(id)
         .then((res) => {
           const data = res.data.data;
-          console.log('Fetched account data:', data);
 
           const info = {
             firstName: data.firstName || '',
@@ -114,9 +114,14 @@ function AddNewAccount() {
             });
           }
           setImages(newImages);
+
         })
-        .catch(() => {
-          alert('تعذر تحميل بيانات الحساب');
+        .catch((error: any) => {
+          const message =
+            error?.response?.data?.message ||
+            error?.message ||
+            'تعذر تحميل بيانات الحساب';
+          toast.error(message);
           navigate(-1);
         })
         .finally(() => setIsLoading(false));
@@ -195,14 +200,14 @@ function AddNewAccount() {
         if (
           Object.keys(changedFields).length === 0 &&
           !(
-            images.nationalIdFrontFile instanceof File ||
-            images.nationalIdBackFile instanceof File ||
-            images.residenceCardFrontFile instanceof File ||
-            images.residenceCardBackFile instanceof File ||
-            (Array.isArray(images.othreFiles) && images.othreFiles.some((f) => f instanceof File))
+            images?.nationalIdFrontFile instanceof File ||
+            images?.nationalIdBackFile instanceof File ||
+            images?.residenceCardFrontFile instanceof File ||
+            images?.residenceCardBackFile instanceof File ||
+            (Array.isArray(images?.othreFiles) && images.othreFiles.some((f) => f instanceof File))
           )
         ) {
-          alert('لم يتم تعديل أي بيانات.');
+          toast.info('لا توجد تغييرات لتحديثها');
           setIsLoading(false);
           return;
         }
@@ -213,22 +218,22 @@ function AddNewAccount() {
 
         // Update attachments if changed
         const attachmentPromises = [];
-        if (images.nationalIdFrontFile instanceof File) {
+        if (images?.nationalIdFrontFile instanceof File) {
           attachmentPromises.push(
             updatePersonAttachment(id, 'NATIONAL_ID', 'FRONT', images.nationalIdFrontFile)
           );
         }
-        if (images.nationalIdBackFile instanceof File) {
+        if (images?.nationalIdBackFile instanceof File) {
           attachmentPromises.push(
             updatePersonAttachment(id, 'NATIONAL_ID', 'BACK', images.nationalIdBackFile)
           );
         }
-        if (images.residenceCardFrontFile instanceof File) {
+        if (images?.residenceCardFrontFile instanceof File) {
           attachmentPromises.push(
             updatePersonAttachment(id, 'RESIDENCE_CARD', 'FRONT', images.residenceCardFrontFile)
           );
         }
-        if (images.residenceCardBackFile instanceof File) {
+        if (images?.residenceCardBackFile instanceof File) {
           attachmentPromises.push(
             updatePersonAttachment(id, 'RESIDENCE_CARD', 'BACK', images.residenceCardBackFile)
           );
@@ -241,11 +246,16 @@ function AddNewAccount() {
       } else {
         response = await createNewAccount(accountInformation, images);
         // You may want to show a toast here: "تم اضافة الحساب بنجاح"
+        toast.success('تم اضافة الحساب بنجاح');
       }
       navigate(-1);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving account:', error);
-      alert('حدث خطأ أثناء حفظ الحساب. يرجى المحاولة مرة أخرى.');
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        'فشل في حفظ الحساب';
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }

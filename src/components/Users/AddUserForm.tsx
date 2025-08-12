@@ -127,9 +127,13 @@ const AddUserForm = ({ onSuccess, onCancel, initialData, isEdit }: AddUserFormPr
       }
       resetForm();
       onSuccess(formData);
-    } catch (err) {
-      console.error('Failed to save user', err);
-      toast.error(isEdit ? 'فشل في تعديل المستخدم' : 'فشل في اضافة المستخدم');
+    } catch (error: any) {
+      console.error('Failed to save user', error);
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        (isEdit ? 'فشل في تعديل المستخدم' : 'فشل في اضافة المستخدم');
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }

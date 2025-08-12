@@ -4,15 +4,21 @@ export interface TableContainerProps {
   columns: TableColumn[];
   apiUrl: string;
   refresh?: boolean;
-  isExpander?: boolean
+  isExpander?: boolean;
   isThereFilters?: boolean;
   headerActions?: React.ReactNode;
 }
 
 export interface TableProps {
-  columns: TableColumn[];
-  data: Array<Record<string, any>>;
+  columns: any[];
+  data: any[];
+  loading: boolean;
+  error?: string | null;
   onSort?: (columnKey: string) => void;
-  loading?: boolean;
-  error?: any;
+  expandedRowId?: number | string | null;
+  setExpandedRowId?: (rowId: number | string, rowData: any) => void;
+  childData?: any[];
+  loadingRowId?: number | string | null;
+  isExpander?: boolean;
+  childColumns?: any[];
 }

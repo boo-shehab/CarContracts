@@ -123,9 +123,13 @@ const AddCompanyForm = ({ onSuccess, onCancel, initialData, isEdit }: AddCompany
         resetForm();
       }
       onSuccess(formData);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to save company', err);
-      toast.error(isEdit ? 'فشل في تعديل الشركة' : 'فشل في اضافة الشركة');
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        (isEdit ? 'فشل في تعديل الشركة' : 'فشل في اضافة الشركة');
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }

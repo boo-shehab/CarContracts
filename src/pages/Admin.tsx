@@ -11,6 +11,7 @@ import CustomDatePicker from '../components/Form/DateFiled/CustomDatePicker';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import { LiaEditSolid } from 'react-icons/lia';
 import DeleteModal from '../components/DeleteModal';
+import { toast } from 'react-toastify';
 
 const UpdateDatesModal = ({ isOpen, onClose, company, onSuccess }: any) => {
   const [expirationDate, setExpirationDate] = useState('');
@@ -29,11 +30,16 @@ const UpdateDatesModal = ({ isOpen, onClose, company, onSuccess }: any) => {
       await axios.put(`/companies/${company.id}`, {
         expirationDate,
       });
+      toast.success('تم تحديث تاريخ الانتهاء بنجاح');
       onSuccess();
       onClose();
     } catch (err: any) {
       // handle error
-      console.log(err);
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        'فشل في تحديث تاريخ الانتهاء.';
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }

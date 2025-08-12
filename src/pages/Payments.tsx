@@ -2,15 +2,14 @@ import { useState } from 'react';
 import { TableColumn } from '../components/Form/types';
 import TableContainer from '../components/TableContainer';
 import axios from '../services/axios';
-
+import { toast } from 'react-toastify';
 
 function Payments() {
   const [refresh, setRefresh] = useState(false);
-  
+
   const toggleRefresh = () => {
     setRefresh(!refresh);
   };
-
 
   const columns: TableColumn[] = [
     {
@@ -21,6 +20,11 @@ function Payments() {
     {
       title: 'نوع السيارة',
       key: 'carName',
+      sortable: true,
+    },
+    {
+      title: 'تاريخ',
+      key: 'createdAt',
       sortable: true,
     },
     {
@@ -37,36 +41,38 @@ function Payments() {
             const elements = [];
             let futureShown = false;
             let isFirst = true;
-            const cutoff = new Date("2025-10-03");
-  
+            const cutoff = new Date();
+
             for (const installment of row.installments) {
-              if (installment.status !== "PENDING") continue;
-  
+              if (installment.status !== 'PENDING') continue;
+
               const dueDate = new Date(installment.dueDate);
-              const prefix = isFirst ? "" : ","; // no comma before first one
-  
+              const prefix = isFirst ? '' : ','; // no comma before first one
+
               if (dueDate <= cutoff) {
                 elements.push(
                   <span key={installment.id} className="text-error-500">
-                    {prefix}{installment.installmentNumber}
+                    {prefix}
+                    {installment.installmentNumber}
                   </span>
                 );
                 isFirst = false;
               } else if (!futureShown) {
                 elements.push(
                   <span key={installment.id} className="text-primary-500">
-                    {prefix}{installment.installmentNumber}
+                    {prefix}
+                    {installment.installmentNumber}
                   </span>
                 );
                 futureShown = true;
                 isFirst = false;
               }
             }
-  
-            return elements;
-          })()}/{row.installments.length}
+
+            return elements.length > 0 ? elements : 0;
+          })()}
+          /{row.installments.length}
         </span>
-  
       ),
     },
     {
@@ -81,44 +87,50 @@ function Payments() {
       render: (row: any) => (
         <span
           className={`text-lg font-normal py-1 rounded-full block text-center px-8 ${
-            row.status === 'PAID'
+            row.status === 'COMPLETED'
               ? 'text-success-500 bg-success-100'
               : 'text-error-500 bg-error-100'
           }`}
         >
-          {row.status === 'PAID' ? 'مدفوعة' : 'غير مدفوعة'}
+          {row.status === 'COMPLETED' ? 'مدفوعة' : 'غير مدفوعة'}
         </span>
       ),
     },
   ];
-  
+
   const childColumns: TableColumn[] = [
     {
-      title: 'اسم المشترك',
-      key: 'subscriberName',
-      sortable: true,
-      render: (row: any) => (
-        <span className="text-lg font-normal">{row.id}</span>
+      title: 'اسم المشتري',
+      key: 'customerName',
+      render: (_child: any, _childIndex: number, parent: any) => (
+        <span className="text-lg font-normal">{parent?.customerName}</span>
       ),
     },
-    { 
-      title: 'المبلغ', 
-      key: 'amount', 
-      sortable: true 
+    {
+      title: 'نوع السيارة',
+      key: 'carName',
+      render: (_child: any, _childIndex: number, parent: any) => (
+        <span className="text-lg font-normal">{parent?.carName}</span>
+      ),
     },
-    { 
-      title: 'تاريخ الاستحقاق', 
-      key: 'dueDate', 
-      sortable: true 
+    {
+      title: 'تاريخ الاستحقاق',
+      key: 'dueDate',
+      sortable: true,
     },
-    { 
-      title: 'رقم الدفعة', 
-      key: 'installmentNumber', 
-      sortable: true 
+    {
+      title: 'المبلغ',
+      key: 'amount',
+      sortable: true,
     },
-    { 
-      title: 'الحالة', 
-      key: 'status', 
+    {
+      title: 'رقم الدفعة',
+      key: 'installmentNumber',
+      sortable: true,
+    },
+    {
+      title: 'الحالة',
+      key: 'status',
       sortable: true,
       render: (row: any) => (
         <span
@@ -128,9 +140,15 @@ function Payments() {
               : 'text-error-500 bg-error-100'
           }`}
           onClick={() => {
-            axios.put(`/payment/${row.id}/updateInstallmentStatus`)
-            .then(() => {
+            axios.put(`/payment/${row.id}/updateInstallmentStatus`).then(() => {
               toggleRefresh();
+              toast.success('تم الدفع بنجاح');
+            }).catch((error: any) => {
+              const message =
+                error?.response?.data?.message ||
+                error?.message ||
+                'فشل في تحديث حالة الدفعة.';
+              toast.error(message);
             });
           }}
         >

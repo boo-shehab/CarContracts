@@ -16,9 +16,11 @@ const Table = ({
   isExpander,
   childColumns, // <-- new
 }: TableProps & { childColumns?: any[] }) => {
-  const getValueByPath = (obj: any, path: string): any =>{
-    return path.split('.').reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : ''), obj);
-  }
+  const getValueByPath = (obj: any, path: string): any => {
+    return path
+      .split('.')
+      .reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : ''), obj);
+  };
 
   return (
     <div className="overflow-auto ml-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary-300 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-primary-100">
@@ -73,7 +75,7 @@ const Table = ({
                     .map((column, colIndex) =>
                       column.render ? (
                         <td key={colIndex} className="p-2.5">
-                          {isExpander && colIndex === 0 && (
+                          {isExpander && colIndex === 0 && item.installments.length > 0 && (
                             <button
                               onClick={() => setExpandedRowId(index, item)}
                               disabled={loadingRowId !== null}
@@ -95,7 +97,7 @@ const Table = ({
                       ) : (
                         <td key={colIndex} className="p-2.5">
                           <div className="flex items-center flex-nowrap gap-1">
-                            {isExpander && colIndex === 0 && (
+                            {isExpander && colIndex === 0 && item.installments.length > 0 && (
                               <button
                                 onClick={() => setExpandedRowId(index, item)}
                                 disabled={loadingRowId !== null}
@@ -131,7 +133,7 @@ const Table = ({
                         {(childColumns || columns).map((column, colIndex) => (
                           <td key={colIndex} className="p-2.5">
                             {column.render
-                              ? column.render(childItem, childIndex)
+                              ? column.render(childItem, childIndex, item) // Pass parent row as third argument
                               : getValueByPath(childItem, column.key)}
                           </td>
                         ))}

@@ -9,6 +9,7 @@ import { FiPrinter } from 'react-icons/fi';
 import { GrView } from 'react-icons/gr';
 import { printAccountDocs } from '../utilities/printAccountDocs';
 import { getAccountById } from '../services/UserService';
+import { toast } from 'react-toastify';
 
 const AccountCards = () => {
   const [refresh, setRefresh] = useState(false);
@@ -48,8 +49,12 @@ const AccountCards = () => {
         residenceCardFrontFile,
         residenceCardBackFile,
       });
-    } catch {
-      alert('تعذر تحميل بيانات الحساب للطباعة');
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        'تعذر تحميل بيانات الحساب للطباعة';
+      toast.error(message);
     }
   };
 

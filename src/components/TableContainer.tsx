@@ -7,6 +7,7 @@ import RenderFilterField from './Form/RenderFilterField';
 import { TableContainerProps } from './types';
 import { IoClose } from 'react-icons/io5';
 import axios from '../services/axios';
+import { toast } from 'react-toastify';
 
 const TableContainer = ({
   columns,
@@ -75,9 +76,14 @@ const TableContainer = ({
       setData(response.data.data);
       setCurrentPage(response.data?.pagination?.currentPage || 0);
       setLastPage(response.data?.pagination?.lastPage || 1);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching data:', error);
-      setError('Error fetching data');
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        'فشل في جلب البيانات. يرجى المحاولة مرة أخرى.';
+      toast.error(message);
+      setError('فشل في جلب البيانات. يرجى المحاولة مرة أخرى.');
     } finally {
       setLoading(false);
     }
@@ -90,6 +96,13 @@ const TableContainer = ({
 
     return () => clearTimeout(handler);
   }, [keyword, filters, sortDirection, refresh, currentPage, fetchData]);
+
+  useEffect(() => {
+    if (expandedRowId !== null) {
+      const row = data[expandedRowId as number];
+      setChildData(row && Array.isArray(row[childKey]) ? row[childKey] : []);
+    }
+  }, [data, expandedRowId, childKey, refresh]);
 
   const handleFilterChange = (name: string, value: any) => {
     console.log(`Filter changed: ${name} = ${value}`);
@@ -187,7 +200,6 @@ const TableContainer = ({
             expandedRowId={expandedRowId}
             isExpander={isExpander}
             setExpandedRowId={(rowId, rowData) => handleExpandRow(rowId, rowData)}
-            loadingRowId={loadingRowId}
             childData={childData}
             childColumns={childColumns}
           />

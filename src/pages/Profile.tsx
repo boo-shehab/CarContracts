@@ -158,8 +158,12 @@ const Profile = () => {
         })
       );
       toast.success('تم حفظ التعديلات بنجاح!');
-    } catch (error) {
-      toast.error('حدث خطأ أثناء حفظ التعديلات');
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        'حدث خطأ أثناء حفظ التعديلات';
+      toast.error(message);
       console.error('Error saving profile:', error);
       return;
     } finally {

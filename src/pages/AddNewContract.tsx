@@ -10,6 +10,7 @@ import { AccountInformation, CarInformation } from '../components/informationCar
 import DocumentsInformation from '../components/informationCard/DocumentsInformation';
 import axios from '../services/axios';
 import { createNewAccount, createNewCar } from '../services/UserService';
+import { toast } from 'react-toastify';
 
 function AddNewContract() {
   const navigate = useNavigate();
@@ -93,7 +94,7 @@ function AddNewContract() {
     installment: [],
   });
   
-  const handleReturnedSellerInfo = (data) => {
+  const handleReturnedSellerInfo = (data: any) => {
     setSellerInformation({
     firstName: data.firstName,
     fatherName: data.fatherName,
@@ -284,8 +285,13 @@ function AddNewContract() {
           contractDate: new Date().toISOString().split('T')[0],
         })
 
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error checking or creating seller account:", error);
+        const message = 
+          error?.response?.data?.message ||
+          error?.message ||
+          "حدث خطأ أثناء أنشاء العقد"
+          toast.error(message)
       }
     } else {
       setCurrentStep(currentStep + 1);
