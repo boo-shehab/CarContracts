@@ -104,7 +104,7 @@ function Contracts() {
     {
       title: 'الاجرائات',
       key: 'procedures',
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+       
       render: (row: any) => (
         <div className="flex items-center gap-2">
             <RiDeleteBinLine

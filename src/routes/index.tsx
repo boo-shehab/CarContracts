@@ -22,7 +22,7 @@ const AddNewCar = lazy(() => import('../pages/AddNewCar'));
 const AddNewAccount = lazy(() => import('../pages/AddNewAccount'));
 const AddNewContract = lazy(() => import('../pages/AddNewContract'));
 const AddNewAuthorization = lazy(() => import('../pages/AddNewAuthorization'));
-const ViewPerson = lazy(() => import('../pages/ViewPerson'));
+const Notifications = lazy(() => import('../pages/Notifications'));
 
 const withSuspense = (element: React.ReactNode) => (
   <Suspense fallback={<Loading />}>{element}</Suspense>
@@ -105,6 +105,10 @@ const router = createBrowserRouter([
           {
             path: 'new-authorization',
             element: withSuspense(<AddNewAuthorization />),
+          },
+          {
+            path: 'notifications',
+            element: withSuspense(<Notifications />),
           },
         ],
       },

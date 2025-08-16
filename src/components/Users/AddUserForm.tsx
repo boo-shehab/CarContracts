@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
 import InputField from '../Form/InputField';
 import { IoCloseOutline } from 'react-icons/io5';
@@ -31,7 +32,6 @@ const AddUserForm = ({ onSuccess, onCancel, initialData, isEdit }: AddUserFormPr
 
   const resetForm = () => {
     setFormData({
-      userType: '',
       fullName: '',
       email: '',
       password: '',

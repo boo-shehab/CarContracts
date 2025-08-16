@@ -27,7 +27,7 @@ export const createNewAccount = async (data: object, images: any) => {
   if (images.residenceCardBackFile)
     formData.append('residenceCardBackFile', images.residenceCardBackFile);
 
-  images.othreFiles.forEach((file) => {
+  images.othreFiles.forEach((file: any) => {
     formData.append('othreFiles', file);
   });
 

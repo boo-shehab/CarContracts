@@ -89,9 +89,9 @@ const Admin = () => {
   const [showModal, setShowModal] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [showUpdateDates, setShowUpdateDates] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState(null);
+  const [selectedCompany, setSelectedCompany] = useState<any>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
+  // const [editModalOpen, setEditModalOpen] = useState(false);
 
   const columns: TableColumn[] = [
     {
@@ -195,7 +195,7 @@ const Admin = () => {
             className="cursor-pointer"
             onClick={() => {
               setSelectedCompany(row);
-              setEditModalOpen(true);
+              // setEditModalOpen(true);
             }}
           />
         </div>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // TableContainer.tsx
 import { useCallback, useEffect, useState } from 'react';
 import Table from './Table';
@@ -36,14 +37,17 @@ const TableContainer = ({
   const rowsPerPage = 10;
 
   const [expandedRowId, setExpandedRowId] = useState<string | number | null>(null);
-  const [loadingRowId, setLoadingRowId] = useState<string | number | null>(null);
+  const [loadingRowId] = useState<string | number | null>(null);
   const [childData, setChildData] = useState<Record<string, any>[]>([]);
 
   const toggleFilters = () => setShowFilters((prev) => !prev);
 
   // When expanding a row, set childData from the expanded row's childKey
   const handleExpandRow = (rowId: string | number, rowData: any) => {
+    
     setExpandedRowId(rowId);
+    console.log('Expanded Row:', rowId, rowData);
+
     setChildData(Array.isArray(rowData[childKey]) ? rowData[childKey] : []);
   };
 
@@ -61,6 +65,9 @@ const TableContainer = ({
       const sortKey = column?.paramKey || sortDirection.sortBy;
       params.sortBy = sortKey;
       params.sortDirection = sortDirection.sortDirection;
+    }
+    if (keyword !== null && keyword !== '') {
+      params.keyword = keyword;
     }
     params.page = currentPage;
     params.size = rowsPerPage;
@@ -155,7 +162,7 @@ const TableContainer = ({
       <div className="flex flex-col md:flex-row w-full gap-4 mt-4 transition-all duration-500 ease-in-out">
         {/* Filters */}
         <div
-          className={`transition-all duration-500 ease-in-out overflow-hidden ${
+          className={`transition-all duration-500 ease-in-out ${
             showFilters
               ? 'w-full md:w-[450px] h-auto opacity-100 translate-x-0'
               : 'w-0 h-0 opacity-0 translate-x-full'
@@ -201,6 +208,7 @@ const TableContainer = ({
             isExpander={isExpander}
             setExpandedRowId={(rowId, rowData) => handleExpandRow(rowId, rowData)}
             childData={childData}
+            loadingRowId={loadingRowId}
             childColumns={childColumns}
           />
 

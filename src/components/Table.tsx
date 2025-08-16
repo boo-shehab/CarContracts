@@ -14,7 +14,7 @@ const Table = ({
   childData,
   loadingRowId,
   isExpander,
-  childColumns, // <-- new
+  childColumns,
 }: TableProps & { childColumns?: any[] }) => {
   const getValueByPath = (obj: any, path: string): any => {
     return path
@@ -75,7 +75,7 @@ const Table = ({
                     .map((column, colIndex) =>
                       column.render ? (
                         <td key={colIndex} className="p-2.5">
-                          {isExpander && colIndex === 0 && item.installments.length > 0 && (
+                          {isExpander && setExpandedRowId !== undefined && colIndex === 0 && item.installments.length > 0 && (
                             <button
                               onClick={() => setExpandedRowId(index, item)}
                               disabled={loadingRowId !== null}
@@ -97,7 +97,7 @@ const Table = ({
                       ) : (
                         <td key={colIndex} className="p-2.5">
                           <div className="flex items-center flex-nowrap gap-1">
-                            {isExpander && colIndex === 0 && item.installments.length > 0 && (
+                            {isExpander && setExpandedRowId !== undefined && colIndex === 0 && item.installments.length > 0 && (
                               <button
                                 onClick={() => setExpandedRowId(index, item)}
                                 disabled={loadingRowId !== null}
@@ -128,18 +128,18 @@ const Table = ({
                 </tr>
                 {expandedRowId === index && loadingRowId === null && isExpander && (
                   <>
-                    {(childData.length > 0 ? childData : []).map((childItem, childIndex) => (
+                    {((childData && childData?.length > 0) ? childData : []).map((childItem, childIndex) => (
                       <tr key={`${index}-${childIndex}`} className="bg-primary-50">
                         {(childColumns || columns).map((column, colIndex) => (
                           <td key={colIndex} className="p-2.5">
                             {column.render
-                              ? column.render(childItem, childIndex, item) // Pass parent row as third argument
+                              ? column.render(childItem, childIndex, item)
                               : getValueByPath(childItem, column.key)}
                           </td>
                         ))}
                       </tr>
                     ))}
-                    {childData.length === 0 && (
+                    {childData?.length === 0 && (
                       <tr>
                         <td
                           colSpan={(childColumns || columns).length}

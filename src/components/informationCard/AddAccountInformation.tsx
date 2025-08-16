@@ -141,7 +141,6 @@ function AddAccountInformation({
                 returnedValue(data);
                 setErrors({});
               }}
-              disabled={isLoading}
               inputValueKey='nationalId'
               dropdownItem={(item) => (
                 <div>

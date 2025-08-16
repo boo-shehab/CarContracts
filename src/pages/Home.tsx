@@ -1,41 +1,104 @@
 import TrendingUp from '../assets/icons/TrendingUp';
 import ArrowRise from '../assets/icons/ArrowRise';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AddCompanyModal from '../components/AddNewModal';
-
-const cardsData = [
-  {
-    title: 'عدد المبيعات الشهرية',
-    value: '500 سيارة',
-    percentage: 80,
-    trend: '600 سيارة',
-    salesValue: '700,000,000',
-  },
-  {
-    title: 'عدد المبيعات الشهرية',
-    value: '500 سيارة',
-    percentage: 80,
-    trend: '600 سيارة',
-    salesValue: '700,000,000',
-  },
-  {
-    title: 'عدد المبيعات الشهرية',
-    value: '500 سيارة',
-    percentage: 80,
-    trend: '600 سيارة',
-    salesValue: '700,000,000',
-  },
-  {
-    title: 'عدد المبيعات الشهرية',
-    value: '500 سيارة',
-    percentage: 80,
-    trend: '600 سيارة',
-    salesValue: '700,000,000',
-  },
-];
+import axios from '../services/axios'
+import ContractsChart from '../components/ContractsChart';
+import SalesChart from '../components/SalesChart';
+import CustomDatePicker from '../components/Form/DateFiled/CustomDatePicker';
+import SelectField from '../components/Form/SelectField';
 
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [date, setDate] = useState(null);
+  const [type, setType] = useState('');
+  const [cardsData, setCardsData] = useState<any[]>([]);
+
+  useEffect(() => {
+    axios.get('/dashboard?start=2025-01-01&dateType=year')
+      .then(response => {
+        const data = response.data.data;
+
+        /* the data will be like this data
+: 
+{month: {paidInstallmentsCount: 2000000, completedPlansCount: 3, contractsCount: 8},…}
+day
+: 
+{paidInstallmentsCount: 0, completedPlansCount: 0, contractsCount: 0}
+completedPlansCount
+: 
+0
+contractsCount
+: 
+0
+paidInstallmentsCount
+: 
+0
+month
+: 
+{paidInstallmentsCount: 2000000, completedPlansCount: 3, contractsCount: 8}
+completedPlansCount
+: 
+3
+contractsCount
+: 
+8
+paidInstallmentsCount
+: 
+2000000
+week
+: 
+{paidInstallmentsCount: 1000000, completedPlansCount: 0, contractsCount: 0}
+completedPlansCount
+: 
+0
+contractsCount
+: 
+0
+paidInstallmentsCount
+: 
+1000000
+year
+: 
+{paidInstallmentsCount: 8006500, completedPlansCount: 12, contractsCount: 17}
+completedPlansCount
+: 
+12
+contractsCount
+: 
+17
+paidInstallmentsCount
+: 
+8006500 */
+        setCardsData([
+          {
+            title: 'عدد المبيعات اليومية',
+            value: `${data.day.completedPlansCount} سيارة`,
+            trend: `${data.day.contractsCount} سيارة`,
+            salesValue: data.day.paidInstallmentsCount.toLocaleString(),
+          },{
+            title: 'عدد المبيعات الاسبوعية',
+            value: `${data.week.completedPlansCount} سيارة`,
+            trend: `${data.week.contractsCount} سيارة`,
+            salesValue: data.week.paidInstallmentsCount.toLocaleString(),
+          },{
+            title: 'عدد المبيعات الشهرية',
+            value: `${data.month.completedPlansCount} سيارة`,
+            trend: `${data.month.contractsCount} سيارة`,
+            salesValue: data.month.paidInstallmentsCount.toLocaleString(),
+          },{
+            title: 'عدد المبيعات السنوية',
+            value: `${data.year.completedPlansCount} سيارة`,
+            trend: `${data.year.contractsCount} سيارة`,
+            salesValue: data.year.paidInstallmentsCount.toLocaleString(),
+          },
+        ]);
+      })
+      .catch(error => {
+        // Handle any errors
+        console.error(error);
+      });
+  }, []);
   return (
     <div>
       <AddCompanyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
@@ -60,9 +123,9 @@ const Home = () => {
 
               <div className="text-xl font-medium text-success-500 flex items-center">
                 <span className="ml-1">
-                  <ArrowRise />
-                </span>{' '}
                 {card.trend}
+                </span>{' '}
+                  <ArrowRise />
               </div>
 
               <div className="text-2xl font-medium text-black">
@@ -73,6 +136,36 @@ const Home = () => {
           </div>
         ))}
       </div>
+      <div className='flex gap-4 mt-4'>
+        <CustomDatePicker
+          name='date'
+          onChange={(e: any) => setDate(e.target.value)}
+          value={date}
+          placeholder='حدد التاريخ لعرض البيانات'
+        />
+        <SelectField
+          name='type'
+          onChange={(e: any) => setType(e.target.value)}
+          options={[
+            { value: 'year', label: 'سنة' },
+            { value: 'month', label: 'شهر' },
+            { value: 'week', label: 'اسبوع' },
+            { value: 'day', label: 'يوم' },
+          ]}
+          value={type}
+          placeholder='حدد المدة'
+        />
+      </div>
+      {date && type && (
+        <div className='flex flex-col md:flex-row gap-4 mt-4 w-full'>
+          <div className='flex-1'>
+            <ContractsChart date={date} type={type} />
+          </div>
+          <div className='flex-1'>
+            <SalesChart date={date} type={type} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

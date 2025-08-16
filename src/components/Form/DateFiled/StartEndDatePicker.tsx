@@ -89,7 +89,7 @@ function StartEndDate({
       </div>
 
       <div
-        className={`relative w-full px-4 py-1 border rounded-lg border-neutral-100 focus-within:border-blue-500 transition text-black cursor-pointer ${
+        className={`relative w-full px-4 border rounded-lg border-neutral-100 focus-within:border-blue-500 transition text-black cursor-pointer ${
           error ? 'border-red-500 text-red-500' : ''
         } ${className}`}
         onClick={handleToggle}

@@ -33,7 +33,13 @@ function AddNewAccount() {
   const isView = location.pathname.endsWith('/view');
 
   const [isLoading, setIsLoading] = useState(false);
-  const [images, setImages] = useState({
+  const [images, setImages] = useState<{
+    nationalIdFrontFile: any | null;
+    nationalIdBackFile: any | null;
+    residenceCardFrontFile: any | null;
+    residenceCardBackFile: any | null;
+    othreFiles: any[];
+  }>({
     nationalIdFrontFile: null,
     nationalIdBackFile: null,
     residenceCardFrontFile: null,
@@ -90,7 +96,13 @@ function AddNewAccount() {
           setOriginalAccountInformation(info); // Save original for comparison
 
           // Set images if attachments exist
-          const newImages = {
+          const newImages: {
+            nationalIdFrontFile: any | null;
+            nationalIdBackFile: any | null;
+            residenceCardFrontFile: any | null;
+            residenceCardBackFile: any | null;
+            othreFiles: any[];
+          } = {
             nationalIdFrontFile: null,
             nationalIdBackFile: null,
             residenceCardFrontFile: null,
@@ -138,7 +150,7 @@ function AddNewAccount() {
     });
   };
 
-  const handleReturnedValue = (data) => {
+  const handleReturnedValue = (data: any) => {
     setAccountInformation({
       firstName: data.firstName,
       fatherName: data.fatherName,
@@ -156,7 +168,13 @@ function AddNewAccount() {
       issuingAuthority: data.issuingAuthority,
     });
 
-    const newImages = {
+    const newImages: {
+      nationalIdFrontFile: any | null;
+      nationalIdBackFile: any | null;
+      residenceCardFrontFile: any | null;
+      residenceCardBackFile: any | null;
+      othreFiles: any[];
+    } = {
       nationalIdFrontFile: null,
       nationalIdBackFile: null,
       residenceCardFrontFile: null,
@@ -190,7 +208,7 @@ function AddNewAccount() {
 
     setIsLoading(true);
     try {
-      let response;
+      // let response;
       if (isEdit && id) {
         // Only send changed fields for info
         const changedFields = getChangedFields(
@@ -204,7 +222,7 @@ function AddNewAccount() {
             images?.nationalIdBackFile instanceof File ||
             images?.residenceCardFrontFile instanceof File ||
             images?.residenceCardBackFile instanceof File ||
-            (Array.isArray(images?.othreFiles) && images.othreFiles.some((f) => f instanceof File))
+            (Array.isArray(images?.othreFiles) && images.othreFiles.some((f:any) => f instanceof File))
           )
         ) {
           toast.info('لا توجد تغييرات لتحديثها');
@@ -244,7 +262,7 @@ function AddNewAccount() {
 
         // You may want to show a toast here: "تم تعديل الحساب بنجاح"
       } else {
-        response = await createNewAccount(accountInformation, images);
+        await createNewAccount(accountInformation, images);
         // You may want to show a toast here: "تم اضافة الحساب بنجاح"
         toast.success('تم اضافة الحساب بنجاح');
       }

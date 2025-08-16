@@ -3,6 +3,7 @@ export interface Company {
   status: 'ACTIVE' | 'EXPIRED';
 }
 export interface CompanyFormData {
+  id?: string;
   companyName: string;
   ownerName: string;
   ownerContact: string;

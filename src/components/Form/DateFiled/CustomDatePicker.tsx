@@ -118,20 +118,46 @@ function CustomDatePicker({
             />
           )}
           <DatePicker
-            selected={value ? new Date(value) : null}
-            onChange={(e) => onChange({ target: { name, value: e } })}
-            disabled={disabled}
-            name={name}
-            placeholderText={placeholder}
-            dateFormat="yyyy / MM / dd"
-            className={`w-full p-2 text-lg border-none focus:border-none focus:outline-none text-black ${className} ${
-              error ? 'border-red-500 text-red-500' : ''
-            }`}
-            calendarClassName="customDatepicker"
-            showMonthDropdown
-            showYearDropdown
-            dropdownMode="select"
-          />
+  selected={pickerDate}
+  onChange={(e) => {
+    setPickerDate(e);
+    onChange({ target: { name, value: e } });
+  }}
+  disabled={disabled}
+  autoComplete="off"
+  name={name}
+  placeholderText={placeholder}
+  dateFormat="yyyy / MM / dd"
+  className={`w-full p-2 text-lg border-none focus:border-none focus:outline-none text-black ${className} ${
+    error ? 'border-red-500 text-red-500' : ''
+  }`}
+  calendarClassName="customDatepicker"
+  showMonthDropdown
+  showYearDropdown
+  dropdownMode="select"
+  popperPlacement="bottom-start"
+  popperProps={{
+    strategy: 'absolute',
+    modifiers: [
+      {
+        name: 'flip',
+        options: {
+          fallbackPlacements: ['bottom-start', 'bottom-end', 'top-start', 'top-end'],
+        },
+      },
+      {
+        name: 'preventOverflow',
+        options: {
+          mainAxis: true,
+          altAxis: true,
+          padding: 8,
+        },
+      },
+    ],
+  } as any}
+/>
+
+
         </div>
         {error ? <p className="mt-1 text-md text-red-500">{error}</p> : null}
       </div>

@@ -32,6 +32,7 @@ function RadioInput({
               type="radio"
               name={name}
               disabled={disabled}
+              autoComplete='off'
               value={item.value}
               checked={value === item.value}
               onChange={onChange}

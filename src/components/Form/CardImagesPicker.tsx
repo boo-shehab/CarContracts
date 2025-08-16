@@ -124,7 +124,7 @@ interface CaptureBoxProps {
   side: CardSide;
   label: string;
   image?: string;
-  inputRef: React.RefObject<HTMLInputElement>;
+  inputRef: React.RefObject<HTMLInputElement> | any;
   onClick: (side: CardSide) => void;
   onFileChange: React.ChangeEventHandler<HTMLInputElement>;
   disabled?: boolean;

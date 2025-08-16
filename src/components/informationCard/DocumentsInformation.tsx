@@ -1,12 +1,12 @@
 import CardImagesPicker from "../Form/CardImagesPicker";
 import UploadImage from "../Form/UploadImage";
 
-function DocumentsInformation({ formData, setFormData, title, isPerson, disabled }) {
-  const handlePersonImages = (fileObj) => {
+function DocumentsInformation({ formData, setFormData, title, isPerson, disabled }: any) {
+  const handlePersonImages = (fileObj: any) => {
     setFormData({ ...formData, ...fileObj });
   };
 
-  const handleOtherImages = (files) => {
+  const handleOtherImages = (files: any) => {
     setFormData({ ...formData, othreFiles: files });
   };
 
@@ -70,7 +70,7 @@ function DocumentsInformation({ formData, setFormData, title, isPerson, disabled
           <UploadImage
             onChange={(files) => handleOtherImages(files)}
             disabled={disabled}
-            oldImages={formData?.othreFiles?.map((file) =>
+            oldImages={formData?.othreFiles?.map((file: any) =>
               typeof file === "string" ? file : URL.createObjectURL(file)
             )}
           />

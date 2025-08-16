@@ -11,7 +11,8 @@ import { useNavigate } from 'react-router-dom';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from '../features/auth/authSlice';
-import Activities from '../components/ActivitiesTimeline';
+import ActivitiesTimeline from '../components/ActivitiesTimeline';
+import UserRoles from '../components/UserRoles';
 
 const Profile = () => {
   const [initialState, setInitialState] = useState({
@@ -278,7 +279,10 @@ const Profile = () => {
           </div>
         </div>
       </div>
-      <Activities />
+      <div className='flex mt-4 flex-col lg:flex-row gap-4'>
+        <UserRoles />
+        <ActivitiesTimeline />
+      </div>
     </div>
   );
 };

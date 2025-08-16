@@ -6,6 +6,7 @@ interface SearchSelectProps {
   returnedValue: (value: any) => void;
   dropdownItem: (item: any) => React.ReactNode;
   inputValueKey?: string;
+  
 }
 
 export default function SearchSelect({
@@ -67,6 +68,7 @@ export default function SearchSelect({
         type="text"
         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         placeholder="Search..."
+        autoComplete='off'
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => setShowDropdown(true)}

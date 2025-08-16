@@ -1,12 +1,12 @@
 import InputField from '../Form/InputField';
 import SearchSelect from '../Form/SearchSelect';
 import { CarInformation } from './type';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 interface AddCarInformationProps {
   formData: CarInformation;
   title: string;
-  setFormData: (field: string, value: string | number) => void;
+  setFormData: any;
   isLoading?: boolean;
   onValidate?: (isValid: boolean) => void;
   returnedValue?: (value: any) => void;
@@ -127,7 +127,6 @@ function AddCarInformation({
                 returnedValue(data);
                 setErrors({});
               }}
-              disabled={isLoading}
               inputValueKey='chassisNumber'
               dropdownItem={(item) => (
                 <div>

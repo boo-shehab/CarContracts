@@ -1,94 +1,116 @@
-import CloningMachineIcon from '../assets/icons/CloningMachineIcon';
+import { useState } from 'react';
+import DeleteModal from '../components/DeleteModal';
 import { TableColumn } from '../components/Form/types';
 import TableContainer from '../components/TableContainer';
-import { LiaEditSolid } from 'react-icons/lia';
 import { RiDeleteBinLine } from 'react-icons/ri';
+import { Link } from 'react-router-dom';
 
-const columns: TableColumn[] = [
-  {
-    title: 'رقم التخويل',
-    key: 'id',
-    sortable: true,
-  },
-  {
-    title: 'تاريخ التخويل',
-    key: 'authorizationDate',
-    sortable: true,
-    isFilterable: true,
-    filterType: 'startEndDate',
-    render: (row: any) => (
-      <span className="text-lg font-normal">
-        {new Date(row.subscriptionDate).toLocaleDateString()}
-      </span>
-    ),
-  },
-  {
-    title: 'اسم المشتري',
-    key: 'buyerName',
-    sortable: true,
-    isFilterable: true,
-    filterType: 'text',
-  },
-  {
-    title: 'وكيل الشركة',
-    key: 'carType',
-    sortable: true,
-  },
-  {
-    title: 'رقم السيارة',
-    key: 'carPlateNumber',
-    sortable: true,
-    isFilterable: true,
-    filterType: 'text',
-  },
-  {
-    title: 'رقم الهاتف',
-    key: 'number',
-    isVisible: false,
-    isFilterable: true,
-    filterType: 'text',
-  },
-  {
-    title: 'المبلغ المدفوع',
-    key: 'amountPaid',
-    sortable: true,
-    isFilterable: true,
-    filterType: 'text',
-  },
-  {
-    title: 'طريقة الدفع',
-    key: 'paymentMethod',
-    sortable: true,
-  },
-  {
-    title: 'حالة الدفع',
-    key: 'paymentStatus',
-    sortable: true,
-    isFilterable: true,
-    filterType: 'select',
-    filterOptions: [
-      { label: 'مكتمل', value: 'paid' },
-      { label: 'غير مكتمل', value: 'unpaid' },
-    ],
-  },
-  {
-    title: 'الاجرائات',
-    key: 'procedures',
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    render: (_row: any) => (
-      <div className="flex items-center gap-2">
-        <RiDeleteBinLine />
-        <LiaEditSolid />
-        <CloningMachineIcon />
-      </div>
-    ),
-  },
-];
 
 function Authorizations() {
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedAuthorization, setSelectedAuthorization] = useState<any>(null);
+  const [refresh, setRefresh] = useState(false);
+
+  const toggleRefresh = () => {
+    setRefresh((prev) => !prev);
+  };
+
+  const columns: TableColumn[] = [
+    {
+      title: 'رقم التخويل',
+      key: 'authorizationNumber',
+      sortable: true,
+    },
+    {
+      title: 'تاريخ التخويل',
+      key: 'authorizationDate',
+      sortable: true,
+      isFilterable: true,
+      filterType: 'startEndDate',
+      render: (row: any) => (
+        <span className="text-lg font-normal">
+          {new Date(row.authorizationDate).toLocaleDateString()}
+        </span>
+      ),
+    },
+    {
+      title: 'اسم المشتري',
+      key: 'buyer.firstName',
+      sortable: true,
+      isFilterable: true,
+      filterType: 'text',
+    },
+    {
+      title: 'وكيل الشركة',
+      key: 'companyAgent',
+      sortable: true,
+    },
+    {
+      title: 'نوع السيارة',
+      key: 'car.type',
+      sortable: true,
+      isFilterable: true,
+      filterType: 'text',
+    },
+    {
+      title: 'رقم السيارة',
+      key: 'car.plateNumber',
+      sortable: true,
+      isFilterable: true,
+      filterType: 'text',
+    },
+    {
+      title: 'رقم الشاصي',
+      key: 'car.chassisNumber',
+      sortable: true,
+    },
+    {
+      title: 'الاجرائات',
+      key: 'procedures',
+       
+      render: (row: any) => (
+        <div className="flex items-center gap-2">
+          <RiDeleteBinLine
+              className="cursor-pointer text-red-600"
+              onClick={() => {
+                setSelectedAuthorization(row)
+                setDeleteModalOpen(true);
+              }}
+            />
+        </div>
+      ),
+    },
+  ];
   return (
     <div>
-      <TableContainer columns={columns} apiUrl="/authorizations" />
+      <TableContainer 
+        columns={columns} 
+        apiUrl="/authorizations"
+        refresh={refresh} 
+        headerActions={
+          <div>
+            <Link to="/new-authorization" className="bg-primary-500 border border-primary-500 rounded-2xl py-2 px-4 text-white text-xl font-normal w-full md:w-auto">
+              + إضافة تخويل
+            </Link>
+          </div>
+        }
+      />
+      
+      <DeleteModal
+        open={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onDelete={() => {
+          setDeleteModalOpen(false);
+          setSelectedAuthorization(null);
+          toggleRefresh();
+        }}
+        title="تأكيد الحذف"
+        description={`هل أنت متأكد أنك تريد حذف هذا التخويل المرقم ${
+          selectedAuthorization?.authorizationNumber || ''
+        }؟ لا يمكن التراجع عن هذا الإجراء.`}
+        loading={false}
+        apiEndpoint={selectedAuthorization ? `/authorizations/${selectedAuthorization.id}` : undefined}
+      />
     </div>
   );
 }
