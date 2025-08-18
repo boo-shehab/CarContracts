@@ -216,7 +216,7 @@ function AddCarInformation({
             disabled={isLoading || disabled}
           />
           <InputField
-            value={formData.passengerCount.toString()}
+            value={formData.passengerCount}
             name="passengerCount"
             onChange={(e) => handleChange('passengerCount', parseInt(e.target.value))}
             label="عدد الركاب"
@@ -226,7 +226,7 @@ function AddCarInformation({
             disabled={isLoading || disabled}
           />
           <InputField
-            value={formData.cylinderCount.toString()}
+            value={formData.cylinderCount}
             name="cylinderCount"
             onChange={(e) => handleChange('cylinderCount', parseInt(e.target.value))}
             label="عدد الأسطوانات"
@@ -236,7 +236,7 @@ function AddCarInformation({
             disabled={isLoading || disabled}
           />
           <InputField
-            value={formData.kilometers.toString()}
+            value={formData.kilometers}
             name="kilometers"
             onChange={(e) => handleChange('kilometers', parseInt(e.target.value))}
             label="عدد الكيلومترات"
