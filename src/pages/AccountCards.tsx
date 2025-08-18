@@ -138,7 +138,7 @@ const AccountCards = () => {
         headerActions={
           <>
             <Link
-              to={'new-account'}
+              to={'/new-account'}
               className="bg-primary-500 border border-primary-500 rounded-2xl py-2 px-4 text-white text-xl font-normal w-full md:w-auto"
             >
               + اضافة شخص

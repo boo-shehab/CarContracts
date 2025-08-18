@@ -6,7 +6,8 @@ interface SearchSelectProps {
   returnedValue: (value: any) => void;
   dropdownItem: (item: any) => React.ReactNode;
   inputValueKey?: string;
-  
+  placeholder?: string;
+
 }
 
 export default function SearchSelect({
@@ -14,6 +15,7 @@ export default function SearchSelect({
   returnedValue,
   dropdownItem,
   inputValueKey = "",
+  placeholder = "Search..."
 }: SearchSelectProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
@@ -67,7 +69,7 @@ export default function SearchSelect({
       <input
         type="text"
         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        placeholder="Search..."
+        placeholder={placeholder}
         autoComplete='off'
         value={query}
         onChange={(e) => setQuery(e.target.value)}

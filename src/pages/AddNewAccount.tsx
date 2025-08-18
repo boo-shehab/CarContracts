@@ -48,6 +48,7 @@ function AddNewAccount() {
   });
   const [disabled, setDisabled] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [imagesValidation, setImagesValidation] = useState(false);
 
   const [accountInformation, setAccountInformation] = useState<AccountInformation>({
     firstName: '',
@@ -204,7 +205,7 @@ function AddNewAccount() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isFormValid) return;
+    if (!isFormValid || !imagesValidation) return;
 
     setIsLoading(true);
     try {
@@ -305,6 +306,7 @@ function AddNewAccount() {
           setFormData={setImages}
           isPerson={true}
           disabled={isView || disabled}
+          onValidationChange={setImagesValidation}
           title="اضافة الملفات"
         />
 
@@ -319,7 +321,7 @@ function AddNewAccount() {
         ) : (
           <button
             type="submit"
-            disabled={!isFormValid || isLoading}
+            disabled={!isFormValid || !imagesValidation || isLoading}
             className="w-full rounded-lg px-4 py-2.5 text-white text-2xl bg-primary-500 hover:bg-primary-600 disabled:bg-neutral-100 disabled:text-neutral-400 disabled:cursor-not-allowed aria-pressed:bg-primary-700 "
           >
             {isLoading

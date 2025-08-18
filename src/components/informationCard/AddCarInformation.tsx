@@ -123,6 +123,7 @@ function AddCarInformation({
           {returnedValue && (
             <SearchSelect
               api='car'
+              placeholder='البحث برقم الشاصي'
               returnedValue={(data) => {
                 returnedValue(data);
                 setErrors({});

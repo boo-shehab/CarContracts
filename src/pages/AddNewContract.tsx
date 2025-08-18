@@ -308,6 +308,7 @@ function AddNewContract() {
           paymentId: paymentResponse.data.data.id,
           contractDate: new Date().toISOString().split('T')[0],
         })
+        navigate(-1)
 
       } catch (error: any) {
         console.error("Error checking or creating seller account:", error);

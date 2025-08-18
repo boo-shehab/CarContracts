@@ -39,6 +39,11 @@ function Authorizations() {
       sortable: true,
       isFilterable: true,
       filterType: 'text',
+      render: (row: any) => (
+        <span className="text-lg font-normal">
+          {`${row?.buyer?.firstName || ''} ${row?.buyer?.fatherName || ''} ${row?.buyer?.grandfatherName || ''} ${row?.buyer?.fourthName || ''} ${row?.buyer?.surname || ''}`}
+        </span>
+      ),
     },
     {
       title: 'وكيل الشركة',
