@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GoBellFill } from 'react-icons/go';
 import { BsInfoCircle, BsExclamationCircleFill } from 'react-icons/bs';
 import { HiOutlineDocumentText } from 'react-icons/hi';
@@ -19,6 +19,8 @@ const NotificationsPopup = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+
+  const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Fake data based on your screenshot
@@ -92,6 +94,23 @@ const NotificationsPopup = () => {
     setNotifications(mockData);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [open]);
+
   const renderIcon = (type?: string) => {
     switch (type) {
       case 'error':
@@ -108,7 +127,7 @@ const NotificationsPopup = () => {
   };
 
   return (
-    <div className="relative font-sans">
+    <div className="relative font-sans" ref={popupRef}>
       <button onClick={() => setOpen(!open)} className="relative">
         <GoBellFill size={24} className="text-primary-200" />
         {notifications.some((n) => !n.seen) && (

@@ -257,8 +257,10 @@ function AddNewAccount() {
             updatePersonAttachment(id, 'RESIDENCE_CARD', 'BACK', images.residenceCardBackFile)
           );
         }
-        // If you want to support updating other files, loop through images.othreFiles and call updatePersonAttachment with the correct docType/docSide
-
+        // If you want to support updating other files, loop through images.otherFiles and call updatePersonAttachment with the correct docType/docSide
+        // images.othreFiles.forEach((file: File) => {
+          attachmentPromises.push(updatePersonAttachment(id, 'OTHER_FILE', 'OTHER', images.othreFiles));
+        // });
         await Promise.all(attachmentPromises);
 
         // You may want to show a toast here: "تم تعديل الحساب بنجاح"

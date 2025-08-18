@@ -68,11 +68,11 @@ const UploadImage: React.FC<UploadImageProps> = ({ onChange, oldImages, disabled
   return (
     <>
       {images.length > 0 && (
-        <div className="flex flex-wrap gap-4 justify-center mb-4">
+        <div className="flex flex-wrap gap-4 justify-center">
           {images.map((src, idx) => (
             <div
               key={idx}
-              className="w-32 h-32 rounded-xl overflow-hidden bg-white border border-blue-100 flex items-center justify-center"
+              className="w-44 h-44 rounded-xl overflow-hidden bg-white border border-blue-100 flex items-center justify-center"
             >
               <img src={src} alt={`uploaded-${idx}`} className="object-cover w-full h-full" />
             </div>

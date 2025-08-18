@@ -76,10 +76,14 @@ export const updatePersonAttachment = async (
   personId: string | number,
   docType: string,
   docSide: string,
-  file: File
+  file: File | File[]
 ) => {
   const formData = new FormData();
-  formData.append('file', file);
+  if (Array.isArray(file)) {
+    file.forEach((f) => formData.append('file', f));
+  } else {
+    formData.append('file', file);
+  }
 
   return axios.put(
     `/person/${personId}/attachment/${docType}/${docSide}`,
