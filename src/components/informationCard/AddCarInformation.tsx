@@ -1,12 +1,12 @@
 import InputField from '../Form/InputField';
 import SearchSelect from '../Form/SearchSelect';
 import { CarInformation } from './type';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 interface AddCarInformationProps {
   formData: CarInformation;
   title: string;
-  setFormData: (field: string, value: string | number) => void;
+  setFormData: any;
   isLoading?: boolean;
   onValidate?: (isValid: boolean) => void;
   returnedValue?: (value: any) => void;
@@ -123,11 +123,11 @@ function AddCarInformation({
           {returnedValue && (
             <SearchSelect
               api='car'
+              placeholder='البحث برقم الشاصي'
               returnedValue={(data) => {
                 returnedValue(data);
                 setErrors({});
               }}
-              disabled={isLoading}
               inputValueKey='chassisNumber'
               dropdownItem={(item) => (
                 <div>
@@ -216,7 +216,7 @@ function AddCarInformation({
             disabled={isLoading || disabled}
           />
           <InputField
-            value={formData.passengerCount.toString()}
+            value={formData.passengerCount}
             name="passengerCount"
             onChange={(e) => handleChange('passengerCount', parseInt(e.target.value))}
             label="عدد الركاب"
@@ -226,7 +226,7 @@ function AddCarInformation({
             disabled={isLoading || disabled}
           />
           <InputField
-            value={formData.cylinderCount.toString()}
+            value={formData.cylinderCount}
             name="cylinderCount"
             onChange={(e) => handleChange('cylinderCount', parseInt(e.target.value))}
             label="عدد الأسطوانات"
@@ -236,7 +236,7 @@ function AddCarInformation({
             disabled={isLoading || disabled}
           />
           <InputField
-            value={formData.kilometers.toString()}
+            value={formData.kilometers}
             name="kilometers"
             onChange={(e) => handleChange('kilometers', parseInt(e.target.value))}
             label="عدد الكيلومترات"

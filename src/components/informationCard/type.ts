@@ -28,3 +28,9 @@ export interface CarInformation {
     kilometers: number;
     origin: string;
 }
+
+export interface AuthorizationInformation {
+    authorizationNumber: string ;
+    authorizationDate: string;
+    companyAgent: string ;
+}

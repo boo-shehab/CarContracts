@@ -1,4 +1,3 @@
-import React from "react";
 import { Timeline } from "antd";
 import "antd/dist/reset.css"; // Ant Design styles
 
@@ -22,7 +21,7 @@ const activitiesData = [
   {
     dateGroup: "الأسبوع الماضي",
     activities: [
-      "قمت بإنشاء عقد جديد المرقم ب 1234",
+      "قمت بإنشاء عقد جديد المرقم ب 1234قمت بإنشاء عقد جديد المرقم ب 1234قمت بإنشاء عقد جديد المرقم ب 1234قمت بإنشاء عقد جديد المرقم ب 1234قمت بإنشاء عقد جديد المرقم ب 1234قمت بإنشاء عقد جديد المرقم ب 1234قمت بإنشاء عقد جديد المرقم ب 1234قمت بإنشاء عقد جديد المرقم ب 1234قمت بإنشاء عقد جديد المرقم ب 1234قمت بإنشاء عقد جديد المرقم ب 1234قمت بإنشاء عقد جديد المرقم ب 1234قمت بإنشاء عقد جديد المرقم ب 1234قمت بإنشاء عقد جديد المرقم ب 1234",
       "قمت بطباعة عقد بيع باسم محمد علي المرقم 346",
       "قمت بطباعة عقد بيع باسم محمد علي المرقم 346",
     ],
@@ -31,7 +30,7 @@ const activitiesData = [
 
 export default function ActivitiesTimeline() {
   return (
-    <div className="bg-white rounded-lg p-6 max-w-4xl mx-auto">
+    <div className="bg-white rounded-lg p-4 mx-auto shadow">
       <h2 className="text-blue-600 font-bold text-lg mb-4">نشاطاتي</h2>
 
       {activitiesData.map((group, idx) => (

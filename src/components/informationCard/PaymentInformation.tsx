@@ -27,7 +27,7 @@ interface PaymentInformationProps {
 }
 
 function PaymentInformation({ formData, setFormData }: PaymentInformationProps) {
-  const [lastChanged, setLastChanged] = useState<'total' | 'down' | 'remaining' | null>(null);
+  const [setLastChanged] = useState<'total' | 'down' | 'remaining' | any>(null);
   const userEditedInstallment = useRef(false);
 
   // Auto update related fields when values change

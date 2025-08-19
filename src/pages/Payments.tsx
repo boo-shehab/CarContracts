@@ -81,8 +81,8 @@ function Payments() {
       isFilterable: true,
       filterType: 'select',
       filterOptions: [
-        { label: 'غير مدفوعة', value: 'UNPAID' },
-        { label: 'مدفوعة', value: 'PAID' },
+        { label: 'غير مدفوعة', value: 'PENDING' },
+        { label: 'مدفوعة', value: 'COMPLETED' },
       ],
       render: (row: any) => (
         <span

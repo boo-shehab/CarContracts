@@ -164,3 +164,11 @@ input[type='number'] {
   --color-info-800: #001042;
   --color-info-900: #00061a;
 }
+
+.ant-timeline-item  {
+  left: calc(50% - 65px) !important;
+}
+
+.ant-timeline-item-content {
+  width: calc(100% - 75px) !important;
+}

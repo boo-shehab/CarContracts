@@ -13,7 +13,8 @@ interface Props {
 
 const AddUserModal = ({ isOpen, onClose, onSuccess, initialData, isEdit }: Props) => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const [dataInfo, setDataInfo] = useState(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_dataInfo, setDataInfo] = useState(null);
   const handleSuccess = (data: any) => {
     setDataInfo(data);
     setIsSuccessModalOpen(true);

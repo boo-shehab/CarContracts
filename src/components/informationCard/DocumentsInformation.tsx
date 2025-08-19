@@ -1,14 +1,27 @@
+import { useEffect } from "react";
 import CardImagesPicker from "../Form/CardImagesPicker";
 import UploadImage from "../Form/UploadImage";
 
-function DocumentsInformation({ formData, setFormData, title, isPerson, disabled }) {
-  const handlePersonImages = (fileObj) => {
+function DocumentsInformation({ formData, setFormData, title, isPerson, disabled, onValidationChange }: any) {
+  const handlePersonImages = (fileObj: any) => {
     setFormData({ ...formData, ...fileObj });
   };
 
-  const handleOtherImages = (files) => {
+  const handleOtherImages = (files: any) => {
     setFormData({ ...formData, othreFiles: files });
   };
+
+  useEffect(() => {
+    if (onValidationChange) {
+      console.log(formData);
+
+      if (formData.nationalIdFrontFile && formData.nationalIdBackFile && formData.residenceCardFrontFile && formData.residenceCardBackFile) {
+        onValidationChange(true);
+      }else {
+        onValidationChange(false);
+      }
+    }
+  }, [formData, onValidationChange]);
 
   return (
     <div className="w-full bg-white rounded-xl shadow-lg p-4 my-4">
@@ -70,7 +83,7 @@ function DocumentsInformation({ formData, setFormData, title, isPerson, disabled
           <UploadImage
             onChange={(files) => handleOtherImages(files)}
             disabled={disabled}
-            oldImages={formData?.othreFiles?.map((file) =>
+            oldImages={formData?.othreFiles?.map((file: any) =>
               typeof file === "string" ? file : URL.createObjectURL(file)
             )}
           />

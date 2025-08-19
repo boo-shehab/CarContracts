@@ -3,6 +3,7 @@ import { TableColumn } from '../components/Form/types';
 import TableContainer from '../components/TableContainer';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import DeleteModal from '../components/DeleteModal';
+import { Link } from 'react-router-dom';
 
 
 function Contracts() {
@@ -88,6 +89,11 @@ function Contracts() {
       key: 'paymentPlan.paymentType',
       paramKey: 'TypePayment',
       sortable: false,
+      render: (row: any) => (
+        <span className="text-lg font-normal">
+          {row?.paymentPlan?.paymentType === 'CASH' ? 'نقد' : 'تقسيط'}
+        </span>
+      ),
     },
     {
       title: 'حالة الدفع',
@@ -97,14 +103,19 @@ function Contracts() {
       isFilterable: true,
       filterType: 'select',
       filterOptions: [
-        { label: 'مكتمل', value: 'paid' },
-        { label: 'غير مكتمل', value: 'unpaid' },
+        { label: 'مكتمل', value: 'COMPLETED' },
+        { label: 'غير مكتمل', value: 'PENDING' },
       ],
+      render: (row: any) => (
+        <span className="text-lg font-normal">
+          {row?.paymentPlan?.status === 'COMPLETED' ? 'مكتمل' : 'غير مكتمل'}
+        </span>
+      ),
     },
     {
       title: 'الاجرائات',
       key: 'procedures',
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+       
       render: (row: any) => (
         <div className="flex items-center gap-2">
             <RiDeleteBinLine
@@ -124,6 +135,14 @@ function Contracts() {
         columns={columns} 
         apiUrl="/contracts"
         refresh={refresh}
+        headerActions={
+          <Link
+            to={'/new-contract'}
+            className="bg-primary-500 border border-primary-500 rounded-2xl py-2 px-4 text-white text-xl font-normal w-full md:w-auto"
+          >
+            + اضافة عقد
+          </Link>
+        }
       />
       <DeleteModal
         open={deleteModalOpen}

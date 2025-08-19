@@ -108,15 +108,20 @@ function AddAccountInformation({
       // Check if the nationalId is existing in the database
       await axios.get(`/person?nationalId=${value}`)
       .then(response => {
-        console.log(response.data.data.length > 0);
-        if (response.data.data.length > 0) {
-            error = 'رقم الهوية موجود بالفعل';
-            
-          }
-        })
-        .catch(err => {
+        if (response.data.data.find((item: any) => item.nationalId === value)) {
+          error = 'رقم الهوية موجود بالفعل';
+        }
+      })
+      .catch(err => {
           console.error('Error checking national ID:', err);
         });
+    }
+
+    if(field === 'phoneNumber') {
+      // check if the phoneNumber is 11 number and start with 07
+      if (!/^(07)\d{9}$/.test(value)) {
+        error = 'رقم الهاتف يجب أن يكون 11 رقمًا ويبدأ بـ 07';
+      }
     }
 
     setErrors((prev) => ({
@@ -137,11 +142,11 @@ function AddAccountInformation({
           {returnedValue && (
             <SearchSelect
               api='person'
+              placeholder='البحث برقم الهوية'
               returnedValue={(data) => {
                 returnedValue(data);
                 setErrors({});
               }}
-              disabled={isLoading}
               inputValueKey='nationalId'
               dropdownItem={(item) => (
                 <div>

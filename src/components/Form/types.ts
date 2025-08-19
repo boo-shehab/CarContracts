@@ -48,7 +48,7 @@ export interface TableColumn {
   isVisible?: boolean;
   filterType?: 'text' | 'select' | 'date' | 'startEndDate' | 'radio';
   filterOptions?: { value: string; label: string }[];
-  render?: (row: Record<string, any>, index: number) => React.ReactNode;
+  render?: (row: Record<string, any>, index: number, parent?: any) => React.ReactNode;
 }
 
 export interface RenderFilterFieldProps {

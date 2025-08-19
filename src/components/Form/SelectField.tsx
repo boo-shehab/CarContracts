@@ -120,6 +120,7 @@ function SelectField({
                     <span className="text-lg">{option.label}</span>
                     <input
                       type="checkbox"
+                      autoComplete='off'
                       checked={(value as string[]).includes(option.value)}
                       onChange={() => handleMultiSelect(option.value)}
                       className="form-checkbox w-5 h-5 rounded-md border-gray-300 text-blue-600"

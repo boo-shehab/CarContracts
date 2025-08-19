@@ -37,7 +37,13 @@ function AddNewContract() {
     infoOffice: '',
     issuingAuthority: '',
   });
-  const [sellerImages, setSellerImages] = useState({
+  const [sellerImages, setSellerImages] = useState<{
+    nationalIdFrontFile: string | null;
+    nationalIdBackFile: string | null;
+    residenceCardFrontFile: string | null;
+    residenceCardBackFile: string | null;
+    otherImages: string[];
+  }>({
     nationalIdFrontFile: null,
     nationalIdBackFile: null,
     residenceCardFrontFile: null,
@@ -61,7 +67,13 @@ function AddNewContract() {
     infoOffice: '',
     issuingAuthority: '',
   });
-  const [buyerImages, setBuyerImages] = useState({
+  const [buyerImages, setBuyerImages] = useState<{
+    nationalIdFrontFile: string | null;
+    nationalIdBackFile: string | null;
+    residenceCardFrontFile: string | null;
+    residenceCardBackFile: string | null;
+    otherImages: string[];
+  }>({
     nationalIdFrontFile: null,
     nationalIdBackFile: null,
     residenceCardFrontFile: null,
@@ -112,7 +124,13 @@ function AddNewContract() {
     issuingAuthority: data.issuingAuthority,
   })
 
-   const newImages = {
+   const newImages: {
+    nationalIdFrontFile: string | null;
+    nationalIdBackFile: string | null;
+    residenceCardFrontFile: string | null;
+    residenceCardBackFile: string | null;
+    otherImages: string[];
+  } = {
     nationalIdFrontFile: null,
     nationalIdBackFile: null,
     residenceCardFrontFile: null,
@@ -122,7 +140,7 @@ function AddNewContract() {
 
   if (Array.isArray(data.attachments)) {
     data.attachments.forEach((attachment: any) => {
-      const { docType, docSide, url } = attachment;
+      const { docType, docSide, url }: { docType: string; docSide: string; url: string } = attachment;
 
       if (docType === "NATIONAL_ID" && docSide === "FRONT") {
         newImages.nationalIdFrontFile = url;
@@ -142,7 +160,7 @@ function AddNewContract() {
   console.log(data);
   setSellerDisabled(true)
   }
-  const handleReturnedBuyerInfo = (data) => {
+  const handleReturnedBuyerInfo = (data: any) => {
     setBuyerInformation({
     firstName: data.firstName,
     fatherName: data.fatherName,
@@ -160,7 +178,13 @@ function AddNewContract() {
     issuingAuthority: data.issuingAuthority,
   })
 
-   const newImages = {
+   const newImages: {
+    nationalIdFrontFile: string | null;
+    nationalIdBackFile: string | null;
+    residenceCardFrontFile: string | null;
+    residenceCardBackFile: string | null;
+    otherImages: string[];
+  } = {
     nationalIdFrontFile: null,
     nationalIdBackFile: null,
     residenceCardFrontFile: null,
@@ -170,7 +194,7 @@ function AddNewContract() {
 
   if (Array.isArray(data.attachments)) {
     data.attachments.forEach((attachment: any) => {
-      const { docType, docSide, url } = attachment;
+      const { docType, docSide, url }: { docType: string; docSide: string; url: string } = attachment;
 
       if (docType === "NATIONAL_ID" && docSide === "FRONT") {
         newImages.nationalIdFrontFile = url;
@@ -191,7 +215,7 @@ function AddNewContract() {
   setBuyerDisabled(true)
   }
 
-  const handleReturnedCarInfo = (data) => {
+  const handleReturnedCarInfo = (data: any) => {
     setCarInformation({
       name: data.name,
       type: data.type,
@@ -284,6 +308,7 @@ function AddNewContract() {
           paymentId: paymentResponse.data.data.id,
           contractDate: new Date().toISOString().split('T')[0],
         })
+        navigate(-1)
 
       } catch (error: any) {
         console.error("Error checking or creating seller account:", error);

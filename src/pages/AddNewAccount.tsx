@@ -33,7 +33,13 @@ function AddNewAccount() {
   const isView = location.pathname.endsWith('/view');
 
   const [isLoading, setIsLoading] = useState(false);
-  const [images, setImages] = useState({
+  const [images, setImages] = useState<{
+    nationalIdFrontFile: any | null;
+    nationalIdBackFile: any | null;
+    residenceCardFrontFile: any | null;
+    residenceCardBackFile: any | null;
+    othreFiles: any[];
+  }>({
     nationalIdFrontFile: null,
     nationalIdBackFile: null,
     residenceCardFrontFile: null,
@@ -42,6 +48,7 @@ function AddNewAccount() {
   });
   const [disabled, setDisabled] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [imagesValidation, setImagesValidation] = useState(false);
 
   const [accountInformation, setAccountInformation] = useState<AccountInformation>({
     firstName: '',
@@ -90,7 +97,13 @@ function AddNewAccount() {
           setOriginalAccountInformation(info); // Save original for comparison
 
           // Set images if attachments exist
-          const newImages = {
+          const newImages: {
+            nationalIdFrontFile: any | null;
+            nationalIdBackFile: any | null;
+            residenceCardFrontFile: any | null;
+            residenceCardBackFile: any | null;
+            othreFiles: any[];
+          } = {
             nationalIdFrontFile: null,
             nationalIdBackFile: null,
             residenceCardFrontFile: null,
@@ -138,7 +151,7 @@ function AddNewAccount() {
     });
   };
 
-  const handleReturnedValue = (data) => {
+  const handleReturnedValue = (data: any) => {
     setAccountInformation({
       firstName: data.firstName,
       fatherName: data.fatherName,
@@ -156,7 +169,13 @@ function AddNewAccount() {
       issuingAuthority: data.issuingAuthority,
     });
 
-    const newImages = {
+    const newImages: {
+      nationalIdFrontFile: any | null;
+      nationalIdBackFile: any | null;
+      residenceCardFrontFile: any | null;
+      residenceCardBackFile: any | null;
+      othreFiles: any[];
+    } = {
       nationalIdFrontFile: null,
       nationalIdBackFile: null,
       residenceCardFrontFile: null,
@@ -186,11 +205,11 @@ function AddNewAccount() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isFormValid) return;
+    if (!isFormValid || !imagesValidation) return;
 
     setIsLoading(true);
     try {
-      let response;
+      // let response;
       if (isEdit && id) {
         // Only send changed fields for info
         const changedFields = getChangedFields(
@@ -204,7 +223,7 @@ function AddNewAccount() {
             images?.nationalIdBackFile instanceof File ||
             images?.residenceCardFrontFile instanceof File ||
             images?.residenceCardBackFile instanceof File ||
-            (Array.isArray(images?.othreFiles) && images.othreFiles.some((f) => f instanceof File))
+            (Array.isArray(images?.othreFiles) && images.othreFiles.some((f:any) => f instanceof File))
           )
         ) {
           toast.info('لا توجد تغييرات لتحديثها');
@@ -238,13 +257,15 @@ function AddNewAccount() {
             updatePersonAttachment(id, 'RESIDENCE_CARD', 'BACK', images.residenceCardBackFile)
           );
         }
-        // If you want to support updating other files, loop through images.othreFiles and call updatePersonAttachment with the correct docType/docSide
-
+        // If you want to support updating other files, loop through images.otherFiles and call updatePersonAttachment with the correct docType/docSide
+        // images.othreFiles.forEach((file: File) => {
+          attachmentPromises.push(updatePersonAttachment(id, 'OTHER_FILE', 'OTHER', images.othreFiles));
+        // });
         await Promise.all(attachmentPromises);
 
         // You may want to show a toast here: "تم تعديل الحساب بنجاح"
       } else {
-        response = await createNewAccount(accountInformation, images);
+        await createNewAccount(accountInformation, images);
         // You may want to show a toast here: "تم اضافة الحساب بنجاح"
         toast.success('تم اضافة الحساب بنجاح');
       }
@@ -287,6 +308,7 @@ function AddNewAccount() {
           setFormData={setImages}
           isPerson={true}
           disabled={isView || disabled}
+          onValidationChange={setImagesValidation}
           title="اضافة الملفات"
         />
 
@@ -301,7 +323,7 @@ function AddNewAccount() {
         ) : (
           <button
             type="submit"
-            disabled={!isFormValid || isLoading}
+            disabled={!isFormValid || !imagesValidation || isLoading}
             className="w-full rounded-lg px-4 py-2.5 text-white text-2xl bg-primary-500 hover:bg-primary-600 disabled:bg-neutral-100 disabled:text-neutral-400 disabled:cursor-not-allowed aria-pressed:bg-primary-700 "
           >
             {isLoading
