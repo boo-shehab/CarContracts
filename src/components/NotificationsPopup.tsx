@@ -148,7 +148,10 @@ const NotificationsPopup = () => {
             </div>
             <FilterIcon
               className="text-neutral-400 hover:text-blue-500 cursor-pointer"
-              onClick={() => navigate('/notifications')}
+              onClick={() => {
+                navigate('/notifications')
+                setOpen(false);
+              }}
             />
           </div>
 
