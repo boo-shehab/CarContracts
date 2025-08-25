@@ -19,46 +19,40 @@ export default function ContractsChart({ date, type }: any) {
 
       if (type === "year") {
         // API returns: { "1": 120, "2": 80, ... }
-        const months = [
-          "يناير",
-          "فبراير",
-          "مارس",
-          "ابريل",
-          "مايو",
-          "يونيو",
-          "يوليو",
-          "اغسطس",
-          "سبتمبر",
-          "اكتوبر",
-          "نوفمبر",
-          "ديسمبر",
-        ];
+        const months = Array.from({ length: 12 }, (_, i) => {
+          const month = new Date(date.getFullYear(), date.getMonth() + 1 + i);
+          return month.toISOString().slice(0, 7);
+        });
 
-        chartData = months.map((month, index) => ({
+        chartData = months.map((month) => ({
           time: month,
-          value: rawData[index + 1] ?? 0, // month numbers are 1–12
+          value: rawData[month] ?? 0, // month numbers are 1–12
         }));
       } 
       else if (type === "month") {
-        // API returns: { "1": 50, "2": 40, ... } (days of month)
-        const daysInMonth = new Date(
-          date.getFullYear(),
-          date.getMonth() + 1,
-          0
-        ).getDate();
+        // API returns: { "2025-08-07": 50, "2025-08-12": 40, ... } (days of month)
+          const daysInMonth = Array.from({ length: 30 }, (_, i) => {
+            const day = new Date(date);
+            day.setDate(day.getDate() + i + 1);
+            return day.toISOString().slice(0, 10);
+          });          
 
-        chartData = Array.from({ length: daysInMonth }, (_, i) => ({
-          time: `${i + 1}`,
-          value: rawData[i + 1] ?? 0,
-        }));
+          chartData = daysInMonth.map((day) => ({
+            time: day,
+            value: rawData[day] ?? 0,
+          }));
       } 
       else if (type === "week") {
         // API returns: { "1": 20, "2": 30, ... } (1 = Saturday)
-        const days = ["السبت", "الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"];
+        const days = Array.from({ length: 7 }, (_, i) => {
+          const day = new Date(date);
+          day.setDate(day.getDate() + i + 1);
+          return day.toISOString().slice(0, 10);
+        });
 
-        chartData = days.map((day, index) => ({
+        chartData = days.map((day) => ({
           time: day,
-          value: rawData[index + 1] ?? 0,
+          value: rawData[day] ?? 0,
         }));
       } 
       else if (type === "day") {

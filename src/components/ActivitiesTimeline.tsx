@@ -1,5 +1,4 @@
 import { Timeline } from "antd";
-import "antd/dist/reset.css"; // Ant Design styles
 
 const activitiesData = [
   {
@@ -31,11 +30,11 @@ const activitiesData = [
 export default function ActivitiesTimeline() {
   return (
     <div className="bg-white rounded-lg p-4 mx-auto shadow">
-      <h2 className="text-blue-600 font-bold text-lg mb-4">نشاطاتي</h2>
+      <h2 className="text-blue-600 font-bold text-xl mb-4">نشاطاتي</h2>
 
       {activitiesData.map((group, idx) => (
-        <div key={idx} className="mb-6 timeline_container">
-          <h3 className="font-bold text-gray-800 mb-2">{group.dateGroup}</h3>
+        <div key={idx} className="timeline_container">
+          <h3 className="text-xl font-medium text-neutral-600 mb-2">{group.dateGroup}</h3>
           <Timeline
             mode="left"
             items={group.activities.map((text) => ({

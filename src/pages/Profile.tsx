@@ -268,9 +268,9 @@ const Profile = () => {
             <button
               onClick={handleSave}
               disabled={Boolean(!isChanged || isPasswordMismatch || phoneError || isLoading)}
-              className={`w-full py-2 rounded font-semibold transition-colors duration-200 ${
+              className={`w-full py-3.5 rounded-[8px] text-xl font-semibold transition-colors duration-200 ${
                 !isChanged || isPasswordMismatch || phoneError || isLoading
-                  ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
+                  ? 'bg-gray-300 text-neutral-400 cursor-not-allowed'
                   : 'bg-blue-600 text-white hover:bg-blue-700'
               }`}
             >

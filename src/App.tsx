@@ -7,6 +7,9 @@ import { getMe, logout } from './services/authService';
 import { setUser } from './features/auth/authSlice';
 import Loading from './components/Loading';
 
+import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import { app } from './firebase'; // <-- import your initialized app
+
 function App() {
   const dispatch = useDispatch();
   const { accessToken, isLoading } = useSelector((state: any) => state.auth);
@@ -53,6 +56,35 @@ function App() {
 
     fetchUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    Notification.requestPermission()
+      .then((permission) => {
+        if (permission === 'granted') {
+          const messaging = getMessaging(app); // <-- pass the app instance
+          getToken(messaging, {
+            vapidKey:
+              'BOJEhMwYAch4UmfKjkqDW0Qu1GGpsIlcxN1tdbTfxYwv6AeRFVZEmdHLJ_hlWDeDCIK6x7JdOk5xi6uU0zmvz9c',
+          }).then((currentToken) => {
+            if (currentToken) {
+              console.log('Token generated:', currentToken);
+            } else {
+              console.log('No registration token available. Request permission to generate one.');
+            }
+          });
+          onMessage(messaging, (payload) => {
+            console.log('Message received. ', payload);
+            new Notification(payload.notification?.title || 'Notification', {
+              body: payload.notification?.body,
+              icon: payload.notification?.icon,
+            });
+          });
+        }
+      })
+      .catch((err) => {
+        console.error('Error requesting notification permission:', err);
+      });
   }, []);
 
   if (isLoading) return <Loading />;
