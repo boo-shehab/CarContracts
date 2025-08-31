@@ -80,7 +80,6 @@ const Profile = () => {
   ]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(formData);
 
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 

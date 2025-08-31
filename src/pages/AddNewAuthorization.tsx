@@ -119,7 +119,6 @@ function AddNewAuthorization() {
   }
 
   setBuyerImages(newImages);
-  console.log(data);
   setBuyerDisabled(true)
   }
   
@@ -168,10 +167,8 @@ function AddNewAuthorization() {
         let buyer;
         const checkBuyerResponse = await axios.get(`/person?nationalId=${buyerInformation.nationalId}`);
         if (checkBuyerResponse.data.data.length === 0) {
-          console.log("Creating new buyer account.");
           const buyerResponse = await createNewAccount(buyerInformation, buyerImages);
           buyer = buyerResponse.data.data;
-          console.log("Created buyer account:", buyerResponse.data);
         } else {
           buyer = checkBuyerResponse.data.data[0];
         }
@@ -179,15 +176,11 @@ function AddNewAuthorization() {
         let car;
         const checkCarResponse = await axios.get(`/car?chassisNumber=${carInformation.chassisNumber}`);
         if (checkCarResponse.data.data.length === 0) {
-          console.log("Creating new car entry.");
           const carResponse = await createNewCar(carInformation);
           car = carResponse.data.data;
-          console.log("Created car entry:", carResponse.data);
         } else {
           car = checkCarResponse.data.data[0];
-        }
-        console.log('date', authorizationInformation.authorizationDate);
-        
+        }        
         await axios.post('authorizations', {
           buyerId: buyer.id,
           carId: car.id,

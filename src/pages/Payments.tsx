@@ -1,11 +1,95 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TableColumn } from '../components/Form/types';
 import TableContainer from '../components/TableContainer';
 import axios from '../services/axios';
 import { toast } from 'react-toastify';
+import { Dialog } from '@headlessui/react';
+import { IoCloseOutline } from 'react-icons/io5';
+import CustomDatePicker from '../components/Form/DateFiled/CustomDatePicker';
+
+
+const UpdateDatesModal = ({ isOpen, onClose, payment, onSuccess }: any) => {
+  const [paymentDate, setPaymentDate] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+
+  useEffect(() => {
+    if (payment) {
+      setPaymentDate(payment.dueDate);
+    }
+  }, []);
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      await axios.post(`/payment/updateInstallmentDate`, {
+        installmentId: payment.id,
+        dueDate: new Date(paymentDate).toISOString().split('T')[0],
+      });
+      toast.success('تم تحديث تاريخ الانتهاء بنجاح');
+      onSuccess();
+      onClose();
+    } catch (err: any) {
+      // handle error
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        'فشل في تحديث تاريخ الانتهاء.';
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!isOpen || !payment) return null;
+
+  return (
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center"
+    >
+      <div className="fixed inset-0 bg-black opacity-30" />
+      <div className="bg-white rounded-xl shadow-lg z-10 w-full max-w-lg p-6">
+        <div className="flex items-center justify-between w-full gap-2 mb-4">
+          <h2 className="text-2xl font-bold text-gray-800">تأجيل الدفعة</h2>
+          <button type="button" onClick={onClose} className="text-neutral-400 hover:text-black">
+            <IoCloseOutline size={24} />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <CustomDatePicker
+            name="expirationDate"
+            value={paymentDate}
+            showQuickSelect={true}
+            onChange={(e: any) => setPaymentDate(e.target.value)}
+            disabled={isLoading}
+            label="تاريخ الانتهاء"
+          />
+          <div className="flex gap-2 mt-4">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="bg-primary-500 text-white px-4 py-2 rounded"
+            >
+              {isLoading ? 'جاري التحديث...' : 'تحديث'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </Dialog>
+  );
+};
 
 function Payments() {
   const [refresh, setRefresh] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+
+  const handleUpdateSuccess = () => {
+    toggleRefresh();
+  };
 
   const toggleRefresh = () => {
     setRefresh(!refresh);
@@ -133,27 +217,40 @@ function Payments() {
       key: 'status',
       sortable: true,
       render: (row: any) => (
-        <span
-          className={`text-lg font-normal py-1 rounded-full block text-center px-8 cursor-pointer ${
-            row.status === 'PAID'
-              ? 'text-success-500 bg-success-100'
-              : 'text-error-500 bg-error-100'
-          }`}
-          onClick={() => {
-            axios.put(`/payment/${row.id}/updateInstallmentStatus`).then(() => {
-              toggleRefresh();
-              toast.success('تم الدفع بنجاح');
-            }).catch((error: any) => {
-              const message =
-                error?.response?.data?.message ||
-                error?.message ||
-                'فشل في تحديث حالة الدفعة.';
-              toast.error(message);
-            });
-          }}
-        >
-          {row.status === 'PAID' ? 'مدفوعة' : 'غير مدفوعة'}
-        </span>
+        <div className="flex gap-2">
+          <span
+            className={`text-lg font-normal py-1 flex-1 rounded-full block text-center px-8 cursor-pointer ${
+              row.status === 'PAID'
+                ? 'text-success-500 bg-success-100'
+                : 'text-error-500 bg-error-100'
+            }`}
+            onClick={() => {
+              axios.put(`/payment/${row.id}/updateInstallmentStatus`).then(() => {
+                toggleRefresh();
+                toast.success('تم الدفع بنجاح');
+              }).catch((error: any) => {
+                const message =
+                  error?.response?.data?.message ||
+                  error?.message ||
+                  'فشل في تحديث حالة الدفعة.';
+                toast.error(message);
+              });
+            }}
+          >
+            {row.status === 'PAID' ? 'مدفوعة' : 'غير مدفوعة'}
+          </span>
+          {row.status !== 'PAID' && (
+            <span
+              className={`text-lg font-normal py-1 rounded-full block text-center px-8 cursor-pointer bg-warning-100 text-warning-500`}
+              onClick={() => {
+                setSelectedPayment(row);
+                setIsUpdateModalOpen(true);
+              }}
+            >
+              تأجيل الدفعة
+            </span>
+          )}
+        </div>
       ),
     },
   ];
@@ -168,6 +265,14 @@ function Payments() {
         childColumns={childColumns}
         childKey="installments"
       />
+      {isUpdateModalOpen && (
+        <UpdateDatesModal
+          isOpen={isUpdateModalOpen}
+          onClose={() => setIsUpdateModalOpen(false)}
+          payment={selectedPayment}
+          onSuccess={handleUpdateSuccess}
+        />
+      )}
     </div>
   );
 }

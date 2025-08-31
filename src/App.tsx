@@ -69,6 +69,8 @@ function App() {
           }).then((currentToken) => {
             if (currentToken) {
               console.log('Token generated:', currentToken);
+              // Send the token to your server and update the UI if necessary
+              
             } else {
               console.log('No registration token available. Request permission to generate one.');
             }

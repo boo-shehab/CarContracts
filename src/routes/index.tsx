@@ -4,6 +4,7 @@ import ProtectedRoute from './ProtectedRoute';
 import AdminRoute from './AdminRoute';
 import PublicRoute from './PublicRoute';
 import Loading from '../components/Loading';
+import RolesPage from '../pages/RolesPage';
 
 // Lazy load all pages
 const Home = lazy(() => import('../pages/Home'));
@@ -110,6 +111,10 @@ const router = createBrowserRouter([
             path: 'notifications',
             element: withSuspense(<Notifications />),
           },
+          {
+            path: 'roles',
+            element: withSuspense(<RolesPage />),
+          }
         ],
       },
     ],

@@ -73,12 +73,10 @@ const SuccessModal = ({ message = 'تم اضافة الشركة بنجاح !', d
         companyUsername: data?.companyUsername || '',
         companyPassword: data?.companyPassword || '',
       };
-      const response = await axios.post('/email/send', payload);
-      console.log(response.data);
+      await axios.post('/email/send', payload);
       toast.success('تم إرسال البيانات بنجاح!');
       onClose();
     } catch (error: any) {
-      console.log(error);
       const message =
             error?.response?.data?.message ||
             error?.message ||

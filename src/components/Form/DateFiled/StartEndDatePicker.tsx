@@ -113,7 +113,6 @@ function StartEndDate({
               placeholder="YYYY/MM/DD"
               value={internalValue.start || null}
               onChange={(e: any) => {
-                console.log(e.target);
                 setInternalValue({ ...internalValue, start: e.target.value });
                 onChange(e.target.name, e.target.value);
               }}
@@ -127,7 +126,6 @@ function StartEndDate({
               placeholder="YYYY/MM/DD"
               value={internalValue.end || null}
               onChange={(e: any) => {
-                console.log(e.target);
                 setInternalValue({ ...internalValue, end: e.target.value });
                 onChange(e.target.name, e.target.value);
               }}

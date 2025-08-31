@@ -186,7 +186,6 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
     }
     
   };
-  console.log('formData', formData);
   
   return (
     <div className="w-full bg-white rounded-xl shadow-lg p-4 my-4">

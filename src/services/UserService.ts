@@ -9,7 +9,6 @@ export const updateUserToCompany = async (data: any) => {
 };
 
 export const createNewAccount = async (data: object, images: any) => {
-  console.log('Creating new account with data:', data);
 
   const formData = new FormData();
 

@@ -157,7 +157,6 @@ function AddNewContract() {
   }
 
   setSellerImages(newImages);
-  console.log(data);
   setSellerDisabled(true)
   }
   const handleReturnedBuyerInfo = (data: any) => {
@@ -211,7 +210,6 @@ function AddNewContract() {
   }
 
   setBuyerImages(newImages);
-  console.log(data);
   setBuyerDisabled(true)
   }
 
@@ -262,21 +260,16 @@ function AddNewContract() {
         let seller;
         const checkSellerResponse = await axios.get(`/person?nationalId=${sellerInformation.nationalId}`);
         if (checkSellerResponse.data.data.length === 0) {
-          console.log("Creating new seller account.");
           const sellerResponse = await createNewAccount(sellerInformation, sellerImages);
           seller = sellerResponse.data.data;
-          console.log("Created seller account:", sellerResponse.data);
-          
         } else {
           seller = checkSellerResponse.data.data[0];
         }
         let buyer;
         const checkBuyerResponse = await axios.get(`/person?nationalId=${buyerInformation.nationalId}`);
         if (checkBuyerResponse.data.data.length === 0) {
-          console.log("Creating new buyer account.");
           const buyerResponse = await createNewAccount(buyerInformation, buyerImages);
           buyer = buyerResponse.data.data;
-          console.log("Created buyer account:", buyerResponse.data);
         } else {
           buyer = checkBuyerResponse.data.data[0];
         }
@@ -284,10 +277,8 @@ function AddNewContract() {
         let car;
         const checkCarResponse = await axios.get(`/car?chassisNumber=${carInformation.chassisNumber}`);
         if (checkCarResponse.data.data.length === 0) {
-          console.log("Creating new car entry.");
           const carResponse = await createNewCar(carInformation);
           car = carResponse.data.data;
-          console.log("Created car entry:", carResponse.data);
         } else {
           car = checkCarResponse.data.data[0];
         }

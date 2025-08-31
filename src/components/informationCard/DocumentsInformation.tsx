@@ -13,7 +13,6 @@ function DocumentsInformation({ formData, setFormData, title, isPerson, disabled
 
   useEffect(() => {
     if (onValidationChange) {
-      console.log(formData);
 
       if (formData.nationalIdFrontFile && formData.nationalIdBackFile && formData.residenceCardFrontFile && formData.residenceCardBackFile) {
         onValidationChange(true);

@@ -27,7 +27,6 @@ function AddCarInformation({
   // Validate all fields and set errors, return true if valid, false otherwise
   const validate = (): boolean => {
     
-      console.log('Form Data: ',formData);
     const newErrors: Record<string, string> = {};
     if (!formData.name) newErrors.name = 'اسم السيارة مطلوب';
     if (!formData.type) newErrors.type = 'نوع السيارة مطلوب';
@@ -111,9 +110,6 @@ function AddCarInformation({
         value !== undefined &&
         !isNaN(Number(value)) &&
         Object.keys(errors).filter((key) => key !== field).length === 0;
-        console.log(value);
-        
-
       onValidate(isValid && validate());
     }
   };

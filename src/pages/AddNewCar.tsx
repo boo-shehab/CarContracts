@@ -64,7 +64,6 @@ function AddNewCar() {
     }
 
     setImages(newImages as any);
-    console.log(data);
     setIsCarInfoValid(true);
     setDisabled(true);
   };

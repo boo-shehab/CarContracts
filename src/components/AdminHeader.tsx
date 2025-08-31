@@ -42,7 +42,6 @@ const AdminHeader = () => {
   }, []);
 
   const handleLogout = () => {
-    console.log('User logged out');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('roles');

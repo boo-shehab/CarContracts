@@ -46,7 +46,6 @@ const TableContainer = ({
   const handleExpandRow = (rowId: string | number, rowData: any) => {
     
     setExpandedRowId(rowId);
-    console.log('Expanded Row:', rowId, rowData);
 
     setChildData(Array.isArray(rowData[childKey]) ? rowData[childKey] : []);
   };
@@ -112,7 +111,6 @@ const TableContainer = ({
   }, [data, expandedRowId, childKey, refresh]);
 
   const handleFilterChange = (name: string, value: any) => {
-    console.log(`Filter changed: ${name} = ${value}`);
     setFilters((prev) => {
       const updated = { ...prev };
       if (value === null || value === '') {

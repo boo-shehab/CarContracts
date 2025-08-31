@@ -4,7 +4,7 @@ const baseURL = import.meta.env.DEV
   ? '/api'
   : 'https://209.127.228.55:8082/api';
 const instance = axios.create({
-  baseURL: baseURL + '/carcontracts/v1',
+  baseURL: 'http://209.127.228.55:8082/api' + '/carcontracts/v1',
   headers: {
     'Content-Type': 'application/json',
   },
