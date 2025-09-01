@@ -7,7 +7,7 @@ import InputField from '../components/Form/InputField';
 import axios from '../services/axios';
 import { toast } from 'react-toastify';
 import { CiCamera } from 'react-icons/ci';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from '../features/auth/authSlice';
@@ -15,6 +15,7 @@ import ActivitiesTimeline from '../components/ActivitiesTimeline';
 import UserRoles from '../components/UserRoles';
 
 const Profile = () => {
+  const { id: paramId } = useParams<{ id?: string }>();
   const [initialState, setInitialState] = useState({
     email: '',
     phone: '',
@@ -31,12 +32,40 @@ const Profile = () => {
   const [preview, setPreview] = useState<string>(initialState.imageUrl);
   const [isChanged, setIsChanged] = useState(false);
   const [phoneError, setPhoneError] = useState('');
+  const [isOtherUser, setIsOtherUser] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (user) {
+    // If there's an id in the URL and it's not the logged-in user, fetch that user's data
+    if (paramId && String(user?.id) !== paramId) {
+      setIsLoading(true);
+      setIsOtherUser(true);
+      axios
+        .get(`/companies/${user.companyUserId}/users?user.id=${paramId}`)
+        .then((res) => {
+          const otherUser = res.data?.data?.[0];
+          if (otherUser) {
+            const userData = {
+              email: otherUser.email || '',
+              phone: otherUser.phone || '',
+              username: otherUser.username || '',
+              imageUrl: userImage, // No image available
+              password: '',
+              confirmPassword: '',
+            };
+            setInitialState(userData);
+            setFormData(userData);
+            setPreview(userImage);
+          }
+        })
+        .catch(() => {
+          toast.error('تعذر جلب بيانات المستخدم');
+        })
+        .finally(() => setIsLoading(false));
+    } else if (user) {
+      setIsOtherUser(false);
       const userData = {
         email: user.email || '',
         phone: user.phone || '',
@@ -45,12 +74,11 @@ const Profile = () => {
         password: '',
         confirmPassword: '',
       };
-
       setInitialState(userData);
       setFormData(userData);
       setPreview(userData.imageUrl);
     }
-  }, [user]);
+  }, [user, paramId]);
 
   useEffect(() => {
     if (imageFile) {
@@ -183,29 +211,32 @@ const Profile = () => {
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Image Section */}
         <div className="w-full lg:w-1/3 bg-white p-4 rounded-lg shadow flex flex-col items-center justify-center gap-4">
-          {/* the input should be above the image */}
           <div className="relative w-32 h-32 rounded-full overflow-hidden">
             <img
               src={preview || userImage}
               alt="Profile"
               className="w-full h-full rounded-full object-cover"
             />
-
             <label className="absolute bottom-0 left-0 w-full h-1/2 bg-black/20 flex items-center justify-center cursor-pointer">
-              <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+                disabled={isOtherUser}
+              />
               <CiCamera size={30} color="white" />
             </label>
           </div>
-
           <button
             onClick={handleRemoveImage}
             className="text-red-600 border border-red-600 w-full px-4 py-2 rounded hover:bg-red-50 flex items-center justify-center gap-2 hover:text-red-700 transition-colors duration-200"
+            disabled={isOtherUser}
           >
             حذف الصورة
             <RiDeleteBinLine />
           </button>
         </div>
-
         {/* Form Section */}
         <div className="flex-1 bg-white p-4 rounded-lg shadow">
           <div className="space-y-4">
@@ -214,7 +245,7 @@ const Profile = () => {
               label="الاسم"
               type="text"
               placeholder="أدخل اسمك"
-              disabled={isLoading}
+              disabled={isLoading || isOtherUser}
               value={formData.username}
               onChange={handleChange}
               leftIcon={<FaUser />}
@@ -224,7 +255,7 @@ const Profile = () => {
               label="البريد الإلكتروني"
               type="email"
               placeholder="أدخل بريدك الإلكتروني"
-              disabled={isLoading}
+              disabled={isLoading || isOtherUser}
               value={formData.email}
               onChange={handleChange}
               leftIcon={<FaEnvelope />}
@@ -234,52 +265,61 @@ const Profile = () => {
               label="رقم الهاتف"
               type="number"
               placeholder="أدخل رقم هاتفك"
-              disabled={isLoading}
+              disabled={isLoading || isOtherUser}
               value={formData.phone}
               onChange={handleChange}
               leftIcon={<FaPhone />}
             />
             {phoneError && <p className="text-red-600 text-sm">{phoneError}</p>}
-            <InputField
-              name="password"
-              label="كلمة المرور"
-              type="password"
-              placeholder="أدخل كلمة المرور"
-              disabled={isLoading}
-              value={formData.password}
-              onChange={handleChange}
-              leftIcon={<FaLock />}
-            />
-            <InputField
-              name="confirmPassword"
-              label="تأكيد كلمة المرور"
-              type="password"
-              placeholder="أعد كتابة كلمة المرور"
-              disabled={isLoading}
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              leftIcon={<FaLock />}
-            />
-            {isPasswordMismatch && (
-              <p className="text-red-600 text-sm">كلمتا المرور غير متطابقتين</p>
+            {!isOtherUser && (
+              <>
+                <InputField
+                  name="password"
+                  label="كلمة المرور"
+                  type="password"
+                  placeholder="أدخل كلمة المرور"
+                  disabled={isLoading}
+                  value={formData.password}
+                  onChange={handleChange}
+                  leftIcon={<FaLock />}
+                />
+                <InputField
+                  name="confirmPassword"
+                  label="تأكيد كلمة المرور"
+                  type="password"
+                  placeholder="أعد كتابة كلمة المرور"
+                  disabled={isLoading}
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  leftIcon={<FaLock />}
+                />
+                {isPasswordMismatch && (
+                  <p className="text-red-600 text-sm">كلمتا المرور غير متطابقتين</p>
+                )}
+              </>
             )}
-
-            <button
-              onClick={handleSave}
-              disabled={Boolean(!isChanged || isPasswordMismatch || phoneError || isLoading)}
-              className={`w-full py-3.5 rounded-[8px] text-xl font-semibold transition-colors duration-200 ${
-                !isChanged || isPasswordMismatch || phoneError || isLoading
-                  ? 'bg-gray-300 text-neutral-400 cursor-not-allowed'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
-            >
-              {isLoading ? 'جاري الحفظ...' : 'حفظ التعديل'}
-            </button>
+            {!isOtherUser && (
+              <button
+                onClick={handleSave}
+                disabled={Boolean(!isChanged || isPasswordMismatch || phoneError || isLoading)}
+                className={`w-full py-3.5 rounded-[8px] text-xl font-semibold transition-colors duration-200 ${
+                  !isChanged || isPasswordMismatch || phoneError || isLoading
+                    ? 'bg-gray-300 text-neutral-400 cursor-not-allowed'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+              >
+                {isLoading ? 'جاري الحفظ...' : 'حفظ التعديل'}
+              </button>
+            )}
           </div>
         </div>
       </div>
       <div className='flex mt-4 flex-col lg:flex-row gap-4'>
-        <UserRoles />
+        <UserRoles
+          isOtherUser={isOtherUser}
+          userId={paramId || user?.id}
+          companyUserId={user?.companyUserId}
+        />
         <ActivitiesTimeline />
       </div>
     </div>

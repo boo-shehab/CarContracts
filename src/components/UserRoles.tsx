@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import RolePopup from './RolePopup';
 
 const roles = [
   { label: 'الكل', value: 'all' },
@@ -11,8 +13,9 @@ const roles = [
   { label: 'اضافة بطاقة', value: 'add_card' },
 ];
 
-function UserRoles() {
+function UserRoles({ isOtherUser = false, userId, companyUserId }: any) {
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
+  const [showPopup, setShowPopup] = useState(false);
 
   const handleToggle = (roleValue: string) => {
     setSelectedRoles((prev) =>
@@ -22,7 +25,12 @@ function UserRoles() {
 
   return (
     <div className="w-full z-10 lg:min-w-1/3 h-fit bg-white p-4 rounded-lg shadow">
-      <h2 className="text-blue-600 font-bold text-xl mb-4">صلاحيات المستخدم</h2>
+      <div className='flex gap-1'>
+        <h2 className="text-blue-600 font-bold text-xl mb-4">دور المستخدم</h2>
+        {isOtherUser && (
+          <button onClick={() => setShowPopup(true)}>تغيير الدور</button>
+        )}
+      </div>
       <div className="flex flex-col gap-4">
         {roles.map((role) => (
           <label
@@ -40,6 +48,13 @@ function UserRoles() {
           </label>
         ))}
       </div>
+      {showPopup && (
+        <RolePopup
+          userId={userId}
+          companyUserId={companyUserId}
+          onClose={() => setShowPopup(false)}
+        />
+      )}
     </div>
   );
 }
