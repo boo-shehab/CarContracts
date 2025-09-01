@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AddCarInformation from '../components/informationCard/AddCarInformation';
 import { MdKeyboardArrowRight } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +6,8 @@ import DocumentsInformation from '../components/informationCard/DocumentsInforma
 import { toast } from 'react-toastify';
 import { CarInformation } from '../components/informationCard/type';
 import { createNewCar } from '../services/UserService';
+import { hasPermission } from '../utilities/permissions';
+import { ALL_PERMISSIONS } from '../utilities/allPermissions';
 
 function AddNewCar() {
   const navigate = useNavigate();
@@ -119,6 +121,13 @@ function AddNewCar() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!hasPermission(ALL_PERMISSIONS.CREATE_CAR)) {
+      toast.error("ليس لديك إذن لإضافة سيارة");
+      navigate(-1);
+    }
+  }, []);
 
   return (
     <div className="mb-4">

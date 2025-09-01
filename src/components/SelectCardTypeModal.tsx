@@ -2,6 +2,8 @@ import { Dialog } from '@headlessui/react';
 import { IoCloseOutline, IoPersonOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import CarSVG from '../assets/icons/CarSVG';
+import { hasPermission } from '../utilities/permissions';
+import { ALL_PERMISSIONS } from '../utilities/allPermissions';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -29,20 +31,24 @@ const SelectCardTypeModal = ({ isOpen, onClose }: Props) => {
         </div>
         {/* Modal Body */}
         <div className="flex flex-col gap-4 mt-4">
-          <Link
-            to="/new-car"
-            className="bg-white shadow-[1px_2px_16px_0px_#4899EA1F] text-primary-500 rounded-2xl text-2xl font-medium hover:bg-primary-100 transition-colors flex flex-col items-center justify-center py-6 cursor-pointer"
-          >
-            <CarSVG size={40} className="cursor-pointer mb-6" />
-            <p className="cursor-pointer">بطاقة سيارة</p>
-          </Link>
-          <Link
-            to="/new-account"
-            className="bg-white shadow-[1px_2px_16px_0px_#4899EA1F] text-primary-500 rounded-2xl text-2xl font-medium hover:bg-primary-100 transition-colors flex flex-col items-center justify-center py-6 cursor-pointer"
-          >
-            <IoPersonOutline size={40} className="cursor-pointer mb-6" />
-            <p className="cursor-pointer">بطاقة حساب</p>
-          </Link>
+          {hasPermission(ALL_PERMISSIONS.CREATE_CAR) && (
+            <Link
+              to="/new-car"
+              className="bg-white shadow-[1px_2px_16px_0px_#4899EA1F] text-primary-500 rounded-2xl text-2xl font-medium hover:bg-primary-100 transition-colors flex flex-col items-center justify-center py-6 cursor-pointer"
+            >
+              <CarSVG size={40} className="cursor-pointer mb-6" />
+              <p className="cursor-pointer">بطاقة سيارة</p>
+            </Link>
+          )}
+          {hasPermission(ALL_PERMISSIONS.PERSON_CREATE) && (
+            <Link
+              to="/new-account"
+              className="bg-white shadow-[1px_2px_16px_0px_#4899EA1F] text-primary-500 rounded-2xl text-2xl font-medium hover:bg-primary-100 transition-colors flex flex-col items-center justify-center py-6 cursor-pointer"
+            >
+              <IoPersonOutline size={40} className="cursor-pointer mb-6" />
+              <p className="cursor-pointer">بطاقة حساب</p>
+            </Link>
+          )}
         </div>
       </div>
     </Dialog>

@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '../hooks/useNotifications';
 import { getMessaging, onMessage } from 'firebase/messaging';
 import { app } from '../firebase';
+import { hasPermission } from '../utilities/permissions';
+import { ALL_PERMISSIONS } from '../utilities/allPermissions';
 
 type Notification = {
   id: string;
@@ -27,6 +29,7 @@ const NotificationsPopup = () => {
 
   // Listen for Firebase notifications
   useEffect(() => {
+    if(!hasPermission(ALL_PERMISSIONS.GET_NOTIFICATTIONS)) return
     const messaging = getMessaging(app);
     onMessage(messaging, (payload) => {
       const notif: Notification = {

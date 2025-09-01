@@ -7,6 +7,10 @@ import ContractsChart from '../components/ContractsChart';
 import SalesChart from '../components/SalesChart';
 import CustomDatePicker from '../components/Form/DateFiled/CustomDatePicker';
 import SelectField from '../components/Form/SelectField';
+import { hasPermission } from '../utilities/permissions';
+import { ALL_PERMISSIONS } from '../utilities/allPermissions';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,7 +18,13 @@ const Home = () => {
   const [type, setType] = useState('');
   const [cardsData, setCardsData] = useState<any[]>([]);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
+    if(!hasPermission(ALL_PERMISSIONS.GET_DASHBOARD)) {
+      toast.error("ليس لديك إذن لعرض لوحة المعلومات");
+      navigate(-1);
+    }
     axios.get('/dashboard?start=2025-01-01&dateType=year')
       .then(response => {
         const data = response.data.data;

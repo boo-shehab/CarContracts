@@ -5,6 +5,8 @@ import DownArrow from '../assets/icons/DownArrow';
 import { FiMenu } from 'react-icons/fi';
 import { IoClose } from 'react-icons/io5';
 import NotificationsPopup from './NotificationsPopup';
+import { hasPermission } from '../utilities/permissions';
+import { ALL_PERMISSIONS } from '../utilities/allPermissions';
 
 const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -84,7 +86,9 @@ const Header = () => {
 
         {/* Desktop Section */}
         <div className="hidden xl:flex items-center gap-3 relative" ref={desktopDropdownRef}>
-          <NotificationsPopup />
+          {hasPermission(ALL_PERMISSIONS.GET_NOTIFICATTIONS) && (
+            <NotificationsPopup />
+          )}
           <img src={userImg} alt="User" className="w-10 h-10 rounded-full object-cover" />
           <span className="text-gray-800 font-medium">محمد علي</span>
           <div
@@ -150,14 +154,16 @@ const Header = () => {
             >
               مستحقات الدفع
             </NavLink>
-            <NavLink
-              to="/account-cards"
-              className={({ isActive }) =>
-                `text-lg font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
-              }
-            >
-              بطاقات الحساب
-            </NavLink>
+            {hasPermission(ALL_PERMISSIONS.PERSON_READ) && (
+              <NavLink
+                to="/account-cards"
+                className={({ isActive }) =>
+                  `text-lg font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
+                }
+              >
+                بطاقات الحساب
+              </NavLink>
+            )}
           </ul>
         </nav>
 
@@ -179,7 +185,9 @@ const Header = () => {
           </div>
 
           <div className="flex items-center gap-3 border-b pb-4 relative" ref={mobileDropdownRef}>
-            <NotificationsPopup />
+            {hasPermission(ALL_PERMISSIONS.GET_NOTIFICATTIONS) && (
+              <NotificationsPopup />
+            )}
             <img src={userImg} alt="User" className="w-8 h-8 rounded-full object-cover" />
             <span className="text-gray-800 font-medium text-lg">محمد علي</span>
             <div
@@ -205,15 +213,17 @@ const Header = () => {
             >
               الصفحة الرئيسية
             </NavLink>
-            <NavLink
-              to="/contracts"
-              onClick={() => setIsSidebarOpen(false)}
-              className={({ isActive }) =>
-                `text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
-              }
-            >
-              العقود
-            </NavLink>
+            {hasPermission(ALL_PERMISSIONS.GET_CONTRACT) && (
+              <NavLink
+                to="/contracts"
+                onClick={() => setIsSidebarOpen(false)}
+                className={({ isActive }) =>
+                  `text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
+                }
+              >
+                العقود
+              </NavLink>
+            )}
             <NavLink
               to="/authorizations"
               onClick={() => setIsSidebarOpen(false)}
@@ -241,24 +251,28 @@ const Header = () => {
             >
               المستخدمين
             </NavLink>
-            <NavLink
-              to="/Payments"
-              onClick={() => setIsSidebarOpen(false)}
-              className={({ isActive }) =>
-                `text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
-              }
-            >
-              مستحقات الدفع
-            </NavLink>
-            <NavLink
-              to="/account-cards"
-              onClick={() => setIsSidebarOpen(false)}
-              className={({ isActive }) =>
-                `text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
-              }
-            >
-              بطاقات الحساب
-            </NavLink>
+            {hasPermission(ALL_PERMISSIONS.GET_PAYMENT_PLAN) && (
+              <NavLink
+                to="/Payments"
+                onClick={() => setIsSidebarOpen(false)}
+                className={({ isActive }) =>
+                  `text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
+                }
+              >
+                مستحقات الدفع
+              </NavLink>
+            )}
+            {hasPermission(ALL_PERMISSIONS.PERSON_READ) && (
+              <NavLink
+                to="/account-cards"
+                onClick={() => setIsSidebarOpen(false)}
+                className={({ isActive }) =>
+                  `text-xl font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
+                }
+              >
+                بطاقات الحساب
+              </NavLink>
+            )}
           </nav>
         </div>
       </div>

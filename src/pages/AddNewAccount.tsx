@@ -12,6 +12,8 @@ import {
 } from '../services/UserService';
 import { printAccountDocs } from '../utilities/printAccountDocs';
 import { toast } from 'react-toastify';
+import { hasPermission } from '../utilities/permissions';
+import { ALL_PERMISSIONS } from '../utilities/allPermissions';
 
 function getChangedFields(original: any, updated: any) {
   const changed: any = {};
@@ -68,6 +70,25 @@ function AddNewAccount() {
   });
   const [originalAccountInformation, setOriginalAccountInformation] =
     useState<AccountInformation | null>(null);
+
+  useEffect(() => {
+    if (isView) {
+      if (!hasPermission(ALL_PERMISSIONS.PERSON_READ)) {
+        toast.error('ليس لديك إذن لعرض المستخدم');
+        navigate('/');
+      }
+    } else if (isEdit) {
+      if (!hasPermission(ALL_PERMISSIONS.PERSON_UPDATE)) {
+        toast.error('ليس لديك إذن لتعديل المستخدم');
+        navigate('/');
+      }
+    } else {
+      if (!hasPermission(ALL_PERMISSIONS.PERSON_CREATE)) {
+        toast.error('ليس لديك إذن لإنشاء مستخدم');
+        navigate('/');
+      }
+    }
+  }, [])
 
   // Fetch data if editing or viewing
   useEffect(() => {

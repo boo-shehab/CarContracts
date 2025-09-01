@@ -1,6 +1,6 @@
 import TableContainer from '../components/TableContainer';
 import { TableColumn } from '../components/Form/types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import { LiaEditSolid } from 'react-icons/lia';
@@ -10,6 +10,8 @@ import { GrView } from 'react-icons/gr';
 import { printAccountDocs } from '../utilities/printAccountDocs';
 import { getAccountById } from '../services/UserService';
 import { toast } from 'react-toastify';
+import { hasPermission } from '../utilities/permissions';
+import { ALL_PERMISSIONS } from '../utilities/allPermissions';
 
 const AccountCards = () => {
   const [refresh, setRefresh] = useState(false);
@@ -20,6 +22,14 @@ const AccountCards = () => {
   const toggleRefresh = () => {
     setRefresh(!refresh);
   };
+
+  useEffect(() => {
+
+    if (!hasPermission(ALL_PERMISSIONS.PERSON_READ)) {
+      toast.error('ليس لديك إذن لعرض هذه الصفحة');
+      navigate(-1);
+    }
+  }, []);
 
   const handlePrintAccount = async (accountId: string | number) => {
     try {
@@ -137,12 +147,14 @@ const AccountCards = () => {
         refresh={refresh}
         headerActions={
           <>
+          {hasPermission(ALL_PERMISSIONS.PERSON_CREATE) && (
             <Link
               to={'/new-account'}
               className="bg-primary-500 border border-primary-500 rounded-2xl py-2 px-4 text-white text-xl font-normal w-full md:w-auto"
             >
               + اضافة شخص
             </Link>
+          )}
           </>
         }
       />

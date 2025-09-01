@@ -4,6 +4,8 @@ import { IoCloseOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import SelectCardTypeModal from './SelectCardTypeModal';
 import { useState } from 'react';
+import { hasPermission } from '../utilities/permissions';
+import { ALL_PERMISSIONS } from '../utilities/allPermissions';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -41,13 +43,15 @@ const AddCompanyModal = ({ isOpen, onClose }: Props) => {
               <CiCirclePlus size={40} className="cursor-pointer mb-6" />
               <p className="cursor-pointer">اضافة بطاقة</p>
             </div>
-            <Link
-              to="/new-contract"
-              className="bg-white shadow-[1px_2px_16px_0px_#4899EA1F] text-primary-500 rounded-2xl text-2xl font-medium hover:bg-primary-100 transition-colors flex flex-col items-center justify-center py-6 cursor-pointer"
-            >
-              <CiCirclePlus size={40} className="cursor-pointer mb-6" />
-              <p className="cursor-pointer">اضافة عقد</p>
-            </Link>
+            {hasPermission(ALL_PERMISSIONS.ADD_CONTRACT) && (
+              <Link
+                to="/new-contract"
+                className="bg-white shadow-[1px_2px_16px_0px_#4899EA1F] text-primary-500 rounded-2xl text-2xl font-medium hover:bg-primary-100 transition-colors flex flex-col items-center justify-center py-6 cursor-pointer"
+              >
+                <CiCirclePlus size={40} className="cursor-pointer mb-6" />
+                <p className="cursor-pointer">اضافة عقد</p>
+              </Link>
+            )}
             <Link
               to="/new-authorization"
               className="bg-white shadow-[1px_2px_16px_0px_#4899EA1F] text-primary-500 rounded-2xl text-2xl font-medium hover:bg-primary-100 transition-colors flex flex-col items-center justify-center py-6 cursor-pointer"

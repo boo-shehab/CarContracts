@@ -6,6 +6,9 @@ import { toast } from 'react-toastify';
 import { Dialog } from '@headlessui/react';
 import { IoCloseOutline } from 'react-icons/io5';
 import CustomDatePicker from '../components/Form/DateFiled/CustomDatePicker';
+import { hasPermission } from '../utilities/permissions';
+import { ALL_PERMISSIONS } from '../utilities/allPermissions';
+import { useNavigate } from 'react-router-dom';
 
 
 const UpdateDatesModal = ({ isOpen, onClose, payment, onSuccess }: any) => {
@@ -86,6 +89,8 @@ function Payments() {
   const [refresh, setRefresh] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleUpdateSuccess = () => {
     toggleRefresh();
@@ -219,12 +224,13 @@ function Payments() {
       render: (row: any) => (
         <div className="flex gap-2">
           <span
-            className={`text-lg font-normal py-1 flex-1 rounded-full block text-center px-8 cursor-pointer ${
+            className={`text-lg font-normal py-1 flex-1 rounded-full block text-center px-8 ${
               row.status === 'PAID'
                 ? 'text-success-500 bg-success-100'
                 : 'text-error-500 bg-error-100'
-            }`}
+            } ${hasPermission(ALL_PERMISSIONS.UPDATE_INSTALLMENT) ? 'cursor-pointer' : 'cursor-not-allowed'}`}
             onClick={() => {
+              if (row.status === 'PAID' || !hasPermission(ALL_PERMISSIONS.UPDATE_INSTALLMENT)) return;
               axios.put(`/payment/${row.id}/updateInstallmentStatus`).then(() => {
                 toggleRefresh();
                 toast.success('تم الدفع بنجاح');
@@ -241,8 +247,9 @@ function Payments() {
           </span>
           {row.status !== 'PAID' && (
             <span
-              className={`text-lg font-normal py-1 rounded-full block text-center px-8 cursor-pointer bg-warning-100 text-warning-500`}
+              className={`text-lg font-normal py-1 rounded-full block text-center px-8 bg-warning-100 text-warning-500 ${hasPermission(ALL_PERMISSIONS.UPDATE_INSTALLMENT) ? 'cursor-pointer' : 'cursor-not-allowed'}`}
               onClick={() => {
+                if (!hasPermission(ALL_PERMISSIONS.UPDATE_INSTALLMENT)) return;
                 setSelectedPayment(row);
                 setIsUpdateModalOpen(true);
               }}
@@ -254,6 +261,13 @@ function Payments() {
       ),
     },
   ];
+
+  useEffect(() => {
+    if (!hasPermission(ALL_PERMISSIONS.GET_PAYMENT_PLAN)) {
+      toast.error("ليس لديك إذن لعرض الدفعات");
+      navigate(-1);
+    }
+  }, []);
 
   return (
     <div>

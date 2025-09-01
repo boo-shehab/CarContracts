@@ -1,15 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TableColumn } from '../components/Form/types';
 import TableContainer from '../components/TableContainer';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import DeleteModal from '../components/DeleteModal';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { hasPermission } from '../utilities/permissions';
+import { ALL_PERMISSIONS } from '../utilities/allPermissions';
+import { toast } from 'react-toastify';
 
 
 function Contracts() {
   const [selectedContract, setSelectedContract] = useState<any>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
+
+  const navigate = useNavigate();
   
   const toggleRefresh = () => {
     setRefresh(!refresh);
@@ -118,6 +123,7 @@ function Contracts() {
        
       render: (row: any) => (
         <div className="flex items-center gap-2">
+          {hasPermission(ALL_PERMISSIONS.DELETE_CONTRACT) && (
             <RiDeleteBinLine
               className="cursor-pointer text-red-600"
               onClick={() => {
@@ -125,10 +131,18 @@ function Contracts() {
                 setDeleteModalOpen(true);
               }}
             />
+          )}
         </div>
       ),
     },
   ];
+
+  useEffect(() => {
+    if(!hasPermission(ALL_PERMISSIONS.GET_CONTRACT)){
+      toast.error("ليس لديك إذن لعرض العقود");
+      navigate(-1);
+    }
+  }, []);
   return (
     <div>
       <TableContainer 
@@ -136,12 +150,16 @@ function Contracts() {
         apiUrl="/contracts"
         refresh={refresh}
         headerActions={
-          <Link
-            to={'/new-contract'}
-            className="bg-primary-500 border border-primary-500 rounded-2xl py-2 px-4 text-white text-xl font-normal w-full md:w-auto"
-          >
-            + اضافة عقد
-          </Link>
+          <>
+            {hasPermission(ALL_PERMISSIONS.ADD_CONTRACT) && (
+              <Link
+                to={'/new-contract'}
+                className="bg-primary-500 border border-primary-500 rounded-2xl py-2 px-4 text-white text-xl font-normal w-full md:w-auto"
+              >
+                + اضافة عقد
+              </Link>
+            )}
+          </>
         }
       />
       <DeleteModal

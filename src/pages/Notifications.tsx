@@ -1,14 +1,17 @@
 import { MdKeyboardArrowRight } from "react-icons/md"
 import { useNavigate } from "react-router-dom"
-import SelectField from "../components/Form/SelectField";
-import InputField from "../components/Form/InputField";
-import StartEndDate from "../components/Form/DateFiled/StartEndDatePicker";
+// import SelectField from "../components/Form/SelectField";
+// import InputField from "../components/Form/InputField";
+// import StartEndDate from "../components/Form/DateFiled/StartEndDatePicker";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { BsExclamationCircleFill, BsInfoCircle } from "react-icons/bs";
 import { HiOutlineDocumentText } from "react-icons/hi";
 import { formatDistanceToNow } from "date-fns";
 import { ar } from "date-fns/locale";
 import axios from "../services/axios";
+import { hasPermission } from "../utilities/permissions";
+import { ALL_PERMISSIONS } from "../utilities/allPermissions";
+import { toast } from "react-toastify";
 
 
 type Notification = {
@@ -79,6 +82,13 @@ const Notifications = () => {
           return <BsInfoCircle className="text-gray-400 text-xl" />;
       }
     };
+
+    useEffect(() => {
+      if(!hasPermission(ALL_PERMISSIONS.GET_NOTIFICATTIONS)) {
+        toast.error("ليس لديك إذن لعرض الإشعارات");
+        navigate(-1);
+      }
+    }, [])
   
   return (
     <div className="mb-4">

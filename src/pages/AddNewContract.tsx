@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AddAccountInformation from '../components/informationCard/AddAccountInformation';
 import AddCarInformation from '../components/informationCard/AddCarInformation';
 import PaymentInformation, {
@@ -11,6 +11,8 @@ import DocumentsInformation from '../components/informationCard/DocumentsInforma
 import axios from '../services/axios';
 import { createNewAccount, createNewCar } from '../services/UserService';
 import { toast } from 'react-toastify';
+import { hasPermission } from '../utilities/permissions';
+import { ALL_PERMISSIONS } from '../utilities/allPermissions';
 
 function AddNewContract() {
   const navigate = useNavigate();
@@ -313,6 +315,13 @@ function AddNewContract() {
       setCurrentStep(currentStep + 1);
     }
   };
+
+  useEffect(() => {
+    if(!hasPermission(ALL_PERMISSIONS.ADD_CONTRACT)) {
+      toast.error("ليس لديك إذن لإضافة عقد");
+      navigate(-1);
+    }
+  }, []);
   return (
     <div className="mb-4">
       {currentStep === 1 && (
