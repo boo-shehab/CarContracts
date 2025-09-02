@@ -7,6 +7,8 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../features/auth/authSlice';
+import { hasPermission } from '../utilities/permissions';
+import { ALL_PERMISSIONS } from '../utilities/allPermissions';
 
 const Login = () => {
   const [user, setUserState] = useState({ username: '', password: '' });
@@ -50,8 +52,14 @@ const Login = () => {
           roles: roles,
         })
       );
-
-      navigate('/');
+      console.log(getUserData.data);
+      if(hasPermission(ALL_PERMISSIONS.GET_DASHBOARD)){
+        navigate('/');
+      } else{
+        navigate('/profile');
+      }
+      
+      
     } catch (error: any) {
       console.error('Login failed', error);
       const message =

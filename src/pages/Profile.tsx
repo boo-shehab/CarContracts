@@ -43,7 +43,7 @@ const Profile = () => {
       setIsLoading(true);
       setIsOtherUser(true);
       axios
-        .get(`/users/${paramId}`)
+        .get(`users/CompanyUserRol/${paramId}`)
         .then((res) => {
           const otherUser = res.data?.data;
           if (otherUser) {
@@ -315,11 +315,13 @@ const Profile = () => {
         </div>
       </div>
       <div className='flex mt-4 flex-col lg:flex-row gap-4'>
-        <UserRoles
-          isOtherUser={isOtherUser}
-          userInfo={initialState}
-          companyUserId={user?.companyUserId}
-        />
+        {initialState && initialState?.id && initialState?.roles[0] !== 'ROLE_COMPANY' && (
+          <UserRoles
+            isOtherUser={isOtherUser}
+            userInfo={initialState}
+            companyUserId={user?.companyUserId}
+          />
+        )}
         <ActivitiesTimeline />
       </div>
     </div>

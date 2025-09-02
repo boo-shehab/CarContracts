@@ -3,7 +3,7 @@ import axios from '../services/axios';
 import { Dialog } from '@headlessui/react';
 import SelectField from './Form/SelectField';
 
-function RolePopup({ userId, companyUserId, onClose, currentRole }: any) {
+function RolePopup({ userId, companyUserId, onClose, currentRole, userInfo }: any) {
   const [roles, setRoles] = useState([]);
   const [selectedRoleId, setSelectedRoleId] = useState<number | null>(
     currentRole ? currentRole.id : null
@@ -40,6 +40,30 @@ function RolePopup({ userId, companyUserId, onClose, currentRole }: any) {
     }
   };
 
+  const lastUserRoleId =
+    Array.isArray(userInfo?.role) && userInfo.role.length > 0
+      ? userInfo.role[userInfo.role.length - 1]?.id
+      : null;
+
+  let buttonText = '';
+  let buttonClass = '';
+
+  if (!selectedRoleId) {
+    buttonText = 'حذف الدور';
+    buttonClass = 'bg-red-600 text-white';
+  } else if (!currentRole) {
+    buttonText = 'إضافة الدور';
+    buttonClass = 'bg-blue-600 text-white';
+  } else if (selectedRoleId !== lastUserRoleId) {
+    buttonText = 'تحديث الدور';
+    buttonClass = 'bg-blue-600 text-white';
+  } else {
+    buttonText = 'تحديث الدور';
+    buttonClass = 'bg-blue-600 text-white';
+  }
+
+  const isDisabled = selectedRoleId === lastUserRoleId;
+
   return (
     <Dialog
       open={true}
@@ -71,11 +95,13 @@ function RolePopup({ userId, companyUserId, onClose, currentRole }: any) {
             إلغاء
           </button>
           <button
-            className="px-4 py-2 rounded bg-blue-600 text-white"
+            className={`px-4 py-2 rounded ${buttonClass} ${
+              isDisabled ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
             onClick={handleSave}
-            disabled={loading || selectedRoleId === currentRole?.id}
+            disabled={loading || isDisabled}
           >
-            حفظ
+            {buttonText}
           </button>
         </div>
       </div>

@@ -15,7 +15,7 @@ const roles = [
   { label: 'اضافة بطاقة', value: 'add_card' },
 ];
 
-function UserRoles({ isOtherUser = false, userId, companyUserId, userInfo }: any) {
+function UserRoles({ isOtherUser = false, companyUserId, userInfo }: any) {
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [showPopup, setShowPopup] = useState(false);
 
@@ -35,7 +35,7 @@ function UserRoles({ isOtherUser = false, userId, companyUserId, userInfo }: any
       </div>
       <div className="flex flex-col gap-4">
         <div
-          className="flex justify-between items-center w-full border border-primary-200 p-4 rounded-lg bg-primary-50"
+          className="flex justify-between items-center overflow-hidden w-full border border-primary-200 p-4 rounded-lg bg-primary-50"
         >
           <span className="flex gap-1 text-lg font-medium text-primary-700">
             {userInfo?.roles}
@@ -60,6 +60,7 @@ function UserRoles({ isOtherUser = false, userId, companyUserId, userInfo }: any
         <RolePopup
           userId={userInfo?.id}
           companyUserId={companyUserId}
+          userInfo={userInfo}
           onClose={() => setShowPopup(false)}
           currentRole={selectedRoles[0] ? roles.find((role) => role.value === selectedRoles[0]) : null}
         />

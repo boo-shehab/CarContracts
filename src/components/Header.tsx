@@ -66,9 +66,11 @@ const Header = () => {
           </NavLink>
         </li>
         <li>
-          <NavLink to="/settings" className="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap">
-            الإعدادات
-          </NavLink>
+          {hasPermission('') && (
+            <NavLink to="/settings" className="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap">
+              الإعدادات
+            </NavLink>
+          )}
         </li>
         <li>
           <button

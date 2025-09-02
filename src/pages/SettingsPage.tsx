@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import RolesPage from './RolesPage';
+import { hasPermission } from '../utilities/permissions';
+import { useNavigate } from 'react-router-dom';
 
 const settingsItems = [
   {
@@ -26,6 +28,13 @@ const settingsItems = [
 
 export default function SettingsPage() {
   const [selected, setSelected] = useState(settingsItems[0].key);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if(!hasPermission('')) {
+      navigate(-1);
+    }
+  }, [])
 
   return (
     <div className="h-full flex flex-col md:flex-row">
