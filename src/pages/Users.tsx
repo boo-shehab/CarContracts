@@ -6,6 +6,7 @@ import { RiDeleteBinLine } from 'react-icons/ri';
 import AddUserModal from '../components/Users/AddUserModal';
 import { useSelector } from 'react-redux';
 import DeleteModal from '../components/DeleteModal';
+import { Link } from 'react-router-dom';
 
 function Users() {
   const [showModal, setShowModal] = useState(false);
@@ -33,6 +34,11 @@ function Users() {
       sortable: true,
       isFilterable: true,
       filterType: 'text',
+      render: (row: any) => (
+        <Link to={`/profile/${row.username}`} className="text-blue-500 hover:underline">
+          {row.fullName}
+        </Link>
+      )
     },
     {
       title: 'البريد الالكتروني',

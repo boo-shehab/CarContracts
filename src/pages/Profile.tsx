@@ -43,9 +43,9 @@ const Profile = () => {
       setIsLoading(true);
       setIsOtherUser(true);
       axios
-        .get(`/companies/${user.companyUserId}/users?user.id=${paramId}`)
+        .get(`/users/${paramId}`)
         .then((res) => {
-          const otherUser = res.data?.data?.[0];
+          const otherUser = res.data?.data;
           if (otherUser) {
             const userData = {
               email: otherUser.email || '',
@@ -317,7 +317,8 @@ const Profile = () => {
       <div className='flex mt-4 flex-col lg:flex-row gap-4'>
         <UserRoles
           isOtherUser={isOtherUser}
-          userId={paramId || user?.id}
+          username={paramId || user?.username}
+          userId={user?.id}
           companyUserId={user?.companyUserId}
         />
         <ActivitiesTimeline />

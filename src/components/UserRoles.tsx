@@ -25,10 +25,10 @@ function UserRoles({ isOtherUser = false, userId, companyUserId }: any) {
 
   return (
     <div className="w-full z-10 lg:min-w-1/3 h-fit bg-white p-4 rounded-lg shadow">
-      <div className='flex gap-1'>
-        <h2 className="text-blue-600 font-bold text-xl mb-4">دور المستخدم</h2>
+      <div className='flex gap-1 justify-between items-center mb-4'>
+        <h2 className="text-blue-600 font-bold text-xl">دور المستخدم</h2>
         {isOtherUser && (
-          <button onClick={() => setShowPopup(true)}>تغيير الدور</button>
+          <button className='text-blue-600 font-bold text-xl cursor-pointer' onClick={() => setShowPopup(true)}>تغيير الدور</button>
         )}
       </div>
       <div className="flex flex-col gap-4">
@@ -53,6 +53,7 @@ function UserRoles({ isOtherUser = false, userId, companyUserId }: any) {
           userId={userId}
           companyUserId={companyUserId}
           onClose={() => setShowPopup(false)}
+          currentRole={selectedRoles[0] ? roles.find((role) => role.value === selectedRoles[0]) : null}
         />
       )}
     </div>
