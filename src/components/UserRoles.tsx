@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Disclosure, Switch } from '@headlessui/react';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import RolePopup from './RolePopup';
 
 const roles = [
@@ -13,7 +15,7 @@ const roles = [
   { label: 'اضافة بطاقة', value: 'add_card' },
 ];
 
-function UserRoles({ isOtherUser = false, userId, companyUserId }: any) {
+function UserRoles({ isOtherUser = false, userId, companyUserId, userInfo }: any) {
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [showPopup, setShowPopup] = useState(false);
 
@@ -32,25 +34,31 @@ function UserRoles({ isOtherUser = false, userId, companyUserId }: any) {
         )}
       </div>
       <div className="flex flex-col gap-4">
-        {roles.map((role) => (
-          <label
-            key={role.value}
-            className="flex items-center justify-between w-full cursor-pointer gap-2"
-          >
-            <span className="text-xl">{role.label}</span>
-            <input
-              type="checkbox"
-              autoComplete="off"
-              checked={selectedRoles.includes(role.value)}
-              onChange={() => handleToggle(role.value)}
-              className="form-checkbox w-5 h-5 rounded-md border-gray-300 text-blue-600"
-            />
-          </label>
-        ))}
+        <div
+          className="flex justify-between items-center w-full border border-primary-200 p-4 rounded-lg bg-primary-50"
+        >
+          <span className="flex gap-1 text-lg font-medium text-primary-700">
+            {userInfo?.roles}
+          </span>
+        </div>
+        <div className="pt-4 pb-6 transition-all duration-300 ease-in-out overflow-hidden max-h-[1000px] opacity-100">
+          <div className="grid grid-cols-1 gap-3">
+            {userInfo?.permissions.map((perm: any) => (
+              <div
+                key={perm.id}
+                className="flex items-center justify-between border p-3 rounded-lg shadow-sm"
+              >
+                <span className="font-medium text-gray-700">
+                  {perm.displayNameAr}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
       {showPopup && (
         <RolePopup
-          userId={userId}
+          userId={userInfo?.id}
           companyUserId={companyUserId}
           onClose={() => setShowPopup(false)}
           currentRole={selectedRoles[0] ? roles.find((role) => role.value === selectedRoles[0]) : null}

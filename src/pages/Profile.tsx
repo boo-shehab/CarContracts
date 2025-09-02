@@ -39,7 +39,7 @@ const Profile = () => {
 
   useEffect(() => {
     // If there's an id in the URL and it's not the logged-in user, fetch that user's data
-    if (paramId && String(user?.id) !== paramId) {
+    if (paramId && String(user?.username) !== paramId) {
       setIsLoading(true);
       setIsOtherUser(true);
       axios
@@ -55,7 +55,7 @@ const Profile = () => {
               password: '',
               confirmPassword: '',
             };
-            setInitialState(userData);
+            setInitialState(otherUser);
             setFormData(userData);
             setPreview(userImage);
           }
@@ -74,7 +74,7 @@ const Profile = () => {
         password: '',
         confirmPassword: '',
       };
-      setInitialState(userData);
+      setInitialState(user);
       setFormData(userData);
       setPreview(userData.imageUrl);
     }
@@ -317,8 +317,7 @@ const Profile = () => {
       <div className='flex mt-4 flex-col lg:flex-row gap-4'>
         <UserRoles
           isOtherUser={isOtherUser}
-          username={paramId || user?.username}
-          userId={user?.id}
+          userInfo={initialState}
           companyUserId={user?.companyUserId}
         />
         <ActivitiesTimeline />
