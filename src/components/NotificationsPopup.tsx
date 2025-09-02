@@ -82,9 +82,9 @@ const NotificationsPopup = () => {
     <div className="relative font-sans" ref={popupRef}>
       <button onClick={() => setOpen(!open)} className="relative">
         <GoBellFill size={24} className="text-primary-200" />
-        {allNotifications.some((n) => !n.seen) && (
+        {allNotifications.some((n: any) => !n.seen) && (
           <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5">
-            {allNotifications.filter((n) => !n.seen).length}
+            {allNotifications.filter((n: any) => !n.seen).length}
           </span>
         )}
       </button>
@@ -95,7 +95,7 @@ const NotificationsPopup = () => {
             <div className="mb-4">
               <h1 className="font-bold text-gray-900 mb-1 text-2xl">الإشعارات</h1>
               <p className="text-blue-600 font-medium text-xl">
-                لديك {allNotifications.filter((n) => !n.seen).length} إشعارات جديدة
+                لديك {allNotifications.filter((n: any) => !n.seen).length} إشعارات جديدة
               </p>
             </div>
             <FilterIcon

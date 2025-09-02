@@ -4,12 +4,12 @@ import { Dialog } from '@headlessui/react';
 import SelectField from './Form/SelectField';
 
 function RolePopup({ userId, companyUserId, onClose, currentRole, userInfo }: any) {
-  const [roles, setRoles] = useState([]);
-  const [selectedRoleId, setSelectedRoleId] = useState<number | null>(
+  const [roles, setRoles] = useState<any>([]);
+  const [selectedRoleId, setSelectedRoleId] = useState<any>(
     currentRole ? currentRole.id : null
   );
   const [loading, setLoading] = useState(false);
-
+  
   useEffect(() => {
     setLoading(true);
     axios
@@ -78,7 +78,7 @@ function RolePopup({ userId, companyUserId, onClose, currentRole, userInfo }: an
         ) : (
           <div className="mb-4">
             <SelectField
-              options={roles.map((role) => ({
+              options={roles.map((role: any) => ({
                 value: role.id,
                 label: role.displayNameAr || role.displayName,
               }))}

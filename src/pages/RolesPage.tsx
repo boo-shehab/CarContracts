@@ -25,7 +25,6 @@ interface Permission {
 export default function RolesPage() {
   const [roles, setRoles] = useState<Role[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
-  const [selectedRoleId, setSelectedRoleId] = useState<number | null>(null);
   const [rolePermissions, setRolePermissions] = useState<Permission[]>([]);
   const [formData, setFormData] = useState({
     displayName: '',
@@ -141,7 +140,6 @@ export default function RolesPage() {
                   <Disclosure.Button
                     className={`flex justify-between items-center w-full border border-primary-200 p-4 rounded-lg cursor-pointer bg-primary-50 hover:bg-primary-100 transition-colors`}
                     onClick={() => {
-                      setSelectedRoleId(role.id);
                       fetchRolePermissions(role.id);
                     }}
                   >

@@ -16,7 +16,7 @@ import UserRoles from '../components/UserRoles';
 
 const Profile = () => {
   const { id: paramId } = useParams<{ id?: string }>();
-  const [initialState, setInitialState] = useState({
+  const [initialState, setInitialState] = useState<any>({
     email: '',
     phone: '',
     username: '',
@@ -37,33 +37,31 @@ const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    // If there's an id in the URL and it's not the logged-in user, fetch that user's data
+  const fetchUserData = async () => {
     if (paramId && String(user?.username) !== paramId) {
       setIsLoading(true);
       setIsOtherUser(true);
-      axios
-        .get(`users/CompanyUserRol/${paramId}`)
-        .then((res) => {
-          const otherUser = res.data?.data;
-          if (otherUser) {
-            const userData = {
-              email: otherUser.email || '',
-              phone: otherUser.phone || '',
-              username: otherUser.username || '',
-              imageUrl: userImage, // No image available
-              password: '',
-              confirmPassword: '',
-            };
-            setInitialState(otherUser);
-            setFormData(userData);
-            setPreview(userImage);
-          }
-        })
-        .catch(() => {
-          toast.error('تعذر جلب بيانات المستخدم');
-        })
-        .finally(() => setIsLoading(false));
+      try {
+        const res = await axios.get(`users/CompanyUserRol/${paramId}`);
+        const otherUser = res.data?.data;
+        if (otherUser) {
+          const userData = {
+            email: otherUser.email || '',
+            phone: otherUser.phone || '',
+            username: otherUser.username || '',
+            imageUrl: userImage,
+            password: '',
+            confirmPassword: '',
+          };
+          setInitialState(otherUser);
+          setFormData(userData);
+          setPreview(userImage);
+        }
+      } catch {
+        toast.error('تعذر جلب بيانات المستخدم');
+      } finally {
+        setIsLoading(false);
+      }
     } else if (user) {
       setIsOtherUser(false);
       const userData = {
@@ -78,6 +76,11 @@ const Profile = () => {
       setFormData(userData);
       setPreview(userData.imageUrl);
     }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, paramId]);
 
   useEffect(() => {
@@ -109,7 +112,7 @@ const Profile = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData((prev: any) => ({ ...prev, [e.target.name]: e.target.value }));
 
     if (e.target.name === 'phone') {
       const phone = e.target.value.startsWith('+') ? e.target.value : `+${e.target.value}`;
@@ -173,8 +176,8 @@ const Profile = () => {
       // Don't send if nothing changed except image
       if (Object.keys(payload).length > 0) {
         await axios.put('/users/me/profile', payload);
-        setInitialState((prev) => ({ ...prev, ...payload }));
-        setFormData((prev) => ({ ...prev, ...payload }));
+        setInitialState((prev: any) => ({ ...prev, ...payload }));
+        setFormData((prev: any) => ({ ...prev, ...payload }));
       }
       // Update Redux user, keeping tokens and roles
       dispatch(
@@ -318,6 +321,7 @@ const Profile = () => {
         {initialState && initialState?.id && initialState?.roles[0] !== 'ROLE_COMPANY' && (
           <UserRoles
             isOtherUser={isOtherUser}
+            refresh={fetchUserData}
             userInfo={initialState}
             companyUserId={user?.companyUserId}
           />

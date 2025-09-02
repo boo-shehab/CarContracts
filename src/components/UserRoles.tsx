@@ -1,29 +1,8 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Disclosure, Switch } from '@headlessui/react';
-import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import RolePopup from './RolePopup';
 
-const roles = [
-  { label: 'الكل', value: 'all' },
-  { label: 'حذف', value: 'delete' },
-  { label: 'تعديل', value: 'edit' },
-  { label: 'طباعة', value: 'print' },
-  { label: 'اضافة عقد', value: 'add_contract' },
-  { label: 'اضافة تخويل', value: 'add_authorization' },
-  { label: 'اضافة برائة ذمة', value: 'add_clearance' },
-  { label: 'اضافة بطاقة', value: 'add_card' },
-];
-
-function UserRoles({ isOtherUser = false, companyUserId, userInfo }: any) {
-  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
+function UserRoles({ isOtherUser = false, companyUserId, userInfo, refresh }: any) {
   const [showPopup, setShowPopup] = useState(false);
-
-  const handleToggle = (roleValue: string) => {
-    setSelectedRoles((prev) =>
-      prev.includes(roleValue) ? prev.filter((r) => r !== roleValue) : [...prev, roleValue]
-    );
-  };
 
   return (
     <div className="w-full z-10 lg:min-w-1/3 h-fit bg-white p-4 rounded-lg shadow">
@@ -61,8 +40,11 @@ function UserRoles({ isOtherUser = false, companyUserId, userInfo }: any) {
           userId={userInfo?.id}
           companyUserId={companyUserId}
           userInfo={userInfo}
-          onClose={() => setShowPopup(false)}
-          currentRole={selectedRoles[0] ? roles.find((role) => role.value === selectedRoles[0]) : null}
+          onClose={() => {
+            refresh()
+            setShowPopup(false)
+          }}
+          currentRole={userInfo?.roles[0] ? userInfo.roles[0] : null}
         />
       )}
     </div>
