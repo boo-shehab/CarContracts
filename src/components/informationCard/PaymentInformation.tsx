@@ -5,6 +5,7 @@ import CustomDatePicker from '../Form/DateFiled/CustomDatePicker';
 
 export interface paymentInformationData {
   paymentType: 'CASH' | 'INSTALLMENT';
+  companyid?: string;
   totalAmount: number | '';
   downPayment: number | '';
   numberOfInstallments?: number | '';

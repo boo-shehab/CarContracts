@@ -2,11 +2,31 @@ import { useEffect, useState } from 'react';
 import RolesPage from './RolesPage';
 import { hasPermission } from '../utilities/permissions';
 import { useNavigate } from 'react-router-dom';
+import ContractPrintDesigner from '../components/ContractPrintDesigner/ContractPrintDesigner';
 
 const settingsItems = [
   {
     key: 'roles',
     label: 'إدارة الأدوار والصلاحيات',
+    icon: (
+      <svg
+        className="w-6 h-6 text-primary-500"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14v7m-7-7a7 7 0 0114 0v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1z"
+        />
+      </svg>
+    ),
+  },
+  {
+    key: 'contractPrintDesigner',
+    label: 'تصميم طباعة العقد',
     icon: (
       <svg
         className="w-6 h-6 text-primary-500"
@@ -63,6 +83,7 @@ export default function SettingsPage() {
       {/* Content */}
       <main className="flex-1 p-8 h-full overflow-y-auto">
         {selected === 'roles' && <RolesPage />}
+        {selected === 'contractPrintDesigner' && <ContractPrintDesigner />}
         {/* Add more content sections here as you add more settings */}
       </main>
     </div>

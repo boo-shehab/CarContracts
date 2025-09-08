@@ -44,7 +44,12 @@ const TableContainer = ({
 
   // When expanding a row, set childData from the expanded row's childKey
   const handleExpandRow = (rowId: string | number, rowData: any) => {
-    
+    if (expandedRowId === rowId) {
+      // Collapse if the same row is clicked
+      setExpandedRowId(null);
+      setChildData([]);
+      return;
+    }
     setExpandedRowId(rowId);
 
     setChildData(Array.isArray(rowData[childKey]) ? rowData[childKey] : []);
@@ -163,7 +168,7 @@ const TableContainer = ({
           className={`transition-all duration-500 ease-in-out ${
             showFilters
               ? 'w-full md:w-[450px] h-auto opacity-100 translate-x-0'
-              : 'w-0 h-0 opacity-0 translate-x-full'
+              : 'w-0 h-0 opacity-0 translate-x-full overflow-hidden'
           }`}
         >
           <div className="flex flex-col w-full border-none mb-4 bg-white rounded-2xl p-2 shadow-[1px_2px_16px_0px_#4899EA1F]">

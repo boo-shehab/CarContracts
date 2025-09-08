@@ -2,6 +2,7 @@ import { HiChevronUpDown } from 'react-icons/hi2';
 import { TableProps } from './types';
 import { CiCirclePlus } from 'react-icons/ci';
 import { IoIosArrowUp } from 'react-icons/io';
+import { useEffect } from 'react';
 
 const Table = ({
   columns,
@@ -21,6 +22,12 @@ const Table = ({
       .split('.')
       .reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : ''), obj);
   };
+
+  useEffect(() => {
+    // isExpander && setExpandedRowId !== undefined && colIndex === 0 && item.installments.length > 0
+    console.log(isExpander);
+    console.log(setExpandedRowId);
+  })
 
   return (
     <div className="overflow-auto ml-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary-300 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-primary-100">

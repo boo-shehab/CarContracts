@@ -14,6 +14,7 @@ function AddNewCar() {
   const [isLoading, setIsLoading] = useState(false);
   const [images, setImages] = useState<File[]>([]);
   const [isCarInfoValid, setIsCarInfoValid] = useState(false);
+  
   const [disabled, setDisabled] = useState(false)
 
   const [carInformation, setCarInformation] = useState<CarInformation>({
@@ -51,10 +52,6 @@ function AddNewCar() {
     });
 
     const newImages = {
-      nationalIdFrontFile: null,
-      nationalIdBackFile: null,
-      residenceCardFrontFile: null,
-      residenceCardBackFile: null,
       otherImages: [] as any[],
     };
 
@@ -87,7 +84,7 @@ function AddNewCar() {
     });
     setImages([]);
     setIsLoading(false);
-    setIsCarInfoValid(true);
+    setIsCarInfoValid(false);
   };
 
   const handleCarInfoValidate = (isValid: boolean) => {

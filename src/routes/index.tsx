@@ -6,6 +6,7 @@ import PublicRoute from './PublicRoute';
 import Loading from '../components/Loading';
 import RolesPage from '../pages/RolesPage';
 import SettingsPage from '../pages/SettingsPage';
+import ContractPrintPage from '../pages/ContractPrintPage';
 
 // Lazy load all pages
 const Home = lazy(() => import('../pages/Home'));
@@ -115,7 +116,12 @@ const router = createBrowserRouter([
           {
             path: 'roles',
             element: withSuspense(<RolesPage />),
-          },{
+          },
+          {
+            path: 'print/:sellerName',
+            element: withSuspense(<ContractPrintPage />),
+          },
+          {
             path: 'settings',
             element: withSuspense(<SettingsPage />),
           }

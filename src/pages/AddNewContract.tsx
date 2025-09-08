@@ -13,10 +13,13 @@ import { createNewAccount, createNewCar } from '../services/UserService';
 import { toast } from 'react-toastify';
 import { hasPermission } from '../utilities/permissions';
 import { ALL_PERMISSIONS } from '../utilities/allPermissions';
+import { useSelector } from 'react-redux';
 
 function AddNewContract() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  
+  const { companyUserId } = useSelector((state: any) => state.auth);
   
   const [sellerDisabled, setSellerDisabled] = useState(false);
   const [buyerDisabled, setBuyerDisabled] = useState(false);
@@ -214,6 +217,10 @@ function AddNewContract() {
   setBuyerImages(newImages);
   setBuyerDisabled(true)
   }
+  
+  const handleCarInputChange = (field: string, value: string | number) => {
+    setCarInformation((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleReturnedCarInfo = (data: any) => {
     setCarInformation({
@@ -277,12 +284,20 @@ function AddNewContract() {
         }
 
         let car;
-        const checkCarResponse = await axios.get(`/car?chassisNumber=${carInformation.chassisNumber}`);
-        if (checkCarResponse.data.data.length === 0) {
-          const carResponse = await createNewCar(carInformation);
-          car = carResponse.data.data;
+        let checkCarResponse = await axios.get(`/car?chassisNumber=${carInformation.chassisNumber}`);
+        let existingCar = checkCarResponse.data.data.find((c: any) => c.chassisNumber === carInformation.chassisNumber);
+        if (!existingCar) {
+          checkCarResponse = await axios.get(`/car?plateNumber=${carInformation.plateNumber}`);
+          existingCar = checkCarResponse.data.data.find((c: any) => c.plateNumber === carInformation.plateNumber);
+          if(!existingCar) {
+            const carResponse = await createNewCar(carInformation);
+            car = carResponse.data;
+          } else {
+            car = existingCar;
+          }
+          
         } else {
-          car = checkCarResponse.data.data[0];
+          car = existingCar;
         }
         const payment = paymentInformation;
         if(paymentInformation.paymentType === 'CASH') {
@@ -292,6 +307,7 @@ function AddNewContract() {
           delete payment.firstInstallmentDate;
           delete payment.installment;
         }
+        payment.companyid = companyUserId;
 
         const paymentResponse = await axios.post('/payment', payment)
         await axios.post('contracts', {
@@ -393,7 +409,7 @@ function AddNewContract() {
           <>
             <AddCarInformation
               formData={carInformation}
-              setFormData={setCarInformation}
+              setFormData={handleCarInputChange}
               disabled={carDisabled}
               returnedValue={handleReturnedCarInfo}
               title="اضف معلومات السيارة الجديدة"

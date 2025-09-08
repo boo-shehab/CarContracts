@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { hasPermission } from '../utilities/permissions';
 import { ALL_PERMISSIONS } from '../utilities/allPermissions';
 import { toast } from 'react-toastify';
+import { FiPrinter } from 'react-icons/fi';
 
 
 function Contracts() {
@@ -124,13 +125,19 @@ function Contracts() {
       render: (row: any) => (
         <div className="flex items-center gap-2">
           {hasPermission(ALL_PERMISSIONS.DELETE_CONTRACT) && (
-            <RiDeleteBinLine
-              className="cursor-pointer text-red-600"
-              onClick={() => {
-                setSelectedContract(row);
-                setDeleteModalOpen(true);
-              }}
-            />
+            <>
+              <RiDeleteBinLine
+                className="cursor-pointer text-red-600"
+                onClick={() => {
+                  setSelectedContract(row);
+                  setDeleteModalOpen(true);
+                }}
+              />
+              <FiPrinter
+                className="cursor-pointer text-blue-500"
+                onClick={() => navigate(`/print/${row.seller.fullName}`)}
+              />
+            </>
           )}
         </div>
       ),

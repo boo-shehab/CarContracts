@@ -25,94 +25,90 @@ function AddCarInformation({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Validate all fields and set errors, return true if valid, false otherwise
-  const validate = (): boolean => {
+  // const validate = (): boolean => {
     
-    const newErrors: Record<string, string> = {};
-    if (!formData.name) newErrors.name = 'اسم السيارة مطلوب';
-    if (!formData.type) newErrors.type = 'نوع السيارة مطلوب';
-    if (!formData.color) newErrors.color = 'لون السيارة مطلوب';
-    if (!formData.model) newErrors.model = 'موديل السيارة مطلوب';
-    if (!formData.chassisNumber) newErrors.chassisNumber = 'رقم الشاصي مطلوب';
-    if (!formData.plateNumber) newErrors.plateNumber = 'رقم السيارة مطلوب';
-    if (!formData.engineType) newErrors.engineType = 'نوع المحرك مطلوب';
-    if (!formData.kilometers && formData.kilometers < 0)
-      newErrors.kilometers = 'عدد الكيلومترات مطلوب';
-    if (!formData.passengerCount || formData.passengerCount < 1)
-      newErrors.passengerCount = 'عدد الركاب مطلوب ويجب أن يكون أكبر من 0';
-    if (!formData.origin) newErrors.origin = 'المصدر مطلوب';
-    if (!formData.cylinderCount || formData.cylinderCount < 1)
-      newErrors.cylinderCount = 'عدد الأسطوانات مطلوب ويجب أن يكون أكبر من 0';
-    const isValid = Object.keys(newErrors).length === 0;
-    if (onValidate) onValidate(isValid);
-    return isValid;
-  };
+  //   const newErrors: Record<string, string> = {};
+  //   if (!formData.name) newErrors.name = 'اسم السيارة مطلوب';
+  //   if (!formData.type) newErrors.type = 'نوع السيارة مطلوب';
+  //   if (!formData.color) newErrors.color = 'لون السيارة مطلوب';
+  //   if (!formData.model) newErrors.model = 'موديل السيارة مطلوب';
+  //   if (!formData.chassisNumber) newErrors.chassisNumber = 'رقم الشاصي مطلوب';
+  //   if (!formData.plateNumber) newErrors.plateNumber = 'رقم السيارة مطلوب';
+  //   if (!formData.engineType) newErrors.engineType = 'نوع المحرك مطلوب';
+  //   if (!formData.kilometers && formData.kilometers < 0)
+  //     newErrors.kilometers = 'عدد الكيلومترات مطلوب';
+  //   if (!formData.passengerCount || formData.passengerCount < 1)
+  //     newErrors.passengerCount = 'عدد الركاب مطلوب ويجب أن يكون أكبر من 0';
+  //   if (!formData.origin) newErrors.origin = 'المصدر مطلوب';
+  //   if (!formData.cylinderCount || formData.cylinderCount < 1)
+  //     newErrors.cylinderCount = 'عدد الأسطوانات مطلوب ويجب أن يكون أكبر من 0';
+  //   const isValid = Object.keys(newErrors).length === 0;
+  //   if (onValidate) onValidate(isValid);
+  //   return isValid;
+  // };
 
   // Real-time validation for each field
   const handleChange = (field: string, value: string | number) => {
-    setFormData(field, value);
-    setErrors((prev) => {
-      const newErrors = { ...prev };
-      // Remove error for this field if valid
-      const numberFields = ['kilometers', 'passengerCount', 'cylinderCount'];
-      if (
-        (numberFields.includes(field)
-          ? value !== null && value !== undefined && !isNaN(Number(value))
-          : value !== '' && value !== null && value !== undefined)
-      ) {
-        delete newErrors[field];
-      } else {
-        // Optionally, add error if field is empty
-        switch (field) {
-          case 'name':
-            newErrors.name = 'اسم السيارة مطلوب';
-            break;
-          case 'type':
-            newErrors.type = 'نوع السيارة مطلوب';
-            break;
-          case 'color':
-            newErrors.color = 'لون السيارة مطلوب';
-            break;
-          case 'model':
-            newErrors.model = 'موديل السيارة مطلوب';
-            break;
-          case 'chassisNumber':
-            newErrors.chassisNumber = 'رقم الشاصي مطلوب';
-            break;
-          case 'plateNumber':
-            newErrors.plateNumber = 'رقم السيارة مطلوب';
-            break;
-          case 'engineType':
-            newErrors.engineType = 'نوع المحرك مطلوب';
-            break;
-          case 'origin':
-            newErrors.origin = 'المصدر مطلوب';
-            break;
-          case 'kilometers':
-            newErrors.kilometers = 'عدد الكيلومترات مطلوب';
-            break;
-          case 'passengerCount':
-            newErrors.passengerCount = 'عدد الركاب مطلوب ويجب أن يكون أكبر من 0';
-            break;
-          case 'cylinderCount':
-            newErrors.cylinderCount = 'عدد الأسطوانات مطلوب ويجب أن يكون أكبر من 0';
-            break;
-          default:
-            break;
-        }
+  // Update formData
+  setFormData(field, value);
+
+  setErrors((prev) => {
+    const newErrors = { ...prev };
+
+    // Validation logic for the changed field
+    const numberFields = ['kilometers', 'passengerCount', 'cylinderCount'];
+    if (
+      (numberFields.includes(field)
+        ? value !== null && value !== undefined && !isNaN(Number(value))
+        : value !== '' && value !== null && value !== undefined)
+    ) {
+      delete newErrors[field];
+    } else {
+      switch (field) {
+        case 'name':
+          newErrors.name = 'اسم السيارة مطلوب';
+          break;
+        case 'type':
+          newErrors.type = 'نوع السيارة مطلوب';
+          break;
+        case 'color':
+          newErrors.color = 'لون السيارة مطلوب';
+          break;
+        case 'model':
+          newErrors.model = 'موديل السيارة مطلوب';
+          break;
+        case 'chassisNumber':
+          newErrors.chassisNumber = 'رقم الشاصي مطلوب';
+          break;
+        case 'plateNumber':
+          newErrors.plateNumber = 'رقم السيارة مطلوب';
+          break;
+        case 'engineType':
+          newErrors.engineType = 'نوع المحرك مطلوب';
+          break;
+        case 'origin':
+          newErrors.origin = 'المصدر مطلوب';
+          break;
+        case 'kilometers':
+          newErrors.kilometers = 'عدد الكيلومترات مطلوب';
+          break;
+        case 'passengerCount':
+          newErrors.passengerCount = 'عدد الركاب مطلوب ويجب أن يكون أكبر من 0';
+          break;
+        case 'cylinderCount':
+          newErrors.cylinderCount = 'عدد الأسطوانات مطلوب ويجب أن يكون أكبر من 0';
+          break;
       }
-      return newErrors;
-    });
-    // Check if form is valid after this change
-    if (onValidate) {
-      const isValid =
-        value !== '' &&
-        value !== null &&
-        value !== undefined &&
-        !isNaN(Number(value)) &&
-        Object.keys(errors).filter((key) => key !== field).length === 0;
-      onValidate(isValid && validate());
     }
-  };
+
+    // Immediately validate using the new errors object
+    const isValid = Object.keys(newErrors).length === 0;
+    if (onValidate) onValidate(isValid);
+
+    return newErrors;
+  });
+};
+
   return (
     <div className="w-full bg-white rounded-xl shadow-lg p-4 my-4">
         <div className='flex flex-col'>
