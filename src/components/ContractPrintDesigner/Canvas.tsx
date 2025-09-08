@@ -5,6 +5,7 @@ import { Rnd } from 'react-rnd';
 import Toolbar from './Toolbar';
 import { Field, InputItem, ItemTypes } from './types';
 import axios from '../../services/axios';
+import { toast } from 'react-toastify';
 
 interface CanvasProps {
   availableFields: Field[];
@@ -14,6 +15,7 @@ interface CanvasProps {
 const Canvas = ({ setAvailableFields }: CanvasProps) => {
   const [items, setItems] = useState<InputItem[]>([]);
   const [bgImage, setBgImage] = useState<string | null>(null);
+  const [data, setData] = useState<any>(null);
 
   const [, drop] = useDrop(() => ({
     accept: ItemTypes.INPUT,
@@ -48,11 +50,40 @@ const Canvas = ({ setAvailableFields }: CanvasProps) => {
   const handleSave = async () => {
     // localStorage.setItem('contractBg', bgImage || '');
     // localStorage.setItem('contractInputs', JSON.stringify(items));
-    await axios.post('/templates', {
-      name: 'Contract Template',
-      imageUrl: 'https://mostaql.hsoubcdn.com/uploads/thumbnails/141046/52805/26b9fe1e-79fd-44ac-b614-ffa5bbb05714.JPG',
-      fields: items.map((item) => {
-        if(item?.id){
+    // check if we have template saved already if so update it else create new
+    
+    if(data == null) {
+      await axios.post('/templates', {
+        name: 'Contract Template',
+        imageUrl: 'https://mostaql.hsoubcdn.com/uploads/thumbnails/141046/52805/26b9fe1e-79fd-44ac-b614-ffa5bbb05714.JPG',
+        fields: items.map((item) => {
+          if(item?.id){
+            return {
+              fieldId: item.fieldId,
+              x: item.x,
+              y: item.y,
+              width: item.width,
+              height: item.height,
+              label: item.label,
+            }
+          } else {
+            return {
+              fieldId: item.fieldId,
+              x: item.x,
+              y: item.y,
+              width: item.width,
+              height: item.height,
+              label: item.label,
+            };
+          }
+        })
+      });
+    } else {
+
+      await axios.put(`/templates/${data.id}`, {
+        name: 'Contract Template',
+        imageUrl: 'https://mostaql.hsoubcdn.com/uploads/thumbnails/141046/52805/26b9fe1e-79fd-44ac-b614-ffa5bbb05714.JPG',
+        fields: items.map((item) => {
           return {
             fieldId: item.fieldId,
             x: item.x,
@@ -61,20 +92,42 @@ const Canvas = ({ setAvailableFields }: CanvasProps) => {
             height: item.height,
             label: item.label,
           }
-        } else {
-          return {
-            fieldId: item.fieldId,
-            x: item.x,
-            y: item.y,
-            width: item.width,
-            height: item.height,
-            label: item.label,
-          };
-        }
-      })
-    });
-
+        })
+      });
+    }
+    toast.success('تم الحفظ بنجاح');
   };
+
+  const handleDeleteAll = async () => {
+    if (!data?.id) {
+      // ماكو داتا محفوظة بالباكند
+      setBgImage(null);
+      setAvailableFields((prev) => [
+        ...prev,
+        ...items.map((i) => ({ id: i.fieldId, label: i.label }))
+      ]);
+      setItems([]);
+      return;
+    }
+
+    try {
+      await axios.delete(`/templates/${data.id}`);
+      setBgImage(null);
+      setAvailableFields((prev) => [
+        ...prev,
+        ...items.map((i) => ({ id: i.fieldId, label: i.label }))
+      ]);
+      setItems([]);
+      setData(null);
+      toast.success('تم الحذف بنجاح');
+    } catch (error) {
+      console.error(error);
+      toast.error('فشل الحذف من الباكند');
+    }
+  };
+
+
+
   // const handleClear = () => {
   //   localStorage.clear();
   //   setBgImage(null);
@@ -86,10 +139,11 @@ const Canvas = ({ setAvailableFields }: CanvasProps) => {
     const getSavedData = async () => {
       // const savedBg = localStorage.getItem('contractBg');
       // const savedInputs = localStorage.getItem('contractInputs');
-  
+
       const response = await axios.get('/templates/company');
-      const savedBg = response.data.data[response.data.data.length - 1].imageUrl;
-      const savedInputs = response.data.data[response.data.data.length - 1].fields;
+      const savedBg = response.data.data[response.data.data.length - 1]?.imageUrl;
+      const savedInputs = response.data.data[response.data.data.length - 1]?.fields || [];
+      setData(response.data.data[response.data.data.length - 1]);
       
   
       if (savedBg) setBgImage(savedBg);
@@ -114,7 +168,17 @@ const Canvas = ({ setAvailableFields }: CanvasProps) => {
     <div className="flex-1 p-4 overflow-auto">
       <Toolbar
         onSave={handleSave}
+        onClearImage={() => setBgImage(null)}
+        onClearFields={() => {
+          setAvailableFields((prev) => [
+            ...prev,
+            ...items.map((i) => ({ id: i.fieldId, label: i.label }))
+          ]);
+          setItems([]);
+        }}
+        onDeleteAll={handleDeleteAll}
       />
+
 
       <div
         id="canvas-container"

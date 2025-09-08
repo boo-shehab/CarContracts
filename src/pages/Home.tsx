@@ -25,61 +25,10 @@ const Home = () => {
       toast.error("ليس لديك إذن لعرض لوحة المعلومات");
       navigate(-1);
     }
-    axios.get('/dashboard?start=2025-01-01&dateType=year')
+    axios.get('/dashboard')
       .then(response => {
         const data = response.data.data;
 
-        /* the data will be like this data
-: 
-{month: {paidInstallmentsCount: 2000000, completedPlansCount: 3, contractsCount: 8},…}
-day
-: 
-{paidInstallmentsCount: 0, completedPlansCount: 0, contractsCount: 0}
-completedPlansCount
-: 
-0
-contractsCount
-: 
-0
-paidInstallmentsCount
-: 
-0
-month
-: 
-{paidInstallmentsCount: 2000000, completedPlansCount: 3, contractsCount: 8}
-completedPlansCount
-: 
-3
-contractsCount
-: 
-8
-paidInstallmentsCount
-: 
-2000000
-week
-: 
-{paidInstallmentsCount: 1000000, completedPlansCount: 0, contractsCount: 0}
-completedPlansCount
-: 
-0
-contractsCount
-: 
-0
-paidInstallmentsCount
-: 
-1000000
-year
-: 
-{paidInstallmentsCount: 8006500, completedPlansCount: 12, contractsCount: 17}
-completedPlansCount
-: 
-12
-contractsCount
-: 
-17
-paidInstallmentsCount
-: 
-8006500 */
         setCardsData([
           {
             title: 'عدد المبيعات اليومية',
@@ -129,11 +78,11 @@ paidInstallmentsCount
           >
             <div className="flex-1 flex flex-col gap-1">
               <div className="text-xl font-bold text-primary-800">{card.title}</div>
-              <div className="text-xl font-normal text-black">{card.value}</div>
+              <div className="text-xl font-normal text-black">{card.trend}</div>
 
               <div className="text-xl font-medium text-success-500 flex items-center">
                 <span className="ml-1">
-                {card.trend}
+                {card.value}
                 </span>{' '}
                   <ArrowRise />
               </div>

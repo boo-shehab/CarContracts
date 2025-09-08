@@ -9,6 +9,7 @@ import CustomDatePicker from '../components/Form/DateFiled/CustomDatePicker';
 import { hasPermission } from '../utilities/permissions';
 import { ALL_PERMISSIONS } from '../utilities/allPermissions';
 import { useNavigate } from 'react-router-dom';
+import PaymentModal from '../components/PaymentMadal';
 
 
 const UpdateDatesModal = ({ isOpen, onClose, payment, onSuccess }: any) => {
@@ -87,8 +88,9 @@ const UpdateDatesModal = ({ isOpen, onClose, payment, onSuccess }: any) => {
 
 function Payments() {
   const [refresh, setRefresh] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [selectedPayment, setSelectedPayment] = useState<any>(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -230,17 +232,9 @@ function Payments() {
                 : 'text-error-500 bg-error-100'
             } ${hasPermission(ALL_PERMISSIONS.UPDATE_INSTALLMENT) ? 'cursor-pointer' : 'cursor-not-allowed'}`}
             onClick={() => {
-              if (row.status === 'PAID' || !hasPermission(ALL_PERMISSIONS.UPDATE_INSTALLMENT)) return;
-              axios.put(`/payment/${row.id}/updateInstallmentStatus`).then(() => {
-                toggleRefresh();
-                toast.success('تم الدفع بنجاح');
-              }).catch((error: any) => {
-                const message =
-                  error?.response?.data?.message ||
-                  error?.message ||
-                  'فشل في تحديث حالة الدفعة.';
-                toast.error(message);
-              });
+              if (row.status === "PAID") return;
+              setSelectedPayment(row);
+              setIsPaymentModalOpen(true);
             }}
           >
             {row.status === 'PAID' ? 'مدفوعة' : 'غير مدفوعة'}
@@ -287,6 +281,12 @@ function Payments() {
           onSuccess={handleUpdateSuccess}
         />
       )}
+      <PaymentModal
+        open={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onSuccess={toggleRefresh}
+        apiEndpoint={`/payment/${selectedPayment?.id}/updateInstallmentStatus`}
+      />
     </div>
   );
 }
