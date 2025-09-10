@@ -48,55 +48,60 @@ const Canvas = ({ setAvailableFields }: CanvasProps) => {
 
   // const handlePrint = () => window.print();
   const handleSave = async () => {
-    // localStorage.setItem('contractBg', bgImage || '');
-    // localStorage.setItem('contractInputs', JSON.stringify(items));
-    // check if we have template saved already if so update it else create new
-    
-    if(data == null) {
-      await axios.post('/templates', {
-        name: 'Contract Template',
-        imageUrl: 'https://mostaql.hsoubcdn.com/uploads/thumbnails/141046/52805/26b9fe1e-79fd-44ac-b614-ffa5bbb05714.JPG',
-        fields: items.map((item) => {
-          if(item?.id){
-            return {
-              fieldId: item.fieldId,
-              x: item.x,
-              y: item.y,
-              width: item.width,
-              height: item.height,
-              label: item.label,
-            }
-          } else {
-            return {
-              fieldId: item.fieldId,
-              x: item.x,
-              y: item.y,
-              width: item.width,
-              height: item.height,
-              label: item.label,
-            };
-          }
-        })
-      });
-    } else {
+  try {
+    let templateId = data?.id;
 
-      await axios.put(`/templates/${data.id}`, {
+    // Map fields (data only)
+    const fieldsPayload = items.map((item) => ({
+      fieldId: item.fieldId,
+      x: item.x,
+      y: item.y,
+      width: item.width,
+      height: item.height,
+      label: item.label,
+    }));
+
+    // ---------- STEP 1: Save or update data ----------
+    if (!templateId) {
+      // Create new template without image first
+      const res = await axios.post('/templates', {
         name: 'Contract Template',
-        imageUrl: 'https://mostaql.hsoubcdn.com/uploads/thumbnails/141046/52805/26b9fe1e-79fd-44ac-b614-ffa5bbb05714.JPG',
-        fields: items.map((item) => {
-          return {
-            fieldId: item.fieldId,
-            x: item.x,
-            y: item.y,
-            width: item.width,
-            height: item.height,
-            label: item.label,
-          }
-        })
+        fields: fieldsPayload,
+      });
+      templateId = res.data.data.id;
+
+      setData(res.data.data);
+      setBgImage(res.data.data.imageKey);
+      setItems(res.data.data.fields);
+
+    } else {
+      // Update existing template data
+      await axios.put(`/templates/${templateId}`, {
+        name: 'Contract Template',
+        fields: fieldsPayload,
       });
     }
+
+    // ---------- STEP 2: If bgImage changed, upload separately ----------
+    if (bgImage && bgImage.startsWith('data:')) {
+      // convert base64 → blob
+      const blob = await fetch(bgImage).then((res) => res.blob());
+      const formData = new FormData();
+      formData.append('image', blob, 'background.png');
+
+      await axios.post(`/templates/${templateId}/image`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+    }
+
     toast.success('تم الحفظ بنجاح');
-  };
+  } catch (err) {
+    console.error(err);
+    toast.error('فشل الحفظ');
+  }
+};
+
 
   const handleDeleteAll = async () => {
     if (!data?.id) {
@@ -141,7 +146,7 @@ const Canvas = ({ setAvailableFields }: CanvasProps) => {
       // const savedInputs = localStorage.getItem('contractInputs');
 
       const response = await axios.get('/templates/company');
-      const savedBg = response.data.data[response.data.data.length - 1]?.imageUrl;
+      const savedBg = response.data.data[response.data.data.length - 1]?.imageKey;
       const savedInputs = response.data.data[response.data.data.length - 1]?.fields || [];
       setData(response.data.data[response.data.data.length - 1]);
       
