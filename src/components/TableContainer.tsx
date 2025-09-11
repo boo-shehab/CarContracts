@@ -34,7 +34,7 @@ const TableContainer = ({
   });
   const [currentPage, setCurrentPage] = useState(0);
   const [lastPage, setLastPage] = useState(1);
-  const rowsPerPage = 1;
+  const rowsPerPage = 10;
 
   const [expandedRowId, setExpandedRowId] = useState<string | number | null>(null);
   const [loadingRowId] = useState<string | number | null>(null);
