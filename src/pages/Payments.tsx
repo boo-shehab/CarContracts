@@ -115,7 +115,7 @@ function Payments() {
     },
     {
       title: 'تاريخ',
-      key: 'createdAt',
+      key: 'paymentPlanCreationDate',
       sortable: true,
     },
     {
@@ -128,42 +128,64 @@ function Payments() {
       key: 'paymentNumber',
       render: (row: any) => (
         <span className="text-lg font-normal">
-          {(() => {
-            const elements = [];
-            let futureShown = false;
-            let isFirst = true;
-            const cutoff = new Date();
+  {(() => {
+    const elements: any = [];
+    const cutoff = new Date();
 
-            for (const installment of row.installments) {
-              if (installment.status !== 'PENDING') continue;
+    let lastPaidIndex: number | null = null;
 
-              const dueDate = new Date(installment.dueDate);
-              const prefix = isFirst ? '' : ','; // no comma before first one
+    const overdueIndexes: number[] = [];
 
-              if (dueDate <= cutoff) {
-                elements.push(
-                  <span key={installment.id} className="text-error-500">
-                    {prefix}
-                    {installment.installmentNumber}
-                  </span>
-                );
-                isFirst = false;
-              } else if (!futureShown) {
-                elements.push(
-                  <span key={installment.id} className="text-primary-500">
-                    {prefix}
-                    {installment.installmentNumber}
-                  </span>
-                );
-                futureShown = true;
-                isFirst = false;
-              }
-            }
+    for (let i = 0; i < row.installments.length; i++) {
+      const installment = row.installments[i];
+      const dueDate = new Date(installment.dueDate);
 
-            return elements.length > 0 ? elements : 0;
-          })()}
-          /{row.installments.length}
+      if (installment.status === "PAID") {
+        lastPaidIndex = i + 1; 
+      } else if (dueDate <= cutoff && installment.status !== "PAID") {
+        overdueIndexes.push(i + 1);
+      }
+    }
+
+    if (lastPaidIndex === null && overdueIndexes.length === 0) {
+      elements.push(
+        <span key="0" className="text-primary-500">
+          0
         </span>
+      );
+    } else if (lastPaidIndex === null && overdueIndexes.length > 0) {
+      elements.push(
+        <span key="overdue" className="text-error-500">
+          {overdueIndexes.join(",")}
+        </span>
+      );
+    } else if (lastPaidIndex !== null && overdueIndexes.length === 0) {
+      elements.push(
+        <span key="lastPaid" className="text-primary-500">
+          {lastPaidIndex}
+        </span>
+      );
+    } else if (lastPaidIndex !== null && overdueIndexes.length > 0) {
+      elements.push(
+        <span key="lastPaid" className="text-primary-500">
+          {lastPaidIndex}
+        </span>
+      );
+      elements.push(
+        <span key="overdue" className="text-error-500">
+          ,{overdueIndexes.join(",")}
+        </span>
+      );
+    }
+
+    return (
+      <>
+        {elements}/{row.installments.length}
+      </>
+    );
+  })()}
+</span>
+
       ),
     },
     {
@@ -216,23 +238,28 @@ function Payments() {
     },
     {
       title: 'رقم الدفعة',
-      key: 'installmentNumber',
+      key: 'paymentNumber',
       sortable: true,
+      render: (_row: any, index: number) => (
+        <span className="text-lg font-normal">{index + 1}</span>
+      ),
     },
     {
       title: 'الحالة',
       key: 'status',
       sortable: true,
-      render: (row: any) => (
+      render: (row: any, index: number, parent: any) => (
         <div className="flex gap-2">
           <span
             className={`text-lg font-normal py-1 flex-1 rounded-full block text-center px-8 ${
-              row.status === 'PAID'
+              row?.status === 'PAID'
                 ? 'text-success-500 bg-success-100'
                 : 'text-error-500 bg-error-100'
             } ${hasPermission(ALL_PERMISSIONS.UPDATE_INSTALLMENT) ? 'cursor-pointer' : 'cursor-not-allowed'}`}
             onClick={() => {
-              if (row.status === "PAID") return;
+              if (row.status === "PAID" || (index > 0 && parent.installments[index - 1]?.status !== "PAID")) return;
+              console.log(parent.installments[index]);
+              
               setSelectedPayment(row);
               setIsPaymentModalOpen(true);
             }}
