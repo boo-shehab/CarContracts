@@ -29,7 +29,9 @@ const NotificationsPopup = () => {
 
   // Listen for Firebase notifications
   useEffect(() => {
-    if(!hasPermission(ALL_PERMISSIONS.GET_NOTIFICATTIONS)) return
+  if (!hasPermission(ALL_PERMISSIONS.GET_NOTIFICATTIONS)) return;
+
+  try {
     const messaging = getMessaging(app);
     onMessage(messaging, (payload) => {
       const notif: Notification = {
@@ -41,24 +43,30 @@ const NotificationsPopup = () => {
       };
       setFirebaseNotifications((prev) => [notif, ...prev]);
     });
-  }, []);
+  } catch (err) {
+    console.warn("Firebase messaging not supported on this browser", err);
+  }
+}, []);
+
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-
-    if (open) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
+  const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+    if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+      setOpen(false);
     }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [open]);
+  };
+
+  if (open) {
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+    document.removeEventListener('touchstart', handleClickOutside);
+  };
+}, [open]);
+
 
   const renderIcon = (type?: string) => {
     switch (type) {

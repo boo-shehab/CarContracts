@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { compressImage } from '../../utilities/compressImage';
 
 export type CardSide = 'front' | 'back';
 
@@ -52,11 +53,13 @@ const CardImagesPicker: React.FC<CardImagesPickerProps> = ({
     fileInputs[side].current?.click();
   };
 
-  const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+  const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
     if (disabled) return;
     const side = e.target.dataset.side as CardSide;
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const compressedFile = await compressImage(file);
 
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -64,15 +67,15 @@ const CardImagesPicker: React.FC<CardImagesPickerProps> = ({
         ...prev,
         [side]: {
           preview: reader.result as string,
-          file,
+          file: compressedFile,
         },
       }));
 
       setFormData({
-        [side === 'front' ? frontKey : backKey]: file,
+        [side === 'front' ? frontKey : backKey]: compressedFile,
       });
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(compressedFile);
   };
 
   return (

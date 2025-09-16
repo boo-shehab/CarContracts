@@ -144,7 +144,7 @@ function AddNewCar() {
         />
         <DocumentsInformation
           formData={images}
-          setFormData={setImages}
+          setFormData={(data: any) => setImages(data.othreFiles)}
           isPerson={false}
           title="اضافة الملفات"
           disabled={disabled}

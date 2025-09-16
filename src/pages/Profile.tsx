@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from '../features/auth/authSlice';
 import ActivitiesTimeline from '../components/ActivitiesTimeline';
 import UserRoles from '../components/UserRoles';
+import { compressImage } from '../utilities/compressImage';
 
 const Profile = () => {
   const { id: paramId } = useParams<{ id?: string }>();
@@ -124,10 +125,12 @@ const Profile = () => {
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     if (file) {
-      setImageFile(file);
+      const compressedFile = await compressImage(file);
+      setImageFile(compressedFile);
     }
   };
 

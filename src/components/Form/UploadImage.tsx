@@ -1,5 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FiCamera, FiUpload } from 'react-icons/fi';
+import { compressImage } from '../../utilities/compressImage';
 
 interface UploadImageProps {
   onChange: (files: File[]) => void;
@@ -30,14 +31,17 @@ const UploadImage: React.FC<UploadImageProps> = ({ onChange, oldImages, disabled
     }
   };
 
-  const handleFiles = (files: File[]) => {
+  const handleFiles = async (files: File[]) => {
     if (disabled) return;
-    const newFiles = [...allFiles, ...files];
+    const compressedFiles = await Promise.all(
+      files.map((file) => compressImage(file))
+    );
+    const newFiles = [...allFiles, ...compressedFiles];
     setAllFiles(newFiles);
     onChange(newFiles);
 
     // Append new image URLs to existing images
-    const imgUrls = files.map((file) => URL.createObjectURL(file));
+    const imgUrls = compressedFiles.map((file) => URL.createObjectURL(file));
     setImages((prev) => [...prev, ...imgUrls]);
   };
 
@@ -64,6 +68,11 @@ const UploadImage: React.FC<UploadImageProps> = ({ onChange, oldImages, disabled
     e.preventDefault();
     setDragActive(false);
   };
+  useEffect(() => {
+  return () => {
+    images.forEach((src) => URL.revokeObjectURL(src));
+  };
+}, [images]);
 
   return (
     <>
@@ -121,7 +130,6 @@ const UploadImage: React.FC<UploadImageProps> = ({ onChange, oldImages, disabled
               type="file"
               accept="image/*"
               capture="environment"
-              multiple
               disabled={disabled}
               className="hidden"
               onChange={handleFileChange}
