@@ -199,6 +199,10 @@ function AddNewAuthorization() {
           toast.error(message)
       }
   };
+  
+  const handleCarInputChange = (field: string, value: string | number) => {
+    setCarInformation((prev) => ({ ...prev, [field]: value }));
+  };
   return (
     <div className="mb-4">
       <div className="flex items-center gap-1 py-4 text-2xl">
@@ -231,7 +235,7 @@ function AddNewAuthorization() {
           
             <AddCarInformation
               formData={carInformation}
-              setFormData={setCarInformation}
+              setFormData={handleCarInputChange}
               disabled={carDisabled}
               returnedValue={handleReturnedCarInfo}
               title="اضف معلومات السيارة الجديدة"

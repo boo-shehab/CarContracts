@@ -151,7 +151,8 @@ const Profile = () => {
     try {
       // Handle image upload if changed
       setIsLoading(true);
-      if (imageFile && imageFile instanceof File) {
+      if (imageFile !== null) {
+        
         const formDataImage = new FormData();
         formDataImage.append('photo', imageFile);
 
@@ -191,6 +192,7 @@ const Profile = () => {
           roles: roles || [],
         })
       );
+      setImageFile(null);
       toast.success('تم حفظ التعديلات بنجاح!');
     } catch (error: any) {
       const message =
