@@ -25,6 +25,7 @@ function AddNewContract() {
   const [buyerDisabled, setBuyerDisabled] = useState(false);
   const [carDisabled, setCarDisabled] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [sellerInformation, setSellerInformation] = useState<AccountInformation>({
     firstName: '',
@@ -258,6 +259,7 @@ function AddNewContract() {
 
   const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     if (currentStep === 3) {
       // here we will handle the submission logic for the contract
       // check if the seller is existing in the database if not create a new one
@@ -330,6 +332,7 @@ function AddNewContract() {
     } else {
       setCurrentStep(currentStep + 1);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -420,7 +423,7 @@ function AddNewContract() {
 
         <button
           type="submit"
-          disabled={!isFormValid}
+          disabled={!isFormValid || loading}
           className="w-full rounded-lg px-4 py-2.5 text-white text-2xl bg-primary-500 hover:bg-primary-600 disabled:bg-neutral-100 disabled:text-neutral-400 disabled:cursor-not-allowed aria-pressed:bg-primary-700 "
         >
           اضافة

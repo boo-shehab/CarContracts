@@ -164,8 +164,8 @@ const AddUserForm = ({ onSuccess, onCancel, initialData, isEdit }: AddUserFormPr
             value={formData.username}
             onChange={handleChange}
             disabled={isLoading}
-            placeholder="ادخل اسم المستخدم"
-            label="اسم المستخدم"
+            placeholder="ادخل يوزر المستخدم"
+            label="يوزر المستخدم"
             error={formErrors.username}
           />
           <InputField

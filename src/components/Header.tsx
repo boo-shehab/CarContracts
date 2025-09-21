@@ -7,6 +7,7 @@ import { IoClose } from 'react-icons/io5';
 import NotificationsPopup from './NotificationsPopup';
 import { hasPermission } from '../utilities/permissions';
 import { ALL_PERMISSIONS } from '../utilities/allPermissions';
+import { useSelector } from 'react-redux';
 
 const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -14,6 +15,8 @@ const Header = () => {
   const [showMobileDropdown, setShowMobileDropdown] = useState(false);
   const desktopDropdownRef = useRef<HTMLDivElement>(null);
   const mobileDropdownRef = useRef<HTMLDivElement>(null);
+  
+  const { user } = useSelector((state: any) => state.auth);
 
   const navigate = useNavigate();
 
@@ -96,8 +99,8 @@ const Header = () => {
           {hasPermission(ALL_PERMISSIONS.GET_NOTIFICATTIONS) && (
             <NotificationsPopup />
           )}
-          <img src={userImg} alt="User" className="w-10 h-10 rounded-full object-cover" />
-          <span className="text-gray-800 font-medium">محمد علي</span>
+          <img src={user?.imageUrl || userImg} alt="User" className="w-10 h-10 rounded-full object-cover" />
+          <span className="text-gray-800 font-medium">{user?.username}</span>
           <div
             className="cursor-pointer text-gray-600 text-xl relative"
             onClick={() => setShowDesktopDropdown((prev) => !prev)}
@@ -195,8 +198,8 @@ const Header = () => {
             {hasPermission(ALL_PERMISSIONS.GET_NOTIFICATTIONS) && (
               <NotificationsPopup />
             )}
-            <img src={userImg} alt="User" className="w-8 h-8 rounded-full object-cover" />
-            <span className="text-gray-800 font-medium text-lg">محمد علي</span>
+            <img src={user?.imageUrl || userImg} alt="User" className="w-8 h-8 rounded-full object-cover" />
+            <span className="text-gray-800 font-medium text-lg">{user?.username}</span>
             <div
               className="cursor-pointer text-gray-600 text-xl relative"
               onClick={() => setShowMobileDropdown((prev) => !prev)}
