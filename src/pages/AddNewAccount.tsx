@@ -6,6 +6,7 @@ import { AccountInformation } from '../components/informationCard/type';
 import DocumentsInformation from '../components/informationCard/DocumentsInformation';
 import {
   createNewAccount,
+  deletePersonAttachment,
   getAccountById,
   updateAccount,
   updatePersonAttachment,
@@ -17,6 +18,10 @@ import { ALL_PERMISSIONS } from '../utilities/allPermissions';
 
 function getChangedFields(original: any, updated: any) {
   const changed: any = {};
+  // check if the original and updated objects are the same
+  if (JSON.stringify(original) === JSON.stringify(updated)) {
+    return changed; // no changes
+  }
   Object.keys(updated).forEach((key) => {
     if (updated[key] !== original[key]) {
       changed[key] = updated[key];
@@ -36,11 +41,11 @@ function AddNewAccount() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [images, setImages] = useState<{
-    nationalIdFrontFile: any | null;
-    nationalIdBackFile: any | null;
-    residenceCardFrontFile: any | null;
-    residenceCardBackFile: any | null;
-    othreFiles: any[];
+    nationalIdFrontFile: {id: string | number, docType: string, docSide: string, url: string} | null;
+    nationalIdBackFile: {id: string | number, docType: string, docSide: string, url: string} | null;
+    residenceCardFrontFile: {id: string | number, docType: string, docSide: string, url: string} | null;
+    residenceCardBackFile: {id: string | number, docType: string, docSide: string, url: string} | null;
+    othreFiles: Array<{id: string | number, docType: string, docSide: string, url: string} | null>;
   }>({
     nationalIdFrontFile: null,
     nationalIdBackFile: null,
@@ -48,6 +53,13 @@ function AddNewAccount() {
     residenceCardBackFile: null,
     othreFiles: [],
   });
+  const [originalImages, setOriginalImages] = useState<{
+    nationalIdFrontFile: {id: string | number, docType: string, docSide: string, url: string} | null;
+    nationalIdBackFile: {id: string | number, docType: string, docSide: string, url: string} | null;
+    residenceCardFrontFile: {id: string | number, docType: string, docSide: string, url: string} | null;
+    residenceCardBackFile: {id: string | number, docType: string, docSide: string, url: string} | null;
+    othreFiles: Array<{id: string | number, docType: string, docSide: string, url: string} | null>;
+  } | null>(null);
   const [disabled, setDisabled] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
   const [imagesValidation, setImagesValidation] = useState(false);
@@ -143,11 +155,12 @@ function AddNewAccount() {
               } else if (docType === 'RESIDENCE_CARD' && docSide === 'BACK') {
                 newImages.residenceCardBackFile = url;
               } else {
-                newImages.othreFiles.push(url);
+                newImages.othreFiles.push(attachment);
               }
             });
           }
           setImages(newImages);
+          setOriginalImages(newImages);
 
         })
         .catch((error: any) => {
@@ -216,13 +229,47 @@ function AddNewAccount() {
         } else if (docType === 'RESIDENCE_CARD' && docSide === 'BACK') {
           newImages.residenceCardBackFile = url;
         } else {
-          newImages.othreFiles.push(url);
+          newImages.othreFiles.push(attachment);
         }
       });
     }
     setImages(newImages);
     setDisabled(true);
   };
+
+  const isEqual = (imgSet1: any, imgSet2: any) => {
+    return (
+      JSON.stringify(imgSet1.nationalIdFrontFile) === JSON.stringify(imgSet2.nationalIdFrontFile) &&
+      JSON.stringify(imgSet1.nationalIdBackFile) === JSON.stringify(imgSet2.nationalIdBackFile) &&
+      JSON.stringify(imgSet1.residenceCardFrontFile) === JSON.stringify(imgSet2.residenceCardFrontFile) &&
+      JSON.stringify(imgSet1.residenceCardBackFile) === JSON.stringify(imgSet2.residenceCardBackFile) &&
+      JSON.stringify(imgSet1.othreFiles) === JSON.stringify(imgSet2.othreFiles)
+    );
+  };
+
+  function getDeletedAttachments(original: any, updated: any) {
+  const deleted: any[] = [];
+
+  // Check other files
+  const originalOthers = original?.othreFiles || [];
+  const updatedOthers = updated?.othreFiles || [];
+
+  originalOthers.forEach((file: any) => {
+    if (!updatedOthers.find((f: any) => f?.id === file?.id)) {
+      deleted.push(file);
+    }
+  });
+
+  // Check single-file docs
+  ["nationalIdFrontFile", "nationalIdBackFile", "residenceCardFrontFile", "residenceCardBackFile"].forEach((key) => {
+    if (original?.[key]?.id && !updated?.[key]) {
+      deleted.push(original[key]);
+    }
+  });
+
+  return deleted;
+}
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -237,16 +284,9 @@ function AddNewAccount() {
           originalAccountInformation || {},
           accountInformation
         );
-        if (
-          Object.keys(changedFields).length === 0 &&
-          !(
-            images?.nationalIdFrontFile instanceof File ||
-            images?.nationalIdBackFile instanceof File ||
-            images?.residenceCardFrontFile instanceof File ||
-            images?.residenceCardBackFile instanceof File ||
-            (Array.isArray(images?.othreFiles) && images.othreFiles.some((f:any) => f instanceof File))
-          )
-        ) {
+        // Check if any attachments have changed
+        const attachmentChanged = !isEqual(originalImages, images);
+        if (Object.keys(changedFields).length === 0 && !attachmentChanged) {
           toast.info('لا توجد تغييرات لتحديثها');
           setIsLoading(false);
           return;
@@ -255,6 +295,11 @@ function AddNewAccount() {
         if (Object.keys(changedFields).length > 0) {
           await updateAccount(id, changedFields);
         }
+
+        const deletedAttachments = getDeletedAttachments(originalImages, images);
+        const deletePromises = deletedAttachments.map((file) =>
+          deletePersonAttachment(id, file.id)
+        );
 
         // Update attachments if changed
         const attachmentPromises = [];
@@ -278,11 +323,11 @@ function AddNewAccount() {
             updatePersonAttachment(id, 'RESIDENCE_CARD', 'BACK', images.residenceCardBackFile)
           );
         }
-        // If you want to support updating other files, loop through images.otherFiles and call updatePersonAttachment with the correct docType/docSide
-        // images.othreFiles.forEach((file: File) => {
-          attachmentPromises.push(updatePersonAttachment(id, 'OTHER_FILE', 'OTHER', images.othreFiles));
-        // });
-        await Promise.all(attachmentPromises);
+        images.othreFiles.forEach((fileObj: any) => {
+          if(typeof fileObj.url === 'string') return
+          attachmentPromises.push(updatePersonAttachment(id, 'OTHER_FILE', 'OTHER', fileObj.url));
+        })
+        await Promise.all([ ...attachmentPromises, ...deletePromises ]);
 
         // You may want to show a toast here: "تم تعديل الحساب بنجاح"
       } else {
@@ -327,6 +372,7 @@ function AddNewAccount() {
         <DocumentsInformation
           formData={images}
           setFormData={setImages}
+          imagesPath="url"
           isPerson={true}
           disabled={isView || disabled}
           onValidationChange={setImagesValidation}

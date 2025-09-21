@@ -1,25 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { FiCamera, FiUpload } from 'react-icons/fi';
+import { FiCamera, FiUpload, FiX } from 'react-icons/fi';
 import { compressImage } from '../../utilities/compressImage';
 
 interface UploadImageProps {
   onChange: (files: File[]) => void;
-  oldImages?: string[];
+  oldImages?: { id: string | number; docType: string; docSide: string; url: string | File }[];
   disabled?: boolean;
+  imagesPath: string;
 }
 
-const UploadImage: React.FC<UploadImageProps> = ({ onChange, oldImages, disabled }) => {
+const UploadImage: React.FC<UploadImageProps> = ({ onChange, oldImages, disabled, imagesPath }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
-  const [images, setImages] = useState<string[]>([]);
-  const [allFiles, setAllFiles] = useState<File[]>([]);
+  const [images, setImages] = useState<any>(oldImages || []);
 
-  // Show old images if available
-  React.useEffect(() => {
-    if (oldImages) {
-      setImages(oldImages);
-    }
+  useEffect(() => {
+    setImages(oldImages || []);
   }, [oldImages]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,14 +33,13 @@ const UploadImage: React.FC<UploadImageProps> = ({ onChange, oldImages, disabled
     const compressedFiles = await Promise.all(
       files.map((file) => compressImage(file))
     );
-    const newFiles = [...allFiles, ...compressedFiles];
-    setAllFiles(newFiles);
-    onChange(newFiles);
 
-    // Append new image URLs to existing images
-    const imgUrls = compressedFiles.map((file) => URL.createObjectURL(file));
-    setImages((prev) => [...prev, ...imgUrls]);
-  };
+    const newImages = compressedFiles.map((file, index) => ({
+      id: Date.now() + index,
+      [imagesPath]: file,
+    }));
+    setImages((prev) => [...prev, ...newImages]);
+  }
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     if (disabled) return;
@@ -68,22 +64,41 @@ const UploadImage: React.FC<UploadImageProps> = ({ onChange, oldImages, disabled
     e.preventDefault();
     setDragActive(false);
   };
+//   useEffect(() => {
+//   return () => {
+//     images.forEach((src) => URL.revokeObjectURL(src[imagesPath]));
+//   };
+// }, [images]);
   useEffect(() => {
-  return () => {
-    images.forEach((src) => URL.revokeObjectURL(src));
+    // send all the files to parent component the old ones and the new ones
+    onChange(images)
+  }, [images]);
+
+  const handleDelete = (id: number) => {
+    if (disabled) return;
+    setImages((prev) => prev.filter((img) => img.id !== id));
   };
-}, [images]);
+
+  console.log(images);
+  
 
   return (
     <>
       {images.length > 0 && (
         <div className="flex flex-wrap gap-4 justify-center">
-          {images.map((src, idx) => (
+          {images.map((src: any) => (
             <div
-              key={idx}
-              className="w-44 h-44 rounded-xl overflow-hidden bg-white border border-blue-100 flex items-center justify-center"
+              key={src.id}
+              className="relative w-44 h-44 rounded-xl overflow-hidden bg-white border border-blue-100 flex items-center justify-center"
             >
-              <img src={src} alt={`uploaded-${idx}`} className="object-cover w-full h-full" />
+              <img src={typeof src[imagesPath] === 'string'? src[imagesPath] : URL.createObjectURL(src[imagesPath])} alt={`uploaded-${src.id}`} className="object-cover w-full h-full" />
+              <button
+                type="button"
+                onClick={() => handleDelete(src.id)}
+                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition"
+              >
+                <FiX size={18} />
+              </button>
             </div>
           ))}
         </div>

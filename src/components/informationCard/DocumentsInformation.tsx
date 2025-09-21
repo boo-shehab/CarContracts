@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import CardImagesPicker from "../Form/CardImagesPicker";
 import UploadImage from "../Form/UploadImage";
 
-function DocumentsInformation({ formData, setFormData, title, isPerson, disabled, onValidationChange }: any) {
+function DocumentsInformation({ formData, setFormData, title, isPerson, disabled, onValidationChange, imagesPath }: any) {
   const handlePersonImages = (fileObj: any) => {
     setFormData({ ...formData, ...fileObj });
   };
@@ -81,10 +81,9 @@ function DocumentsInformation({ formData, setFormData, title, isPerson, disabled
         <div className="flex flex-col sm:flex-row gap-4 flex-wrap mb-4">
           <UploadImage
             onChange={(files) => handleOtherImages(files)}
+            imagesPath={imagesPath}
             disabled={disabled}
-            oldImages={formData?.othreFiles?.map((file: any) =>
-              typeof file === "string" ? file : URL.createObjectURL(file)
-            )}
+            oldImages={formData?.othreFiles}
           />
         </div>
       </div>

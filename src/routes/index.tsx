@@ -7,6 +7,7 @@ import Loading from '../components/Loading';
 import RolesPage from '../pages/RolesPage';
 import SettingsPage from '../pages/SettingsPage';
 import ContractPrintPage from '../pages/ContractPrintPage';
+import Cars from '../pages/Cars';
 
 // Lazy load all pages
 const Home = lazy(() => import('../pages/Home'));
@@ -94,7 +95,19 @@ const router = createBrowserRouter([
             element: withSuspense(<AddNewAccount />),
           },
           {
+            path: 'cars',
+            element: withSuspense(<Cars />),
+          },
+          {
             path: 'new-car',
+            element: withSuspense(<AddNewCar />),
+          },
+          {
+            path: `car/:id/view`,
+            element: withSuspense(<AddNewCar />),
+          },
+          {
+            path: `car/:id/edit`,
             element: withSuspense(<AddNewCar />),
           },
           {

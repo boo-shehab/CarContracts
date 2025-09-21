@@ -49,6 +49,12 @@ function AddCarInformation({
 
   // Real-time validation for each field
   const handleChange = (field: string, value: string | number) => {
+    
+  if (field === "chassisNumber" && typeof value === "string") {
+    // Only allow English letters and digits
+    const englishOnly = value.replace(/[^a-zA-Z0-9]/g, "");
+    value = englishOnly;
+  }
   // Update formData
   setFormData(field, value);
 

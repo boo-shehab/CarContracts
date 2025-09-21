@@ -86,7 +86,7 @@ export const updatePersonAttachment = async (
   }
 
   return axios.put(
-    `/person/${personId}/attachment/${docType}/${docSide}`,
+    `/person/${personId}/attachment/${docType}/${docSide}/1`,
     formData,
     {
       headers: {
@@ -95,3 +95,8 @@ export const updatePersonAttachment = async (
     }
   );
 };
+
+
+export async function deletePersonAttachment(personId: string | number, attachmentId: string | number) {
+  return axios.delete(`/person/${personId}/attachments/${attachmentId}`);
+}
