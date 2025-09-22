@@ -6,7 +6,7 @@ export const getCarById = (id: string) => axios.get(`/car/${id}`);
 export const updateCar = (id: string, data: any) => axios.put(`/car/${id}`, data);
 
 /** Upload new attachments (files) for a car */
-export const uploadCarAttachments = (carId: string, files: FormData) => {
+export const uploadCarAttachments = (carId: string, files: File[]) => {
   console.log('Uploading files for carId:', carId, files);
 
   return axios.post(`/car/${carId}/attachments`, files, {

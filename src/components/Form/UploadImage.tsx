@@ -38,7 +38,7 @@ const UploadImage: React.FC<UploadImageProps> = ({ onChange, oldImages, disabled
       id: Date.now() + index,
       [imagesPath]: file,
     }));
-    setImages((prev) => [...prev, ...newImages]);
+    setImages((prev: any) => [...prev, ...newImages]);
   }
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -76,7 +76,7 @@ const UploadImage: React.FC<UploadImageProps> = ({ onChange, oldImages, disabled
 
   const handleDelete = (id: number) => {
     if (disabled) return;
-    setImages((prev) => prev.filter((img) => img.id !== id));
+    setImages((prev: any) => prev.filter((img: any) => img.id !== id));
   };
 
   console.log(images);

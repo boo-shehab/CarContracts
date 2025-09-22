@@ -4,10 +4,10 @@ export function printAccountDocs({
   residenceCardFrontFile,
   residenceCardBackFile,
 }: {
-  nationalIdFrontFile?: string;
-  nationalIdBackFile?: string;
-  residenceCardFrontFile?: string;
-  residenceCardBackFile?: string;
+  nationalIdFrontFile?: any | undefined;
+  nationalIdBackFile?: any | undefined;
+  residenceCardFrontFile?: any | undefined;
+  residenceCardBackFile?: any | undefined;
 }) {
   const printWindow = window.open('', '_blank');
   if (!printWindow) return;

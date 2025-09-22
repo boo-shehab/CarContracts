@@ -30,9 +30,6 @@ export async function handleCarImageUpdates(
     })
   );
   
-  console.log(newFiles);
-  
-
   // Upload new files if any
   const uploadPromise = newFiles.length > 0
     ? uploadCarAttachments(carId, newFiles)

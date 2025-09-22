@@ -13,7 +13,6 @@ import {
   updateCar,
   uploadCarAttachments,
 } from '../services/CarService';
-import { handleCarImageUpdates } from '../utilities/handleCarImageUpdates';
 import { getChangedFields } from '../utilities/getChangedFields';
 import { mapCarFields } from '../utilities/mapCarFields';
 
@@ -114,12 +113,12 @@ function AddNewCar() {
         }
 
         // Handle new images (File objects)
-        const newFiles = images.filter((img) => typeof img.fileKey !== 'string') as File[];
+        const newFiles = images.filter((img: any) => typeof img.fileKey !== 'string') as File[];
         if (newFiles.length > 0) {
           // You need an uploadCarAttachments service that accepts FormData
           const formData = new FormData();
-          newFiles.forEach((file) => formData.append('files', file.fileKey));
-          await uploadCarAttachments(id, formData);
+          newFiles.forEach((file: any) => formData.append('files', file.fileKey));
+          await uploadCarAttachments(id, formData as any);
         }
         // reset original states
         const updatedCar = await getCarById(id);
@@ -171,7 +170,7 @@ function AddNewCar() {
           imagesPath="fileKey"
           formData={{ othreFiles: images }}
           setFormData={(data: any) => {
-            data.othreFiles.map((d) => {
+            data.othreFiles.map((d: any) => {
               console.log(d);
             });
             setImages(data.othreFiles);
