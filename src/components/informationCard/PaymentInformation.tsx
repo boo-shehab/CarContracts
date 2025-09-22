@@ -12,14 +12,14 @@ export interface paymentInformationData {
   installmentPeriodDays?: number | '';
   firstInstallmentDate?: string | '';
   remainingAmount: number | '';
-    installment?:
-      | [
-          {
-            amount: number | '';
-            dueDate: string | '';
-          },
-        ]
-      | [];
+  installment?:
+    | [
+        {
+          amount: number | '';
+          dueDate: string | '';
+        }
+      ]
+    | [];
 }
 
 interface PaymentInformationProps {
@@ -43,10 +43,7 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
     }));
   }, [formData.totalAmount, formData.downPayment]);
   useEffect(() => {
-    if (
-      formData.paymentType === 'INSTALLMENT' &&
-      !userEditedInstallment.current
-    ) {
+    if (formData.paymentType === 'INSTALLMENT' && !userEditedInstallment.current) {
       const targetLength = Number(formData.numberOfInstallments) || 0;
       const totalAmount = Number(formData.totalAmount) || 0;
       const downPayment = Number(formData.downPayment) || 0;
@@ -101,34 +98,33 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
     formData.downPayment,
   ]);
 
-
   useEffect(() => {
-  if (
-    formData.paymentType === 'INSTALLMENT' &&
-    formData.firstInstallmentDate &&
-    formData.installmentPeriodDays &&
-    Array.isArray(formData.installment)
-  ) {
-    const baseDate = new Date(formData.firstInstallmentDate);
-    const period = Number(formData.installmentPeriodDays);
+    if (
+      formData.paymentType === 'INSTALLMENT' &&
+      formData.firstInstallmentDate &&
+      formData.installmentPeriodDays &&
+      Array.isArray(formData.installment)
+    ) {
+      const baseDate = new Date(formData.firstInstallmentDate);
+      const period = Number(formData.installmentPeriodDays);
 
-    const updated = formData.installment.map((payment, index) => {
-      const due = new Date(baseDate);
-      due.setDate(baseDate.getDate() + index * period);
-      return {
-        ...payment,
-        dueDate: due.toISOString().split('T')[0],
-      };
-    });
+      const updated = formData.installment.map((payment, index) => {
+        const due = new Date(baseDate);
+        due.setDate(baseDate.getDate() + index * period);
+        return {
+          ...payment,
+          dueDate: due.toISOString().split('T')[0],
+        };
+      });
 
-    setFormData((prev: any) => ({ ...prev, installment: updated }));
-  }
-}, [
-  formData.firstInstallmentDate,
-  formData.installmentPeriodDays,
-  formData.numberOfInstallments,
-  formData.paymentType,
-]);
+      setFormData((prev: any) => ({ ...prev, installment: updated }));
+    }
+  }, [
+    formData.firstInstallmentDate,
+    formData.installmentPeriodDays,
+    formData.numberOfInstallments,
+    formData.paymentType,
+  ]);
 
   const handleNumberInput = (value: string) => {
     if (value === '') return value;
@@ -185,9 +181,8 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
       });
       setLastChanged(key as any);
     }
-    
   };
-  
+
   return (
     <div className="w-full bg-white rounded-xl shadow-lg p-4 my-4">
       <p className="text-2xl text-neutral-500 font-normal">طريقة البيع</p>
@@ -270,7 +265,7 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
                       value={payment.dueDate}
                       label="تاريخ الدفع"
                       onChange={(date: any) => {
-                        const newPayments = [...formData.installment ? formData.installment : []];
+                        const newPayments = [...(formData.installment ? formData.installment : [])];
                         newPayments[index].dueDate = date.target.value.toISOString().split('T')[0];
                         setFormData({
                           ...formData,
@@ -286,22 +281,82 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
                       leftIcon={<span className="text-primary-500 bg-transparent">د.ع </span>}
                       type="number"
                       onChange={(e) => {
-                        userEditedInstallment.current = true; // 🔴 أعلِم أن المستخدم تدخل يدوياً
+                        userEditedInstallment.current = true;
 
                         const value = e.target.value === '' ? '' : Number(e.target.value);
-                        const newPayments = [...formData.installment ? formData.installment : []];
-                        newPayments[index].amount = value;
+                        const newPayments = [...(formData.installment ? formData.installment : [])];
+                        const oldAmount = Number(newPayments[index].amount) || 0;
+                        let diff = (Number(value) || 0) - oldAmount;
 
-                        const total = Number(formData.totalAmount) || 0;
-                        const paid = Number(formData.downPayment) || 0;
-                        const sumInstallments = newPayments.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
-                        const remaining = total - paid - sumInstallments;
-
-                        setFormData({
-                          ...formData,
-                          installment: newPayments,
-                          remainingAmount: remaining,
-                        });
+                        // If increasing and remainingAmount is 0, try to take from next installments
+                        if (diff > 0) {
+                          let remaining = Number(formData.remainingAmount) || 0;
+                          if (remaining >= diff) {
+                            // Take from remainingAmount
+                            newPayments[index].amount = value;
+                            if (index === newPayments.length - 1) {
+                              setFormData({
+                                ...formData,
+                                installment: newPayments,
+                                remainingAmount: remaining - diff,
+                              });
+                            } else {
+                              setFormData({
+                                ...formData,
+                                installment: newPayments,
+                                remainingAmount: remaining - diff,
+                              });
+                            }
+                          } else {
+                            // Not enough in remainingAmount, try to take from next installments
+                            let needed = diff - remaining;
+                            let updatedPayments = [...newPayments];
+                            let nextIndex = index + 1;
+                            while (needed > 0 && nextIndex < updatedPayments.length) {
+                              let nextAmount = Number(updatedPayments[nextIndex].amount) || 0;
+                              if (nextAmount >= needed) {
+                                updatedPayments[nextIndex].amount = nextAmount - needed;
+                                needed = 0;
+                              } else {
+                                updatedPayments[nextIndex].amount = 0;
+                                needed -= nextAmount;
+                              }
+                              nextIndex++;
+                            }
+                            // If still needed > 0, cannot increase
+                            if (needed > 0) {
+                              return; // Do not allow
+                            }
+                            updatedPayments[index].amount = value;
+                            setFormData({
+                              ...formData,
+                              installment: updatedPayments,
+                              remainingAmount: 0,
+                            });
+                          }
+                        } else {
+                          // Decreasing: give the difference to next installment or remainingAmount
+                          let give = Math.abs(diff);
+                          let updatedPayments = [...newPayments];
+                          if (index === newPayments.length - 1) {
+                            // Last installment: update its value and give the difference to remainingAmount
+                            updatedPayments[index].amount = value;
+                            setFormData({
+                              ...formData,
+                              installment: updatedPayments,
+                              remainingAmount: (Number(formData.remainingAmount) || 0) + give,
+                            });
+                          } else {
+                            // Give to next installment
+                            let nextAmount = Number(updatedPayments[index + 1].amount) || 0;
+                            updatedPayments[index + 1].amount = nextAmount + give;
+                            updatedPayments[index].amount = value;
+                            setFormData({
+                              ...formData,
+                              installment: updatedPayments,
+                            });
+                          }
+                        }
                       }}
                     />
                   </div>

@@ -174,6 +174,16 @@ const Header = () => {
                 بطاقات الحساب
               </NavLink>
             )}
+            {hasPermission(ALL_PERMISSIONS.GET_CAR) && (
+              <NavLink
+                to={'/cars'}
+                className={({ isActive }) =>
+                  `text-lg font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
+                }
+              >
+                سيارات
+              </NavLink>
+            )}
           </ul>
         </nav>
 
@@ -281,6 +291,17 @@ const Header = () => {
                 }
               >
                 بطاقات الحساب
+              </NavLink>
+            )}
+            
+            {hasPermission(ALL_PERMISSIONS.GET_CAR) && (
+              <NavLink
+                to={'/cars'}
+                className={({ isActive }) =>
+                  `text-lg font-normal ${isActive ? 'text-primary-500 border-b' : ''}`
+                }
+              >
+                سيارات
               </NavLink>
             )}
           </nav>

@@ -260,6 +260,9 @@ function AddNewContract() {
   const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    
+    // scroll to top of the page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (currentStep === 3) {
       // here we will handle the submission logic for the contract
       // check if the seller is existing in the database if not create a new one

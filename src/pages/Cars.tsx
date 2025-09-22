@@ -149,7 +149,7 @@ const Cars = () => {
           selectedAccount?.firstName || ''
         }؟ لا يمكن التراجع عن هذا الإجراء.`}
         loading={false}
-        apiEndpoint={selectedAccount ? `/person/${selectedAccount.id}` : undefined}
+        apiEndpoint={selectedAccount ? `/car/${selectedAccount.id}` : undefined}
       />
     </div>
   );

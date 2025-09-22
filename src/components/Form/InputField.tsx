@@ -48,6 +48,7 @@ const InputField = ({
           name={name}
           value={value}
           autoComplete='off'
+          onWheel={(e) => (type === 'number' ? (e.currentTarget.blur(), e.stopPropagation()) : null)}
           onChange={onChange}
           onBlur={onBlur}
           className={`w-full px-4 ${leftIcon ? 'pl-10' : ''} ${rightIcon ? 'pr-10' : ''} py-2 text-lg border rounded-lg focus:outline-none transition-all ${
