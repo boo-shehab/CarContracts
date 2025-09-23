@@ -7,6 +7,7 @@ interface SearchSelectProps {
   dropdownItem: (item: any) => React.ReactNode;
   inputValueKey?: string;
   placeholder?: string;
+  value?: string;
 
 }
 
@@ -15,9 +16,11 @@ export default function SearchSelect({
   returnedValue,
   dropdownItem,
   inputValueKey = "",
-  placeholder = "Search..."
+  placeholder = "Search...",
+  value
+
 }: SearchSelectProps) {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(value || "");
   const [results, setResults] = useState<any[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -66,15 +69,32 @@ export default function SearchSelect({
         }
       }}
     >
-      <input
-        type="text"
-        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        placeholder={placeholder}
-        autoComplete='off'
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        onFocus={() => setShowDropdown(true)}
-      />
+      <div className="relative">
+        <input
+          type="text"
+          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+          placeholder={placeholder}
+          autoComplete='off'
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => setShowDropdown(true)}
+        />
+        {query && (
+          <button
+            type="button"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+            onClick={() => {
+              setQuery("");
+              setResults([]);
+              setShowDropdown(false);
+              returnedValue(undefined); // <-- changed from null to undefined
+            }}
+            aria-label="Clear"
+          >
+            &#10005;
+          </button>
+        )}
+      </div>
       {showDropdown && results.length > 0 && (
         <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
           {results.map((item, index) => (

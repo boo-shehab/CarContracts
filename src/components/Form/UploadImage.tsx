@@ -16,7 +16,11 @@ const UploadImage: React.FC<UploadImageProps> = ({ onChange, oldImages, disabled
   const [images, setImages] = useState<any>(oldImages || []);
 
   useEffect(() => {
-    setImages(oldImages || []);
+    // Only update images if oldImages is not undefined and is different from current images
+    if (oldImages && oldImages !== images) {
+      setImages(oldImages);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [oldImages]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,23 +68,14 @@ const UploadImage: React.FC<UploadImageProps> = ({ onChange, oldImages, disabled
     e.preventDefault();
     setDragActive(false);
   };
-//   useEffect(() => {
-//   return () => {
-//     images.forEach((src) => URL.revokeObjectURL(src[imagesPath]));
-//   };
-// }, [images]);
   useEffect(() => {
-    // send all the files to parent component the old ones and the new ones
-    onChange(images)
+    onChange(images);
   }, [images]);
 
   const handleDelete = (id: number) => {
     if (disabled) return;
     setImages((prev: any) => prev.filter((img: any) => img.id !== id));
   };
-
-  console.log(images);
-  
 
   return (
     <>

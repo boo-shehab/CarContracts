@@ -68,7 +68,6 @@ function App() {
               'BOJEhMwYAch4UmfKjkqDW0Qu1GGpsIlcxN1tdbTfxYwv6AeRFVZEmdHLJ_hlWDeDCIK6x7JdOk5xi6uU0zmvz9c',
           }).then((currentToken) => {
             if (currentToken) {
-              console.log('Token generated:', currentToken);
               // Send the token to your server and update the UI if necessary
               
             } else {
