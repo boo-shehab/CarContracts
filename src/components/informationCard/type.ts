@@ -27,6 +27,8 @@ export interface CarInformation {
     cylinderCount: number;
     kilometers: number;
     origin: string;
+    walletNumber: string;
+    typeOfCarPlate: string;
 }
 
 export interface AuthorizationInformation {

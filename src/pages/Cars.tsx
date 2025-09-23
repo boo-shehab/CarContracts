@@ -57,11 +57,15 @@ const Cars = () => {
     {
       title: 'رقم اللوحة',
       key: 'plateNumber',
+      isFilterable: true,
+      filterType: 'text',
       sortable: true,
     },
     {
       title: 'رقم الشاصي',
       key: 'chassisNumber',
+      isFilterable: true,
+      filterType: 'text',
       sortable: true,
     },
     {

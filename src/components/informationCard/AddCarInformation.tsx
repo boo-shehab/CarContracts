@@ -89,6 +89,12 @@ function AddCarInformation({
         case 'plateNumber':
           newErrors.plateNumber = 'رقم السيارة مطلوب';
           break;
+        case 'walletNumber':
+          newErrors.walletNumber = 'رقم المحفظة مطلوب';
+          break;
+        case 'typeOfCarPlate':
+          newErrors.typeOfCarPlate = 'نوع لوحة السيارة مطلوب';
+          break;
         case 'engineType':
           newErrors.engineType = 'نوع المحرك مطلوب';
           break;
@@ -126,7 +132,7 @@ function AddCarInformation({
                 returnedValue(data);
                 setErrors({});
               }}
-              inputValueKey='chassisNumber'
+              inputValueKey='keyword'
               dropdownItem={(item) => (
                 <div>
                   {item.chassisNumber}
@@ -199,6 +205,26 @@ function AddCarInformation({
             placeholder="ادخل رقم السيارة"
             type="text"
             error={errors.plateNumber}
+            disabled={isLoading || disabled}
+          />
+          <InputField
+            value={formData.walletNumber}
+            name="walletNumber"
+            onChange={(e) => handleChange('walletNumber', e.target.value)}
+            label="رقم المحفظة"
+            placeholder="ادخل رقم المحفظة"
+            type="text"
+            error={errors.walletNumber}
+            disabled={isLoading || disabled}
+          />
+          <InputField
+            value={formData.typeOfCarPlate}
+            name="typeOfCarPlate"
+            onChange={(e) => handleChange('typeOfCarPlate', e.target.value)}
+            label="نوع لوحة السيارة"
+            placeholder="ادخل نوع لوحة السيارة"
+            type="text"
+            error={errors.typeOfCarPlate}
             disabled={isLoading || disabled}
           />
         </div>

@@ -23,6 +23,8 @@ const initialValues: CarInformation = {
   model: '',
   chassisNumber: '',
   plateNumber: '',
+  walletNumber: '',
+  typeOfCarPlate: '',
   engineType: '',
   passengerCount: 1,
   cylinderCount: 2,

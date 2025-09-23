@@ -9,6 +9,8 @@ export function mapCarFields(data: any): CarInformation {
     model: data.model ?? '',
     chassisNumber: data.chassisNumber ?? '',
     plateNumber: data.plateNumber ?? '',
+    walletNumber: data.walletNumber ?? '',
+    typeOfCarPlate: data.typeOfCarPlate ?? '',
     engineType: data.engineType ?? '',
     passengerCount: data.passengerCount ?? 1,
     cylinderCount: data.cylinderCount ?? 2,
