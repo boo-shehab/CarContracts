@@ -143,7 +143,9 @@ function AddAccountInformation({
             <SearchSelect
               api='person'
               placeholder='البحث برقم الهوية'
+              value={formData.nationalId}
               returnedValue={(data) => {
+                if (!data) {}
                 returnedValue(data);
                 setErrors({});
               }}

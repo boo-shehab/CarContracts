@@ -15,19 +15,8 @@ import { hasPermission } from '../utilities/permissions';
 import { ALL_PERMISSIONS } from '../utilities/allPermissions';
 import { useSelector } from 'react-redux';
 
-function AddNewContract() {
-  const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(1);
-  
-  const { companyUserId } = useSelector((state: any) => state.auth);
-  
-  const [sellerDisabled, setSellerDisabled] = useState(false);
-  const [buyerDisabled, setBuyerDisabled] = useState(false);
-  const [carDisabled, setCarDisabled] = useState(false);
-  const [isFormValid, setIsFormValid] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  const [sellerInformation, setSellerInformation] = useState<AccountInformation>({
+const defaultAccountInformation: AccountInformation = {
     firstName: '',
     fatherName: '',
     grandfatherName: '',
@@ -42,7 +31,21 @@ function AddNewContract() {
     houseNo: '',
     infoOffice: '',
     issuingAuthority: '',
-  });
+  }
+
+function AddNewContract() {
+  const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(1);
+  
+  const { companyUserId } = useSelector((state: any) => state.auth);
+  
+  const [sellerDisabled, setSellerDisabled] = useState(false);
+  const [buyerDisabled, setBuyerDisabled] = useState(false);
+  const [carDisabled, setCarDisabled] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [sellerInformation, setSellerInformation] = useState<AccountInformation>(defaultAccountInformation);
   const [sellerImages, setSellerImages] = useState<{
     nationalIdFrontFile: string | null;
     nationalIdBackFile: string | null;
@@ -57,22 +60,7 @@ function AddNewContract() {
     otherImages: [],
   });
 
-  const [buyerInformation, setBuyerInformation] = useState<AccountInformation>({
-    firstName: '',
-    fatherName: '',
-    grandfatherName: '',
-    fourthName: '',
-    surname: '',
-    nationalId: '',
-    phoneNumber: '',
-    residenceCardNo: '',
-    residence: '',
-    district: '',
-    alley: '',
-    houseNo: '',
-    infoOffice: '',
-    issuingAuthority: '',
-  });
+  const [buyerInformation, setBuyerInformation] = useState<AccountInformation>(defaultAccountInformation);
   const [buyerImages, setBuyerImages] = useState<{
     nationalIdFrontFile: string | null;
     nationalIdBackFile: string | null;
@@ -115,6 +103,18 @@ function AddNewContract() {
   });
   
   const handleReturnedSellerInfo = (data: any) => {
+    if (!data) {
+      setSellerInformation(defaultAccountInformation);
+      setSellerImages({
+        nationalIdFrontFile: null,
+        nationalIdBackFile: null,
+        residenceCardFrontFile: null,
+        residenceCardBackFile: null,
+        otherImages: [],
+      });
+      setSellerDisabled(false);
+      return;
+    }
     setSellerInformation({
     firstName: data.firstName,
     fatherName: data.fatherName,
@@ -167,7 +167,20 @@ function AddNewContract() {
   setSellerImages(newImages);
   setSellerDisabled(true)
   }
+
   const handleReturnedBuyerInfo = (data: any) => {
+    if (!data) {
+      setBuyerInformation(defaultAccountInformation);
+      setBuyerImages({
+        nationalIdFrontFile: null,
+        nationalIdBackFile: null,
+        residenceCardFrontFile: null,
+        residenceCardBackFile: null,
+        otherImages: [],
+      });
+      setBuyerDisabled(false);
+      return;
+    }
     setBuyerInformation({
     firstName: data.firstName,
     fatherName: data.fatherName,
@@ -226,6 +239,23 @@ function AddNewContract() {
   };
 
   const handleReturnedCarInfo = (data: any) => {
+    if (!data) {
+      setCarInformation({
+        name: '',
+        type: '',
+        color: '',
+        model: '',
+        chassisNumber: '',
+        plateNumber: '',
+        engineType: '',
+        passengerCount: 1,
+        cylinderCount: 2,
+        kilometers: 0,
+        origin: '',
+      });
+      setCarDisabled(false);
+      return;
+    }
     setCarInformation({
       name: data.name,
       type: data.type,
@@ -264,16 +294,10 @@ function AddNewContract() {
   const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    console.log("Submitting form with data:");
     
-    // scroll to top of the page
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (currentStep === 3) {
-      // here we will handle the submission logic for the contract
-      // check if the seller is existing in the database if not create a new one
-      // check if the buyer is existing in the database if not create a new one
-      // check if the car is existing in the database if not create a new one
-      // then create a new payment in the database
-      // then create a new contract in the database using there ids
       try {
         let seller;
         const checkSellerResponse = await axios.get(`/person?nationalId=${sellerInformation.nationalId}`);
