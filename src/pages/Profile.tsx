@@ -15,6 +15,17 @@ import ActivitiesTimeline from '../components/ActivitiesTimeline';
 import UserRoles from '../components/UserRoles';
 import { compressImage } from '../utilities/compressImage';
 
+const passwordValid = (password: string) =>
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
+
+const getAbsoluteImageUrl = (url: string) => {
+  if (!url) return userImage;
+  if (url.startsWith('http')) return url;
+  // Replace with your actual API base URL if needed
+  const apiBase = process.env.REACT_APP_API_URL || '';
+  return apiBase + url;
+};
+
 const Profile = () => {
   const { id: paramId } = useParams<{ id?: string }>();
   const [initialState, setInitialState] = useState<any>({
@@ -23,14 +34,14 @@ const Profile = () => {
     username: '',
     password: '',
     confirmPassword: '',
-    imageUrl: userImage,
+    imageUrl: userImage, // Always present!
   });
   const [isLoading, setIsLoading] = useState(false);
   const { user, roles, accessToken, refreshToken } = useSelector((state: any) => state.auth);
 
   const [formData, setFormData] = useState(initialState);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>(initialState.imageUrl);
+  const [preview, setPreview] = useState<string>(userImage);
   const [isChanged, setIsChanged] = useState(false);
   const [phoneError, setPhoneError] = useState('');
   const [isOtherUser, setIsOtherUser] = useState(false);
@@ -50,13 +61,13 @@ const Profile = () => {
             email: otherUser.email || '',
             phone: otherUser.phone || '',
             username: otherUser.username || '',
-            imageUrl: userImage,
             password: '',
             confirmPassword: '',
+            imageUrl: getAbsoluteImageUrl(otherUser.imageUrl) || userImage,
           };
-          setInitialState(otherUser);
+          setInitialState(userData);
           setFormData(userData);
-          setPreview(userImage);
+          setPreview(userData.imageUrl);
         }
       } catch {
         toast.error('تعذر جلب بيانات المستخدم');
@@ -69,11 +80,11 @@ const Profile = () => {
         email: user.email || '',
         phone: user.phone || '',
         username: user.username || '',
-        imageUrl: user.imageUrl || userImage,
         password: '',
         confirmPassword: '',
+        imageUrl: getAbsoluteImageUrl(user.imageUrl) || userImage,
       };
-      setInitialState(user);
+      setInitialState(userData);
       setFormData(userData);
       setPreview(userData.imageUrl);
     }
@@ -82,7 +93,7 @@ const Profile = () => {
   useEffect(() => {
     fetchUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, paramId]);
+  }, [paramId]);
 
   useEffect(() => {
     if (imageFile) {
@@ -97,7 +108,7 @@ const Profile = () => {
       formData.username !== initialState.username ||
       formData.email !== initialState.email ||
       formData.phone !== initialState.phone ||
-      formData.password !== initialState.password ||
+      formData.password !== '' ||
       preview !== initialState.imageUrl;
 
     setIsChanged(changed);
@@ -112,7 +123,6 @@ const Profile = () => {
   ]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-
     setFormData((prev: any) => ({ ...prev, [e.target.name]: e.target.value }));
 
     if (e.target.name === 'phone') {
@@ -136,10 +146,18 @@ const Profile = () => {
 
   const handleRemoveImage = () => {
     setImageFile(null);
-    setPreview('');
+    setPreview(userImage);
   };
 
   const handleSave = async () => {
+    if (!formData.username || !formData.email || !formData.phone) {
+      toast.error('جميع الحقول مطلوبة');
+      return;
+    }
+    if (formData.password && !passwordValid(formData.password)) {
+      toast.error('كلمة المرور يجب أن تكون 8 أحرف على الأقل وتحتوي على رقم، حرف كبير، حرف صغير، ورمز خاص');
+      return;
+    }
     if (formData.password && formData.password !== formData.confirmPassword) {
       toast.error('كلمتا المرور غير متطابقتين');
       return;
@@ -149,10 +167,33 @@ const Profile = () => {
       return;
     }
     try {
-      // Handle image upload if changed
       setIsLoading(true);
+      let imageChanged = false;
+      let imageRemoved = false;
+      let newImageUrl = preview;
+
+      // Remove image (set to default)
+      if (preview === userImage && initialState.imageUrl !== userImage) {
+        const response = await fetch(userImage);
+        const blob = await response.blob();
+        const defaultFile = new File([blob], "default.png", { type: blob.type });
+
+        const formDataImage = new FormData();
+        formDataImage.append('photo', defaultFile);
+
+        const image = await axios.put('/users/me/photo', formDataImage, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        setPreview(userImage);
+        setInitialState((prev: any) => ({ ...prev, imageUrl: userImage }));
+        imageRemoved = true;
+        newImageUrl = userImage;
+      }
+
+      // Upload new image
       if (imageFile !== null) {
-        
         const formDataImage = new FormData();
         formDataImage.append('photo', imageFile);
 
@@ -161,39 +202,45 @@ const Profile = () => {
             'Content-Type': 'multipart/form-data',
           },
         });
-        formData.imageUrl = image.data.imageUrl; // Update image URL in formData
-        setPreview(image.data.imageUrl); // Update preview with new image URL
+        const backendUrl = getAbsoluteImageUrl(image.data.data.imageUrl);
+        setPreview(backendUrl);
+        setInitialState((prev: any) => ({ ...prev, imageUrl: backendUrl }));
+        imageChanged = true;
+        newImageUrl = backendUrl;
+        setImageFile(null);
       }
 
-      // Only send changed fields
+      // Only send changed fields (not imageUrl)
       const payload: Record<string, any> = {};
       Object.entries(formData).forEach(([key, value]) => {
+        if (key === 'imageUrl') return;
         if (
           key !== 'confirmPassword' &&
           value !== initialState[key as keyof typeof initialState] &&
-          value !== ''
+          value !== '' &&
+          !(key === 'password' && value === '')
         ) {
           payload[key] = value;
         }
       });
 
-      // Don't send if nothing changed except image
       if (Object.keys(payload).length > 0) {
         await axios.put('/users/me/profile', payload);
         setInitialState((prev: any) => ({ ...prev, ...payload }));
         setFormData((prev: any) => ({ ...prev, ...payload }));
       }
-      // Update Redux user, keeping tokens and roles
-      dispatch(
-        setUser({
-          user: { ...user, ...payload, imageUrl: preview },
-          accessToken: accessToken || '',
-          refreshToken: refreshToken || '',
-          roles: roles || [],
-        })
-      );
-      setImageFile(null);
-      toast.success('تم حفظ التعديلات بنجاح!');
+
+      if (Object.keys(payload).length > 0 || imageChanged || imageRemoved) {
+        dispatch(
+          setUser({
+            user: { ...user, ...payload, imageUrl: newImageUrl },
+            accessToken: accessToken || '',
+            refreshToken: refreshToken || '',
+            roles: roles || [],
+          })
+        );
+        toast.success('تم حفظ التعديلات بنجاح!');
+      }
     } catch (error: any) {
       const message =
         error?.response?.data?.message ||
@@ -208,6 +255,20 @@ const Profile = () => {
   };
 
   const isPasswordMismatch = formData.password !== formData.confirmPassword;
+
+  const requiredFieldsFilled =
+    formData.username &&
+    formData.email &&
+    formData.phone &&
+    (!formData.password || passwordValid(formData.password)) &&
+    (!formData.password || formData.confirmPassword);
+
+  const canSave =
+    isChanged &&
+    requiredFieldsFilled &&
+    !isPasswordMismatch &&
+    !phoneError &&
+    !isLoading;    
 
   return (
     <div>
@@ -291,6 +352,11 @@ const Profile = () => {
                   onChange={handleChange}
                   leftIcon={<FaLock />}
                 />
+                {formData.password && !passwordValid(formData.password) && (
+                  <p className="text-red-600 text-sm">
+                    كلمة المرور يجب أن تكون 8 أحرف على الأقل وتحتوي على رقم، حرف كبير، حرف صغير، ورمز خاص
+                  </p>
+                )}
                 <InputField
                   name="confirmPassword"
                   label="تأكيد كلمة المرور"
@@ -309,9 +375,9 @@ const Profile = () => {
             {!isOtherUser && (
               <button
                 onClick={handleSave}
-                disabled={Boolean(!isChanged || isPasswordMismatch || phoneError || isLoading)}
+                disabled={!canSave}
                 className={`w-full py-3.5 rounded-[8px] text-xl font-semibold transition-colors duration-200 ${
-                  !isChanged || isPasswordMismatch || phoneError || isLoading
+                  !canSave
                     ? 'bg-gray-300 text-neutral-400 cursor-not-allowed'
                     : 'bg-blue-600 text-white hover:bg-blue-700'
                 }`}
@@ -323,7 +389,7 @@ const Profile = () => {
         </div>
       </div>
       <div className='flex mt-4 flex-col lg:flex-row gap-4'>
-        {initialState && initialState?.id && initialState?.roles[0] !== 'ROLE_COMPANY' && (
+        {initialState && initialState?.id && initialState?.roles && initialState?.roles[0] !== 'ROLE_COMPANY' && (
           <UserRoles
             isOtherUser={isOtherUser}
             refresh={fetchUserData}
