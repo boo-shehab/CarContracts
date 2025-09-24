@@ -181,7 +181,7 @@ const Profile = () => {
         const formDataImage = new FormData();
         formDataImage.append('photo', defaultFile);
 
-        const image = await axios.put('/users/me/photo', formDataImage, {
+        await axios.put('/users/me/photo', formDataImage, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
