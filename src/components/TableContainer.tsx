@@ -147,7 +147,7 @@ const TableContainer = ({
           name="keyword"
           type="text"
           value={keyword}
-          placeholder="ابحث عن الشركة"
+          placeholder="ابحث..."
           onChange={(e) => setKeyword(e.target.value)}
           className="m-0"
           leftIcon={<CiSearch size={24} />}

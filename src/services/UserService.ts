@@ -42,7 +42,7 @@ export const createNewCar = async (data: any, images?: any[]) => {
   const carFormData = new FormData();
   for (const key in data) {
     carFormData.append(key, data[key]);
-  }
+  }  
 
   const response = await axios.post('/car', carFormData, {
     headers: { 'Content-Type': 'multipart/form-data' },

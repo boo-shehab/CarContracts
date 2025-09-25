@@ -1,7 +1,9 @@
 import InputField from '../Form/InputField';
 import SearchSelect from '../Form/SearchSelect';
+import SelectField from '../Form/SelectField';
 import { CarInformation } from './type';
 import { useState } from 'react';
+import axios from '../../services/axios'; 
 
 interface AddCarInformationProps {
   formData: CarInformation;
@@ -49,25 +51,27 @@ function AddCarInformation({
 
   // Real-time validation for each field
   const handleChange = (field: string, value: string | number) => {
+    console.log(field, value);
     
   if (field === "chassisNumber" && typeof value === "string") {
     // Only allow English letters and digits
-    const englishOnly = value.replace(/[^a-zA-Z0-9]/g, "");
-    value = englishOnly;
+    value = value.replace(/[^a-zA-Z0-9]/g, "");
   }
-  // Update formData
+
+  // Update form data
   setFormData(field, value);
 
+  // --- Sync validation ---
   setErrors((prev) => {
     const newErrors = { ...prev };
 
-    // Validation logic for the changed field
     const numberFields = ['kilometers', 'passengerCount', 'cylinderCount'];
-    if (
-      (numberFields.includes(field)
+    const isValidField =
+      numberFields.includes(field)
         ? value !== null && value !== undefined && !isNaN(Number(value))
-        : value !== '' && value !== null && value !== undefined)
-    ) {
+        : value !== '' && value !== null && value !== undefined;
+
+    if (isValidField) {
       delete newErrors[field];
     } else {
       switch (field) {
@@ -90,7 +94,7 @@ function AddCarInformation({
           newErrors.plateNumber = 'رقم السيارة مطلوب';
           break;
         case 'walletNumber':
-          newErrors.walletNumber = 'رقم المحفظة مطلوب';
+          newErrors.walletNumber = 'رقم المحافظة مطلوب';
           break;
         case 'typeOfCarPlate':
           newErrors.typeOfCarPlate = 'نوع لوحة السيارة مطلوب';
@@ -113,13 +117,28 @@ function AddCarInformation({
       }
     }
 
-    // Immediately validate using the new errors object
-    const isValid = Object.keys(newErrors).length === 0;
-    if (onValidate) onValidate(isValid);
-
+    if (onValidate) onValidate(Object.keys(newErrors).length === 0);
     return newErrors;
   });
+
+  // --- Async validation ---
+  if ((field === 'chassisNumber' || field === 'plateNumber') && typeof value === 'string' && value.trim()) {
+    axios
+      .get(`/car?${field}=${value}`)
+      .then((res) => {
+        if (res.data?.data?.find((item: any) => item[field] === value)) {
+          setErrors((prev) => ({
+            ...prev,
+            [field]: field === 'chassisNumber'
+              ? 'رقم الشاصي موجود بالفعل'
+              : 'رقم السيارة موجود بالفعل',
+          }));
+        }
+      })
+      .catch((err) => console.error(`Error checking ${field}:`, err));
+  }
 };
+
 
   return (
     <div className="w-full bg-white rounded-xl shadow-lg p-4 my-4">
@@ -207,13 +226,34 @@ function AddCarInformation({
             error={errors.plateNumber}
             disabled={isLoading || disabled}
           />
-          <InputField
+          <SelectField
             value={formData.walletNumber}
             name="walletNumber"
             onChange={(e) => handleChange('walletNumber', e.target.value)}
-            label="رقم المحفظة"
-            placeholder="ادخل رقم المحفظة"
-            type="text"
+            label="رقم المحافظة"
+            placeholder="ادخل رقم المحافظة"
+            options={[
+              { label: 'بغداد (11)', value: 'بغداد (11)' },
+              { label: 'نينوى (12)', value: 'نينوى (12)' },
+              { label: 'ميسان (13)', value: 'ميسان (13)' },
+              { label: 'البصرة (14)', value: 'البصرة (14)' },
+              { label: 'الأنبار (15)', value: 'الأنبار (15)' },
+              { label: 'القادسية (16)', value: 'القادسية (16)' },
+              { label: 'المثنى (17)', value: 'المثنى (17)' },
+              { label: 'بابل (18)', value: 'بابل (18)' },
+              { label: 'كربلاء (19)', value: 'كربلاء (19)' },
+              { label: 'ديالى (20)', value: 'ديالى (20)' },
+              { label: 'السليمانية (21)', value: 'السليمانية (21)' },
+              { label: 'أربيل (22)', value: 'أربيل (22)' },
+              { label: 'حلبجة (23)', value: 'حلبجة (23)' },
+              { label: 'دهوك (24)', value: 'دهوك (24)' },
+              { label: 'كركوك (25)', value: 'كركوك (25)' },
+              { label: 'صلاح الدين (26)', value: 'صلاح الدين (26)' },
+              { label: 'ذي قار (27)', value: 'ذي قار (27)' },
+              { label: 'النجف (28)', value: 'النجف (28)' },
+              { label: 'واسط (29)', value: 'واسط (29)' }
+            ]}
+
             error={errors.walletNumber}
             disabled={isLoading || disabled}
           />

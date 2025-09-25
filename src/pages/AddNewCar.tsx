@@ -46,7 +46,7 @@ function AddNewCar() {
 
   // Images: track both old and new
   const [images, setImages] = useState<
-    (File | { id: string | number; fileKey: string; mimeType: string })[]
+    ({id: string | number; fileKey: File} | { id: string | number; fileKey: string; mimeType: string })[]
   >([]);
   const [originalImages, setOriginalImages] = useState<
     { id: string | number; fileKey: string; mimeType: string }[]
@@ -70,7 +70,9 @@ function AddNewCar() {
           setImages(attachments);
           setOriginalImages(attachments);
         })
-        .catch(() => toast.error('تعذر تحميل بيانات السيارة'))
+        .catch((e) => {
+          toast.error(e.message || 'تعذر تحميل بيانات السيارة');
+        })
         .finally(() => setIsLoading(false));
     }
   }, [id]);
@@ -115,7 +117,7 @@ function AddNewCar() {
         }
 
         // Handle new images (File objects)
-        const newFiles = images.filter((img: any) => typeof img.fileKey !== 'string') as File[];
+        const newFiles = images.filter((img: any) => typeof img.fileKey !== 'string') as unknown as File[];
         if (newFiles.length > 0) {
           // You need an uploadCarAttachments service that accepts FormData
           const formData = new FormData();
@@ -135,18 +137,16 @@ function AddNewCar() {
 
         toast.success('تم تعديل السيارة بنجاح');
       } else {
-        // For new car, send all images as files
-        const newFiles = images.filter((img) => img instanceof File) as File[];
-        await createNewCar(carInformation, newFiles);
+        await createNewCar(carInformation, images.map((f) => f.fileKey));
         toast.success('تم اضافة السيارة بنجاح');
+        // navigate(-1);
       }
-      // navigate(-1);
     } catch {
       toast.error('فشل في حفظ السيارة');
     } finally {
       setIsLoading(false);
     }
-  };
+  };  
 
   return (
     <div className="mb-4">
@@ -172,12 +172,12 @@ function AddNewCar() {
           imagesPath="fileKey"
           formData={{ othreFiles: images }}
           setFormData={(data: any) => {
-            data.othreFiles.map((d: any) => {
-              console.log(d);
-            });
+            console.log(data.othreFiles);
+            
             setImages(data.othreFiles);
           }}
           isPerson={false}
+          disabled={isView}
         />
 
         {!isView && (

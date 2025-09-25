@@ -149,8 +149,8 @@ const Cars = () => {
           toggleRefresh();
         }}
         title="تأكيد الحذف"
-        description={`هل أنت متأكد أنك تريد حذف المستخدم ${
-          selectedAccount?.firstName || ''
+        description={`هل أنت متأكد أنك تريد حذف السيارة ${
+          selectedAccount?.name || ''
         }؟ لا يمكن التراجع عن هذا الإجراء.`}
         loading={false}
         apiEndpoint={selectedAccount ? `/car/${selectedAccount.id}` : undefined}
