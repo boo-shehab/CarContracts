@@ -6,8 +6,6 @@ import { useNavigate } from "react-router-dom"
 import { useEffect, useState, useRef, useCallback } from "react";
 import { BsExclamationCircleFill, BsInfoCircle } from "react-icons/bs";
 import { HiOutlineDocumentText } from "react-icons/hi";
-import { formatDistanceToNow } from "date-fns";
-import { ar } from "date-fns/locale";
 import axios from "../services/axios";
 import { hasPermission } from "../utilities/permissions";
 import { ALL_PERMISSIONS } from "../utilities/allPermissions";
@@ -18,8 +16,10 @@ type Notification = {
   id: string;
   title: string;
   body: string;
-  notificationDate: Date;
-  permission?: string;
+  seen: boolean;
+  // notificationDate: Date;
+  
+  // permission?: string;
 };
 
 type Pagination = {
@@ -165,12 +165,12 @@ const Notifications = () => {
                     <div
                       dangerouslySetInnerHTML={{ __html: notif.body }}
                     />
-                    <div className="text-gray-400 text-xs mt-1">
+                    {/* <div className="text-gray-400 text-xs mt-1">
                       {formatDistanceToNow(notif.notificationDate, {
                         addSuffix: true,
                         locale: ar,
                       })}
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>

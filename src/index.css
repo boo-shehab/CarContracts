@@ -166,7 +166,7 @@ input[type='number'] {
 }
 
 .ant-timeline-item  {
-  left: calc(50% - 65px) !important;
+  left: calc(50% - 125px) !important;
 }
 
 .ant-timeline-item-content {
