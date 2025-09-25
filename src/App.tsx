@@ -7,8 +7,8 @@ import { getMe, logout } from './services/authService';
 import { setUser } from './features/auth/authSlice';
 import Loading from './components/Loading';
 
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
-import { app } from './firebase'; // <-- import your initialized app
+import { getToken, onMessage } from 'firebase/messaging';
+import { messaging } from './firebase';
 
 function App() {
   const dispatch = useDispatch();
@@ -62,12 +62,13 @@ function App() {
     Notification.requestPermission()
       .then((permission) => {
         if (permission === 'granted') {
-          const messaging = getMessaging(app); // <-- pass the app instance
+
           getToken(messaging, {
             vapidKey:
               'BOJEhMwYAch4UmfKjkqDW0Qu1GGpsIlcxN1tdbTfxYwv6AeRFVZEmdHLJ_hlWDeDCIK6x7JdOk5xi6uU0zmvz9c',
           }).then((currentToken) => {
             if (currentToken) {
+              console.log('Token generated:', currentToken);
               // Send the token to your server and update the UI if necessary
               
             } else {

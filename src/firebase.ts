@@ -13,5 +13,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
+// ✅ create an instance of messaging bound to your app
+const messaging = getMessaging(app);
 
-export { app, getMessaging };
+export { app, messaging };
