@@ -7,8 +7,8 @@ import { ar } from 'date-fns/locale';
 import FilterIcon from '../assets/icons/FilterIcon';
 import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '../hooks/useNotifications';
-import { getMessaging, onMessage } from 'firebase/messaging';
-import { app } from '../firebase';
+import { onMessage } from 'firebase/messaging';
+import { messaging } from '../firebase';
 import { hasPermission } from '../utilities/permissions';
 import { ALL_PERMISSIONS } from '../utilities/allPermissions';
 
@@ -32,7 +32,6 @@ const NotificationsPopup = () => {
   if (!hasPermission(ALL_PERMISSIONS.GET_NOTIFICATTIONS)) return;
 
   try {
-    const messaging = getMessaging(app);
     onMessage(messaging, (payload) => {
       const notif: Notification = {
         id: `firebase-${Date.now()}`,

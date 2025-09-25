@@ -32,8 +32,11 @@ const Login = () => {
 
     try {
       setLoading(true);
-      const { data } = await login(user.username, user.password);
 
+      // هنا login صار يرسل user + pass + deviceInfo تلقائياً
+      // إذا تريد تبعثهم بالـ headers استعمل: login(user.username, user.password, true)
+      const data = await login(user.username, user.password);
+      
       const getUserData = await getMe(data.accessToken);
       const userData = getUserData.data;
 
@@ -52,14 +55,12 @@ const Login = () => {
           roles: roles,
         })
       );
-      console.log(getUserData.data);
-      if(hasPermission(ALL_PERMISSIONS.GET_DASHBOARD)){
+
+      if (hasPermission(ALL_PERMISSIONS.GET_DASHBOARD)) {
         navigate('/');
-      } else{
+      } else {
         navigate('/profile');
       }
-      
-      
     } catch (error: any) {
       console.error('Login failed', error);
       const message =
