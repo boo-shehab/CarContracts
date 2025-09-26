@@ -116,6 +116,18 @@ function AddAccountInformation({
           console.error('Error checking national ID:', err);
         });
     }
+    if(field === 'phoneNumber' && value.length === 11) {
+      // Check if the phoneNumber is existing in the database
+      await axios.get(`/person?phoneNumber=${value}`)
+      .then(response => {
+        if (response.data.data.find((item: any) => item.phoneNumber === value)) {
+          error = 'رقم الهاتف موجود بالفعل';
+        }
+      })
+      .catch(err => {
+          console.error('Error checking phone number:', err);
+        });
+    }
 
     if(field === 'phoneNumber') {
       // check if the phoneNumber is 11 number and start with 07
@@ -145,7 +157,6 @@ function AddAccountInformation({
               placeholder='البحث برقم الهوية'
               value={formData.nationalId}
               returnedValue={(data) => {
-                if (!data) {}
                 returnedValue(data);
                 setErrors({});
               }}

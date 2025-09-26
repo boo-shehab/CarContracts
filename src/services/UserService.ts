@@ -25,11 +25,9 @@ export const createNewAccount = async (data: object, images: any) => {
     formData.append('residenceCardFrontFile', images.residenceCardFrontFile);
   if (images.residenceCardBackFile)
     formData.append('residenceCardBackFile', images.residenceCardBackFile);
-  if (images.drivingLicenseFrontFile){
-    images.othreFiles.forEach((file: any) => {
-      formData.append('othreFiles', file);
-    });
-  }
+  images.othreFiles.forEach((file: any) => {
+    formData.append('othreFiles', file.url);
+  });
 
   return axios.post('/person', formData, {
     headers: {

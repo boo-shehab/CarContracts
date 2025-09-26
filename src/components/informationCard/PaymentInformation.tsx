@@ -68,7 +68,7 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
         const extra = i < extraUnits ? minUnit : 0;
 
         const due = new Date(baseDate);
-        due.setDate(baseDate.getDate() + i * intervalDays);
+        due.setDate(baseDate.getDate() + (i + 1) * intervalDays);
 
         newPayments.push({
           amount: baseAmount + extra,
@@ -211,35 +211,39 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
             placeholder="ادخل المبلغ الكلي"
             type="number"
           />
-          <InputField
-            value={formData.downPayment}
-            name="downPayment"
-            onChange={(e) => {
-              handleInputChange(e.target.value, 'downPayment');
-              setLastChanged('down');
-            }}
-            label="المبلغ المدفوع"
-            placeholder="ادخل المبلغ المدفوع"
-            type="number"
-          />
-          <InputField
-            value={formData.remainingAmount}
-            name="remainingAmount"
-            onChange={(e) => {
-              handleInputChange(e.target.value, 'remainingAmount');
-              setLastChanged('remaining');
-            }}
-            label="المبلغ المتبقي"
-            placeholder="ادخل المبلغ المتبقي"
-            type="number"
-          />
+          {formData.paymentType === 'INSTALLMENT' && (
+            <InputField
+              value={formData.downPayment}
+              name="downPayment"
+              onChange={(e) => {
+                handleInputChange(e.target.value, 'downPayment');
+                setLastChanged('down');
+              }}
+              label="المبلغ المدفوع"
+              placeholder="ادخل المبلغ المدفوع"
+              type="number"
+            />
+          )}
+          {formData.paymentType === 'INSTALLMENT' && (
+            <InputField
+              value={formData.remainingAmount}
+              name="remainingAmount"
+              onChange={(e) => {
+                handleInputChange(e.target.value, 'remainingAmount');
+                setLastChanged('remaining');
+              }}
+              label="المبلغ المتبقي"
+              placeholder="ادخل المبلغ المتبقي"
+              type="number"
+            />
+          )}
           {formData.paymentType === 'INSTALLMENT' && (
             <InputField
               value={formData.numberOfInstallments}
               name="numberOfInstallments"
               onChange={(e) => handleInputChange(e.target.value, 'numberOfInstallments')}
-              label="عدد الاقساط"
-              placeholder="ادخل عدد الاقساط"
+              label="عدد الدفعات"
+              placeholder="ادخل عدد الدفعات"
               type="number"
             />
           )}
@@ -247,7 +251,7 @@ function PaymentInformation({ formData, setFormData }: PaymentInformationProps) 
         {formData.paymentType === 'INSTALLMENT' && (
           <div>
             <div className="flex items-center gap-2 text-2xl mb-4">
-              <span>فترة التقسيط كل</span>
+              <span>فترة الدفعات كل</span>
               <InputField
                 value={formData.installmentPeriodDays}
                 name="installmentPeriodDays"
